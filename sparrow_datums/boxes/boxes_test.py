@@ -7,11 +7,11 @@ from sparrow_datums.boxes import Boxes, BoxType
 
 def test_bad_shape_throws_type_error():
     with pytest.raises(TypeError):
-        Boxes(np.ones(3))
+        Boxes(np.ones(3), BoxType.XYWH_REL)
 
 
 def test_boxes_with_no_width_throws_on_scale():
-    boxes = Boxes(np.ones(4))
+    boxes = Boxes(np.ones(4), BoxType.XYWH_REL)
     with pytest.raises(ValueError):
         boxes.scale
 

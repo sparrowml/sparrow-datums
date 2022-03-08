@@ -24,7 +24,7 @@ class Boxes(np.ndarray):
     def __new__(
         cls,
         boxes: np.ndarray,
-        box_type: BoxType = BoxType.XYWH_REL,
+        box_type: BoxType,
         image_width: Optional[float] = None,
         image_height: Optional[float] = None,
     ) -> None:
