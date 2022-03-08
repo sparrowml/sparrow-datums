@@ -46,7 +46,7 @@ test:
 check-codestyle:
 	poetry run isort --diff --check-only --settings-path pyproject.toml ./
 	poetry run black --diff --check --config pyproject.toml ./
-	poetry run darglint --verbosity 2 sparrow_datums tests
+	poetry run darglint --verbosity 2 sparrow_datums
 
 .PHONY: mypy
 mypy:
@@ -56,7 +56,7 @@ mypy:
 check-safety:
 	poetry check
 	poetry run safety check --full-report
-	poetry run bandit -ll --recursive sparrow_datums tests
+	poetry run bandit -ll --recursive sparrow_datums
 
 .PHONY: lint
 lint: test check-codestyle mypy check-safety
