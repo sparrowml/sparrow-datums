@@ -9,13 +9,6 @@ from sparrow_datums.example import hello
     [
         ("Jeanette", "Hello Jeanette!"),
         ("Raven", "Hello Raven!"),
-        ("Maxine", "Hello Maxine!"),
-        ("Matteo", "Hello Matteo!"),
-        ("Destinee", "Hello Destinee!"),
-        ("Alden", "Hello Alden!"),
-        ("Mariah", "Hello Mariah!"),
-        ("Anika", "Hello Anika!"),
-        ("Isabella", "Hello Isabella!"),
     ],
 )
 def test_hello(name, expected):
