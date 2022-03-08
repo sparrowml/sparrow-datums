@@ -40,7 +40,7 @@ formatting: codestyle
 #* Linting
 .PHONY: test
 test:
-	PYTHONPATH=$(PYTHONPATH) poetry run pytest -c pyproject.toml --cov-report=html --cov=sparrow_datums sparrow_datums/
+	PYTHONPATH=$(PYTHONPATH) poetry run pytest -c pyproject.toml --cov=sparrow_datums sparrow_datums/
 
 .PHONY: check-codestyle
 check-codestyle:
