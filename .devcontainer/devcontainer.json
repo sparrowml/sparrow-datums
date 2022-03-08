@@ -10,7 +10,11 @@
 		"python.linting.enabled": true,
 		"python.formatting.blackPath": "/usr/local/bin/black",
 		"python.formatting.provider": "black",
-		"editor.formatOnSave": true
+		"editor.formatOnSave": true,
+		"python.testing.pytestArgs": [
+			"sparrow_datums"
+		],
+		"python.testing.pytestEnabled": true
 	},
 	"extensions": [
 		"ms-python.python",
