@@ -11,6 +11,7 @@ RUN apt-get update && \
   curl \
   git \
   make \
+  openssh-client \
   && rm -rf /var/lib/apt/lists/*
 
 COPY pyproject.toml ./
