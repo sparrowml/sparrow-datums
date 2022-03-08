@@ -4,9 +4,6 @@
 
 A Python package for data structures
 
-[![Build status](https://github.com/sparrowml/sparrow-datums/workflows/build/badge.svg?branch=master&event=push)](https://github.com/sparrowml/sparrow-datums/actions?query=workflow%3Abuild)
-![Coverage Report](assets/images/coverage.svg)
-
 </div>
 
 ### Poetry
