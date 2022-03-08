@@ -1,0 +1,12 @@
+# This file contains values from Cookiecutter
+
+default_context:
+  project_name: "sparrow-datums"
+  project_description: "A Python package for data structures"
+  organization: "Sparrow Computing"
+  minimal_python_version: 3.9
+  github_name: "sparrowml"
+  email: "ben@sparrow.dev"
+  version: "0.1.0"
+  line_length: "88"
+  create_example_template: "cli"
