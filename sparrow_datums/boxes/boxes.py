@@ -29,7 +29,7 @@ class Boxes(np.ndarray):
         image_height: Optional[float] = None,
     ) -> None:
         if boxes.shape[-1] != 4:
-            raise TypeError("Box array shapes must end with 4 dimensions")
+            raise TypeError("Boxes array shapes must end with 4 dimensions")
         cls.box_type = box_type
         cls._image_width = image_width
         cls._image_height = image_height
