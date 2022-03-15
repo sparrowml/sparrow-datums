@@ -7,7 +7,6 @@ from random import choice
 import typer
 from rich.console import Console
 
-from sparrow_datums import version
 from sparrow_datums.example import hello
 
 

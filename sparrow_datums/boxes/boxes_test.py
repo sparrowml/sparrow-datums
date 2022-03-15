@@ -6,11 +6,11 @@ from sparrow_datums.boxes import Boxes, BoxType
 
 def test_bad_shape_throws_type_error():
     with pytest.raises(TypeError):
-        Boxes(np.ones(3), BoxType.XYWH_REL)
+        Boxes(np.ones(3), BoxType.relative_tlwh)
 
 
 def test_boxes_with_no_width_throws_on_scale():
-    boxes = Boxes(np.ones(4), BoxType.XYWH_REL)
+    boxes = Boxes(np.ones(4), BoxType.relative_tlwh)
     with pytest.raises(ValueError):
         boxes.scale
 
@@ -19,7 +19,7 @@ def test_boxes_to_relative_moves_boxes_to_0_1():
     image_size = 512
     boxes_a = Boxes(
         np.random.uniform(size=(10, 4)) * image_size,
-        BoxType.XYWH_ABS,
+        BoxType.absolute_tlwh,
         image_width=image_size,
         image_height=image_size,
     )
@@ -34,7 +34,7 @@ def test_boxes_to_absolute_moves_boxes_to_0_image_size():
     image_size = 512
     boxes_a = Boxes(
         np.random.uniform(size=(10, 4)),
-        BoxType.XYWH_REL,
+        BoxType.relative_tlwh,
         image_width=image_size,
         image_height=image_size,
     )
