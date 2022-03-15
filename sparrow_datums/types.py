@@ -1,27 +1,27 @@
 import enum
 
 
-class BoxType(enum.IntEnum):
+class BoxType(enum.Enum):
     """
     Enum for box parameterizations
     """
 
-    absolute_tlbr = 0
+    absolute_tlbr = "absolute_tlbr"
     """
     (x1, y1, x2, y2) in absolute pixel coordinates
     """
 
-    absolute_tlwh = 1
+    absolute_tlwh = "absolute_tlwh"
     """
     (x, y, w, h) in absolute pixel coordinates
     """
 
-    relative_tlbr = 2
+    relative_tlbr = "relative_tlbr"
     """
     (x1, y1, x2, y2) in relative pixel coordinates
     """
 
-    relative_tlwh = 3
+    relative_tlwh = "relative_tlwh"
     """
     (x, y, w, h) in relative pixel coordinates
     """
