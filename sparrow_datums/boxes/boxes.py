@@ -24,11 +24,11 @@ class Boxes(np.ndarray):
     def __new__(
         cls,
         boxes: np.ndarray,
-        box_type: BoxType,
+        box_type: Optional[BoxType] = None,
         image_width: Optional[float] = None,
         image_height: Optional[float] = None,
     ) -> None:
-        cls.box_type = box_type
+        cls._box_type = box_type
         cls._image_width = image_width
         cls._image_height = image_height
         cls._scale = None
@@ -38,7 +38,7 @@ class Boxes(np.ndarray):
         """ndarray subclasses don't need __init__, but pylance does"""
         pass
 
-    def __array_finalize__(self, obj: Optional["Boxes"]) -> None:
+    def __array_finalize__(self, _) -> None:
         if not getattr(self, "shape", None) or self.shape[-1] != 4:
             raise ValueError("Box arrays must have 4 dimensions")
 
@@ -47,15 +47,31 @@ class Boxes(np.ndarray):
         return self.view(np.ndarray)
 
     @property
+    def image_width(self) -> float:
+        if self._image_width is None:
+            raise ValueError("image_width not set")
+        return self._image_width
+
+    @property
+    def image_height(self) -> float:
+        if self._image_height is None:
+            raise ValueError("image_height not set")
+        return self._image_height
+
+    @property
     def scale(self) -> np.ndarray:
         """Convert boxes to relative pixel coordinates, if necessary"""
         if self._scale is None:
-            width = self._image_width
-            height = self._image_height
-            if width is None or height is None:
-                raise ValueError("Set image_width and image_height to scale boxes")
+            width = self.image_width
+            height = self.image_height
             self._scale = np.array([width, height, width, height])
         return self._scale
+
+    @property
+    def box_type(self) -> BoxType:
+        if self._box_type is None:
+            raise TypeError("Boxes instance is not typed")
+        return self._box_type
 
     @property
     def is_relative(self) -> bool:
