@@ -1,6 +1,7 @@
 import enum
 import os
 import tempfile
+from typing import Optional
 
 import numpy as np
 import pytest
@@ -14,8 +15,9 @@ class PolygonType(enum.Enum):
 
 
 class Polygons(Chunk):
-    def _check_shape(self) -> None:
-        assert self.shape[-1] == 2
+    def check_shape(self) -> None:
+        if self.shape[-1] != 2:
+            raise ValueError("Uh oh")
 
     @property
     def type(self) -> PolygonType:
@@ -23,7 +25,9 @@ class Polygons(Chunk):
         return _type
 
     @classmethod
-    def decode_type(cls, type_name: str) -> PolygonType:
+    def decode_type(cls, type_name: Optional[str]) -> Optional[PolygonType]:
+        if type_name is None:
+            return type_name
         return PolygonType(type_name)
 
 

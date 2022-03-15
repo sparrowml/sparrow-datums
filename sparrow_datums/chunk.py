@@ -2,37 +2,26 @@ import abc
 import enum
 import gzip
 import json
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 
 
 class Chunk(np.ndarray):
-    """
-    Base class for NumPy array sublcasses
-
-    Parameters
-    ----------
-    data : np.ndarray
-        A dense ndarray of data
-    type : enum.Enum
-        The parameterization of the data array
-    image_width : float, optional
-        The width of the image
-    image_height : float, optional
-        The height of the image
-    """
-
     def __new__(
         cls,
         data: np.ndarray,
         type: Optional[enum.Enum] = None,
         image_width: Optional[float] = None,
         image_height: Optional[float] = None,
+        fps: Optional[float] = None,
+        object_ids: Optional[List[str]] = None,
     ) -> None:
         cls._type = type
         cls._image_width = image_width
         cls._image_height = image_height
+        cls._fps = fps
+        cls._object_ids = object_ids
         cls._scale = None
         return super().__new__(cls, data.shape, dtype=data.dtype, buffer=data.data)
 
@@ -41,16 +30,16 @@ class Chunk(np.ndarray):
         pass
 
     def __array_finalize__(self, _) -> None:
-        self._check_shape()
+        self.check_shape()
 
     @abc.abstractmethod
-    def _check_shape(self) -> None:
+    def check_shape(self) -> None:
         """Raise ValueError for incorrect shape"""
         raise NotImplementedError
 
     @classmethod
     @abc.abstractmethod
-    def decode_type(cls, type_name: str) -> enum.Enum:
+    def decode_type(cls, type_name: Optional[str]) -> Optional[enum.Enum]:
         """Decode the type string"""
         raise NotImplementedError
 
@@ -89,6 +78,8 @@ class Chunk(np.ndarray):
             "type": self._type.name if self._type else None,
             "image_width": self._image_width,
             "image_height": self._image_height,
+            "fps": self._fps,
+            "object_ids": self._object_ids,
         }
 
     def to_file(self, path: str) -> None:
@@ -99,18 +90,15 @@ class Chunk(np.ndarray):
 
     @classmethod
     def from_dict(cls, chunk_dict: Dict[str, Any]) -> "Chunk":
-        classname = chunk_dict["classname"]
-        if classname != cls.__name__:
-            raise TypeError(
-                f"Expected classname of {cls.__name__} but found {classname}"
-            )
-        data = np.array(chunk_dict["data"])
+        data = np.array(chunk_dict["data"]).astype("float64")
         data[data == None] = np.nan
         return cls(
-            data.astype("float64"),
-            type=cls.decode_type(chunk_dict["type"]) if chunk_dict["type"] else None,
+            data,
+            type=cls.decode_type(chunk_dict["type"]),
             image_width=chunk_dict["image_width"],
             image_height=chunk_dict["image_height"],
+            fps=chunk_dict["fps"],
+            object_ids=chunk_dict["object_ids"],
         )
 
     @classmethod

@@ -46,3 +46,22 @@ def test_box_slicing_cols_throws_value_error():
         top_left = boxes[:, :2]
     top_left = boxes.array[:, :2]
     assert isinstance(top_left, np.ndarray)
+
+
+def test_boxes_deserializes_type():
+    boxes = Boxes.from_dict(
+        {
+            "data": [1, 2, 3, 4],
+            "type": "relative_tlbr",
+            "image_width": None,
+            "image_height": None,
+            "fps": None,
+            "object_ids": None,
+        }
+    )
+    assert boxes.type
+
+
+def test_boxes_saves_classname():
+    data = Boxes(np.ones(4)).to_dict()
+    assert data["classname"] == "Boxes"

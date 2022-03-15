@@ -12,39 +12,34 @@ class Boxes(Chunk):
 
     Parameters
     ----------
-    boxes : np.ndarray
+    data : np.ndarray
         A (..., 4) array of boxes
-    box_type : BoxType
+    type : BoxType, optional
         The parameterization of the boxes
     image_width : float, optional
         The width of the image
     image_height : float, optional
         The height of the image
+    fps : float, optional
+        The framerate if the boxes are being tracked
+    object_ids : List[str], optional
+        Tracking IDs for the objects
     """
 
-    def __new__(
-        cls,
-        boxes: np.ndarray,
-        box_type: Optional[BoxType] = None,
-        image_width: Optional[float] = None,
-        image_height: Optional[float] = None,
-    ) -> None:
-        return super().__new__(
-            cls,
-            boxes,
-            type=box_type,
-            image_width=image_width,
-            image_height=image_height,
-        )
-
-    def __array_finalize__(self, _) -> None:
-        if not getattr(self, "shape", None) or self.shape[-1] != 4:
+    def check_shape(self) -> None:
+        if not self.shape or self.shape[-1] != 4:
             raise ValueError("Box arrays must have size-4 dimensions")
 
     @property
     def type(self) -> BoxType:
         _type: BoxType = self._type
         return _type
+
+    @classmethod
+    def decode_type(cls, type_name: Optional[str]) -> Optional[BoxType]:
+        if type_name is None:
+            return None
+        return BoxType(type_name)
 
     @property
     def is_relative(self) -> bool:
@@ -56,7 +51,7 @@ class Boxes(Chunk):
             return self
         return Boxes(
             self / self.scale,
-            box_type=self.type.as_relative,
+            type=self.type.as_relative,
             image_width=self._image_width,
             image_height=self._image_height,
         )
@@ -71,7 +66,7 @@ class Boxes(Chunk):
             return self
         return Boxes(
             self * self.scale,
-            box_type=self.type.as_absolute,
+            type=self.type.as_absolute,
             image_width=self._image_width,
             image_height=self._image_height,
         )
