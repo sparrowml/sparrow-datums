@@ -28,8 +28,6 @@ class Boxes(np.ndarray):
         image_width: Optional[float] = None,
         image_height: Optional[float] = None,
     ) -> None:
-        if boxes.shape[-1] != 4:
-            raise TypeError("Boxes array shapes must end with 4 dimensions")
         cls.box_type = box_type
         cls._image_width = image_width
         cls._image_height = image_height
@@ -39,6 +37,14 @@ class Boxes(np.ndarray):
     def __init__(self, *args, **kwargs) -> None:
         """ndarray subclasses don't need __init__, but pylance does"""
         pass
+
+    def __array_finalize__(self, obj: Optional["Boxes"]) -> None:
+        if not getattr(self, "shape", None) or self.shape[-1] != 4:
+            raise ValueError("Box arrays must have 4 dimensions")
+
+    @property
+    def array(self) -> np.ndarray:
+        return self.view(np.ndarray)
 
     @property
     def scale(self) -> np.ndarray:
