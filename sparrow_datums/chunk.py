@@ -72,15 +72,21 @@ class Chunk(np.ndarray):
             self._scale = np.array([width, height, width, height])
         return self._scale
 
+    @property
+    def metadata_kwargs(self) -> Dict[str, Any]:
+        return {
+            "image_width": self._image_width,
+            "image_height": self._image_height,
+            "fps": self._fps,
+            "object_ids": self._object_ids,
+        }
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "data": np.where(np.isnan(self), None, self).tolist(),
             "classname": self.__class__.__name__,
             "type": self._type.name if self._type else None,
-            "image_width": self._image_width,
-            "image_height": self._image_height,
-            "fps": self._fps,
-            "object_ids": self._object_ids,
+            **self.metadata_kwargs,
         }
 
     def to_file(self, path: str) -> None:

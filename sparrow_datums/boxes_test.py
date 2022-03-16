@@ -40,6 +40,18 @@ def test_boxes_to_absolute_moves_boxes_to_0_image_size():
     assert boxes_c.is_absolute
 
 
+def test_boxes_to_tlbr_moves_boxes_to_tlbr():
+    x = np.concatenate([np.ones((5, 2)), np.zeros((5, 2))], -1)
+    boxes = Boxes(x, BoxType.relative_tlwh).to_tlbr()
+    np.testing.assert_equal(boxes.array, 1)
+
+
+def test_boxes_to_tlwh_moves_boxes_to_tlwh():
+    result = np.concatenate([np.ones((5, 2)), np.zeros((5, 2))], -1)
+    boxes = Boxes(np.ones((5, 4)), BoxType.relative_tlbr).to_tlwh()
+    np.testing.assert_equal(boxes.array, result)
+
+
 def test_box_slicing_cols_throws_value_error():
     boxes = Boxes(np.random.uniform(size=(10, 4)))
     with pytest.raises(ValueError):
