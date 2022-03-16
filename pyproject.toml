@@ -16,9 +16,9 @@ homepage = "https://github.com/sparrowml/sparrow-datums"
 # Keywords description https://python-poetry.org/docs/pyproject/#keywords
 keywords = []  #! Update me
 
-[tool.poetry.scripts]
-# Entry points for the package https://python-poetry.org/docs/pyproject/#scripts
-"sparrow-datums" = "sparrow_datums.__main__:app"
+[[tool.poetry.source]]
+url = "https://pypi.fury.io/sparrow/"
+name = "sparrow"
 
 [tool.poetry.dependencies]
 python = "^3.9"
