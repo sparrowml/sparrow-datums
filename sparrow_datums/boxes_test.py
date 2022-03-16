@@ -52,6 +52,14 @@ def test_boxes_to_tlwh_moves_boxes_to_tlwh():
     np.testing.assert_equal(boxes.array, result)
 
 
+def test_boxes_to_tlbr_doesnt_change_original_instance():
+    x = np.concatenate([np.ones((5, 2)), np.zeros((5, 2))], -1)
+    boxes = Boxes(x, BoxType.relative_tlwh)
+    _ = boxes.to_tlbr()
+    assert boxes.is_tlwh
+    assert boxes.is_relative
+
+
 def test_box_slicing_cols_throws_value_error():
     boxes = Boxes(np.random.uniform(size=(10, 4)))
     with pytest.raises(ValueError):

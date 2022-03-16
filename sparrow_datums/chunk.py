@@ -18,20 +18,29 @@ class Chunk(np.ndarray):
         fps: Optional[float] = None,
         object_ids: Optional[List[str]] = None,
     ) -> None:
-        cls._type = type
-        cls._image_width = image_width
-        cls._image_height = image_height
-        cls._fps = fps
-        cls._object_ids = object_ids
-        cls._scale = None
-        return super().__new__(cls, data.shape, dtype=data.dtype, buffer=data.data)
+        obj = np.asarray(data).view(cls)
+        obj._type = type
+        obj._image_width = image_width
+        obj._image_height = image_height
+        obj._fps = fps
+        obj._object_ids = object_ids
+        obj._scale = None
+        return obj
 
     def __init__(self, *args, **kwargs) -> None:
         """ndarray subclasses don't need __init__, but pylance does"""
         pass
 
-    def __array_finalize__(self, _) -> None:
+    def __array_finalize__(self, obj: Optional["Chunk"]) -> None:
         self.check_shape()
+        if obj is None:
+            return
+        self._type = getattr(obj, "_type", None)
+        self._image_width = getattr(obj, "_image_width", None)
+        self._image_height = getattr(obj, "_image_height", None)
+        self._fps = getattr(obj, "_fps", None)
+        self._object_ids = getattr(obj, "_object_ids", None)
+        self._scale = getattr(obj, "_scale", None)
 
     @abc.abstractmethod
     def check_shape(self) -> None:
