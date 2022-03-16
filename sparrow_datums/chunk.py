@@ -16,22 +16,31 @@ class Chunk(np.ndarray):
         image_width: Optional[float] = None,
         image_height: Optional[float] = None,
         fps: Optional[float] = None,
-        object_ids: Optional[List[str]] = None,
+        object_ids: Optional[list[str]] = None,
     ) -> None:
-        cls._type = type
-        cls._image_width = image_width
-        cls._image_height = image_height
-        cls._fps = fps
-        cls._object_ids = object_ids
-        cls._scale = None
-        return super().__new__(cls, data.shape, dtype=data.dtype, buffer=data.data)
+        obj = np.asarray(data).view(cls)
+        obj._type = type
+        obj._image_width = image_width
+        obj._image_height = image_height
+        obj._fps = fps
+        obj._object_ids = object_ids
+        obj._scale = None
+        return obj
 
     def __init__(self, *args, **kwargs) -> None:
         """ndarray subclasses don't need __init__, but pylance does"""
         pass
 
-    def __array_finalize__(self, _) -> None:
+    def __array_finalize__(self, obj: Optional["Chunk"]) -> None:
         self.check_shape()
+        if obj is None:
+            return
+        self._type = getattr(obj, "_type", None)
+        self._image_width = getattr(obj, "_image_width", None)
+        self._image_height = getattr(obj, "_image_height", None)
+        self._fps = getattr(obj, "_fps", None)
+        self._object_ids = getattr(obj, "_object_ids", None)
+        self._scale = getattr(obj, "_scale", None)
 
     @abc.abstractmethod
     def check_shape(self) -> None:
@@ -72,15 +81,21 @@ class Chunk(np.ndarray):
             self._scale = np.array([width, height, width, height])
         return self._scale
 
-    def to_dict(self) -> Dict[str, Any]:
+    @property
+    def metadata_kwargs(self) -> dict[str, Any]:
         return {
-            "data": np.where(np.isnan(self), None, self).tolist(),
-            "classname": self.__class__.__name__,
-            "type": self._type.name if self._type else None,
             "image_width": self._image_width,
             "image_height": self._image_height,
             "fps": self._fps,
             "object_ids": self._object_ids,
+        }
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "data": np.where(np.isnan(self), None, self).tolist(),
+            "classname": self.__class__.__name__,
+            "type": self._type.name if self._type else None,
+            **self.metadata_kwargs,
         }
 
     def to_file(self, path: str) -> None:
@@ -90,7 +105,7 @@ class Chunk(np.ndarray):
             f.write(json.dumps(self.to_dict()))
 
     @classmethod
-    def from_dict(cls, chunk_dict: Dict[str, Any]) -> "Chunk":
+    def from_dict(cls, chunk_dict: dict[str, Any]) -> "Chunk":
         data = np.array(chunk_dict["data"]).astype("float64")
         data[data == None] = np.nan
         return cls(

@@ -28,11 +28,19 @@ class BoxType(enum.Enum):
 
     @property
     def is_relative(self) -> bool:
-        return self.name in ("relative_tlbr", "relative_tlwh")
+        return "relative" in self.name
 
     @property
     def is_absolute(self) -> bool:
-        return self.name in ("absolute_tlbr", "absolute_tlwh")
+        return "absolute" in self.name
+
+    @property
+    def is_tlbr(self) -> bool:
+        return "tlbr" in self.name
+
+    @property
+    def is_tlwh(self) -> bool:
+        return "tlwh" in self.name
 
     @property
     def as_relative(self) -> "BoxType":
@@ -48,5 +56,21 @@ class BoxType(enum.Enum):
         if self.name == "relative_tlbr":
             return BoxType.absolute_tlbr
         elif self.name == "relative_tlwh":
+            return BoxType.absolute_tlwh
+        return self
+
+    @property
+    def as_tlbr(self) -> "BoxType":
+        if self.name == "relative_tlwh":
+            return BoxType.relative_tlbr
+        elif self.name == "absolute_tlwh":
+            return BoxType.absolute_tlbr
+        return self
+
+    @property
+    def as_tlwh(self) -> "BoxType":
+        if self.name == "relative_tlbr":
+            return BoxType.relative_tlwh
+        elif self.name == "absolute_tlbr":
             return BoxType.absolute_tlwh
         return self
