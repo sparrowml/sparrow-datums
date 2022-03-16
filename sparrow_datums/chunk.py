@@ -16,7 +16,7 @@ class Chunk(np.ndarray):
         image_width: Optional[float] = None,
         image_height: Optional[float] = None,
         fps: Optional[float] = None,
-        object_ids: Optional[List[str]] = None,
+        object_ids: Optional[list[str]] = None,
     ) -> None:
         obj = np.asarray(data).view(cls)
         obj._type = type
@@ -82,7 +82,7 @@ class Chunk(np.ndarray):
         return self._scale
 
     @property
-    def metadata_kwargs(self) -> Dict[str, Any]:
+    def metadata_kwargs(self) -> dict[str, Any]:
         return {
             "image_width": self._image_width,
             "image_height": self._image_height,
@@ -90,7 +90,7 @@ class Chunk(np.ndarray):
             "object_ids": self._object_ids,
         }
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "data": np.where(np.isnan(self), None, self).tolist(),
             "classname": self.__class__.__name__,
@@ -105,7 +105,7 @@ class Chunk(np.ndarray):
             f.write(json.dumps(self.to_dict()))
 
     @classmethod
-    def from_dict(cls, chunk_dict: Dict[str, Any]) -> "Chunk":
+    def from_dict(cls, chunk_dict: dict[str, Any]) -> "Chunk":
         data = np.array(chunk_dict["data"]).astype("float64")
         data[data == None] = np.nan
         return cls(

@@ -61,7 +61,7 @@ class Boxes(Chunk):
         """Convert boxes to relative pixel coordinates, if necessary"""
         if self.type.is_relative:
             return self
-        return Boxes(
+        return self.__class__(
             self / self.scale,
             type=self.type.as_relative,
             **self.metadata_kwargs,
@@ -71,7 +71,7 @@ class Boxes(Chunk):
         """Convert boxes to absolute pixel coordinates, if necessary"""
         if self.type.is_absolute:
             return self
-        return Boxes(
+        return self.__class__(
             self * self.scale,
             type=self.type.as_absolute,
             **self.metadata_kwargs,
@@ -85,7 +85,7 @@ class Boxes(Chunk):
         y = self.array[..., 1]
         w = self.array[..., 2]
         h = self.array[..., 3]
-        return Boxes(
+        return self.__class__(
             np.stack([x, y, x + w, y + h], -1),
             type=self.type.as_tlbr,
             **self.metadata_kwargs,
@@ -98,8 +98,22 @@ class Boxes(Chunk):
         y1 = self.array[..., 1]
         x2 = self.array[..., 2]
         y2 = self.array[..., 3]
-        return Boxes(
+        return self.__class__(
             np.stack([x1, y1, x2 - x1, y2 - y1], -1),
             type=self.type.as_tlwh,
             **self.metadata_kwargs,
         )
+
+
+class SingleBox(Boxes):
+    def check_shape(self) -> None:
+        super().check_shape()
+        if self.ndim > 1:
+            raise ValueError("Single box must be a 1D array")
+
+
+class FrameBoxes(Boxes):
+    def check_shape(self) -> None:
+        super().check_shape()
+        if self.ndim != 2:
+            raise ValueError("FrameBoxes should be (n_boxes, 4)")
