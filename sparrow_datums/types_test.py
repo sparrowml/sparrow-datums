@@ -1,4 +1,4 @@
-from sparrow_datums.types import BoxType
+from .types import BoxType
 
 BOX_TYPE_NAMES = (
     "relative_tlbr",

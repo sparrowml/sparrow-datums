@@ -7,7 +7,7 @@ import tempfile
 import numpy as np
 import pytest
 
-from sparrow_datums.chunk import Chunk
+from .chunk import Chunk
 
 
 class PolygonType(enum.Enum):

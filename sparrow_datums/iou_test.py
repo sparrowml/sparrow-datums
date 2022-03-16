@@ -1,7 +1,7 @@
 import numpy as np
 
-from sparrow_datums import Boxes, BoxType, FrameBoxes, SingleBox
-from sparrow_datums.iou import area, intersection, pairwise_iou
+from .boxes import Boxes, BoxType, FrameBoxes, SingleBox
+from .iou import area, intersection, pairwise_iou
 
 
 def test_intersection_calculation():
