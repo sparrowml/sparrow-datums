@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from sparrow_datums.types import BoxType
 from sparrow_datums.boxes import Boxes
+from sparrow_datums.types import BoxType
 
 
 def test_bad_shape_throws_type_error():

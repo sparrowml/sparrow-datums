@@ -1,7 +1,8 @@
+from typing import Optional
+
 import enum
 import os
 import tempfile
-from typing import Optional
 
 import numpy as np
 import pytest

@@ -110,3 +110,13 @@ build-remove:
 
 .PHONY: cleanup
 cleanup: pycache-remove dsstore-remove mypycache-remove ipynbcheckpoints-remove pytestcache-remove
+
+.PHONY: branchify
+branchify:
+ifneq ($(shell git rev-parse --abbrev-ref HEAD),master)
+	poetry version $(shell poetry version -s)+$(shell git rev-parse HEAD)
+endif
+
+.PHONY: publish
+publish: branchify
+	poetry publish --build --repository sparrow

@@ -14,7 +14,7 @@
 		"python.testing.pytestArgs": [
 			"sparrow_datums"
 		],
-		"python.testing.pytestEnabled": true
+		"python.testing.pytestEnabled": true,
 	},
 	"extensions": [
 		"ms-python.python",
