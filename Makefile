@@ -44,7 +44,7 @@ test:
 
 .PHONY: check-codestyle
 check-codestyle:
-	poetry run isort --diff --check-only --settings-path pyproject.toml ./
+	poetry run isort --overwrite-in-place --settings-path pyproject.toml ./
 	poetry run black --diff --check --config pyproject.toml ./
 	poetry run darglint --verbosity 2 sparrow_datums
 
@@ -113,4 +113,4 @@ cleanup: pycache-remove dsstore-remove mypycache-remove ipynbcheckpoints-remove 
 
 .PHONY: publish
 publish:
-	POETRY_HTTP_BASIC_SPARROW_PASSWORD="" poetry publish --build --repository sparrow
+	poetry publish --build --repository sparrow

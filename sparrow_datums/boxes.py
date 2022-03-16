@@ -2,8 +2,8 @@ from typing import Optional
 
 import numpy as np
 
-from sparrow_datums.types import BoxType
 from sparrow_datums.chunk import Chunk
+from sparrow_datums.types import BoxType
 
 
 class Boxes(Chunk):
