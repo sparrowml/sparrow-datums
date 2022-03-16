@@ -15,15 +15,6 @@
 			"sparrow_datums"
 		],
 		"python.testing.pytestEnabled": true,
-		"python.sortImports.args": [
-			"--settings-path",
-			"pyproject.toml"
-		],
-		"[python]": {
-			"editor.codeActionsOnSave": {
-				"source.organizeImports": true
-			}
-		}
 	},
 	"extensions": [
 		"ms-python.python",
