@@ -114,7 +114,7 @@ cleanup: pycache-remove dsstore-remove mypycache-remove ipynbcheckpoints-remove 
 .PHONY: branchify
 branchify:
 ifneq ($(shell git rev-parse --abbrev-ref HEAD),master)
-	poetry version $(shell poetry version -s)+$(shell git rev-parse HEAD)
+	poetry version $(shell poetry version -s).dev$(shell date +%s)
 endif
 
 .PHONY: publish
