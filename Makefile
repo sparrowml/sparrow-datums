@@ -110,3 +110,7 @@ build-remove:
 
 .PHONY: cleanup
 cleanup: pycache-remove dsstore-remove mypycache-remove ipynbcheckpoints-remove pytestcache-remove
+
+.PHONY: publish
+publish:
+	POETRY_HTTP_BASIC_SPARROW_PASSWORD="" poetry publish --build --repository sparrow
