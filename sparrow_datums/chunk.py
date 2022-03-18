@@ -27,12 +27,39 @@ class Chunk(np.ndarray):
         obj._scale = None
         return obj
 
-    def __init__(self, *args, **kwargs) -> None:
-        """ndarray subclasses don't need __init__, but pylance does"""
+    def __init__(
+        self,
+        data: np.ndarray,
+        type: Optional[enum.Enum] = None,
+        image_width: Optional[float] = None,
+        image_height: Optional[float] = None,
+        fps: Optional[float] = None,
+        object_ids: Optional[list[str]] = None,
+    ) -> None:
+        """
+        Chunk subclasses
+
+        Parameters
+        ----------
+        data : np.ndarray
+            A (..., 4) array of boxes
+        type : BoxType, optional
+            The parameterization of the boxes
+        image_width : float, optional
+            The width of the image
+        image_height : float, optional
+            The height of the image
+        fps : float, optional
+            The framerate if the boxes are being tracked
+        object_ids : List[str], optional
+            Tracking IDs for the objects
+        """
+        # This method is defined for documentation
+        # and type hints.
+        # `np.ndarray` subclasses don't use `__init__()`.
         pass
 
     def __array_finalize__(self, obj: Optional["Chunk"]) -> None:
-        self.validate()
         if obj is None:
             return
         self._type = getattr(obj, "_type", None)
@@ -41,6 +68,7 @@ class Chunk(np.ndarray):
         self._fps = getattr(obj, "_fps", None)
         self._object_ids = getattr(obj, "_object_ids", None)
         self._scale = getattr(obj, "_scale", None)
+        self.validate()
 
     @abc.abstractmethod
     def validate(self) -> None:

@@ -7,24 +7,7 @@ from .types import BoxType
 
 
 class Boxes(Chunk):
-    """
-    Adds box_type to a NumPy array for strictness checking
-
-    Parameters
-    ----------
-    data : np.ndarray
-        A (..., 4) array of boxes
-    type : BoxType, optional
-        The parameterization of the boxes
-    image_width : float, optional
-        The width of the image
-    image_height : float, optional
-        The height of the image
-    fps : float, optional
-        The framerate if the boxes are being tracked
-    object_ids : List[str], optional
-        Tracking IDs for the objects
-    """
+    """Adds box_type to a NumPy array for strictness checking"""
 
     def validate(self) -> None:
         if not self.shape or self.shape[-1] != 4:
