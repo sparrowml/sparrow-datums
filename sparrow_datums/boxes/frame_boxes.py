@@ -2,7 +2,6 @@ from typing import Any, Dict, Iterator, List, Optional, Union
 
 import json
 from pathlib import Path
-from tkinter import W
 
 import numpy as np
 
