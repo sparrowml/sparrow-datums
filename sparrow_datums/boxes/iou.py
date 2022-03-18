@@ -1,6 +1,7 @@
 import numpy as np
 
-from .boxes import Boxes, FrameBoxes
+from .boxes import Boxes
+from .frame_boxes import FrameBoxes
 
 
 def intersection(boxes_a: Boxes, boxes_b: Boxes) -> np.ndarray:

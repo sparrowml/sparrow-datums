@@ -94,10 +94,3 @@ class Boxes(Chunk):
             type=self.type.as_tlwh,
             **self.metadata_kwargs,
         )
-
-
-class FrameBoxes(Boxes):
-    def validate(self) -> None:
-        super().validate()
-        if self.ndim != 2:
-            raise ValueError("FrameBoxes should be (n_boxes, 4)")

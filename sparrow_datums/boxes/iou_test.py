@@ -1,8 +1,10 @@
 import numpy as np
 
-from .boxes import Boxes, BoxType, FrameBoxes
+from .boxes import Boxes
+from .frame_boxes import FrameBoxes
 from .iou import area, intersection, pairwise_iou
 from .single_box import SingleBox
+from .types import BoxType
 
 
 def test_intersection_calculation():

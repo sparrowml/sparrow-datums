@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from .boxes import Boxes, FrameBoxes
+from .boxes import Boxes
 from .types import BoxType
 
 
@@ -85,18 +85,3 @@ def test_boxes_deserializes_type():
 def test_boxes_saves_classname():
     data = Boxes(np.ones(4)).to_dict()
     assert data["classname"] == "Boxes"
-
-
-def test_frame_boxes_with_bad_shape_throws_value_error():
-    with pytest.raises(ValueError):
-        FrameBoxes(np.ones(4))
-    with pytest.raises(ValueError):
-        FrameBoxes(np.ones((2, 3)))
-    # This should work
-    FrameBoxes(np.random.uniform(size=(2, 4)))
-
-
-def test_frame_boxes_creates_more_frame_boxes():
-    boxes_a = FrameBoxes(np.ones((2, 4)), BoxType.relative_tlbr)
-    boxes_b = boxes_a.to_tlwh()
-    assert isinstance(boxes_b, FrameBoxes)

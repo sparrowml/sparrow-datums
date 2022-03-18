@@ -5,7 +5,7 @@ from .boxes import Boxes
 
 
 def _is_1d(x: np.ndarray) -> None:
-    if x.ndim > 1:
+    if x.ndim != 1:
         raise ValueError("Single box must be a 1D array")
 
 
