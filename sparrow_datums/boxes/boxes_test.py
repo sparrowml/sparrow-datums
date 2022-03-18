@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from .boxes import Boxes, FrameBoxes, SingleBox
+from .boxes import Boxes, FrameBoxes
 from .types import BoxType
 
 
@@ -85,15 +85,6 @@ def test_boxes_deserializes_type():
 def test_boxes_saves_classname():
     data = Boxes(np.ones(4)).to_dict()
     assert data["classname"] == "Boxes"
-
-
-def test_single_box_with_bad_shape_throws_value_error():
-    with pytest.raises(ValueError):
-        SingleBox(np.ones((2, 4)))
-    with pytest.raises(ValueError):
-        SingleBox(np.ones(3))
-    # This should work
-    SingleBox(np.random.uniform(size=4))
 
 
 def test_frame_boxes_with_bad_shape_throws_value_error():
