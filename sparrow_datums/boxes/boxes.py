@@ -1,5 +1,7 @@
 from typing import Optional
 
+from multiprocessing.sharedctypes import Value
+
 import numpy as np
 
 from ..chunk import Chunk
@@ -12,6 +14,8 @@ class Boxes(Chunk):
     def validate(self) -> None:
         if not self.shape or self.shape[-1] != 4:
             raise ValueError("Box arrays must have size-4 dimensions")
+        if np.any(self.array < 0):
+            raise ValueError("Negative box values are not allowed")
 
     @property
     def type(self) -> BoxType:
@@ -42,7 +46,7 @@ class Boxes(Chunk):
 
     def to_relative(self) -> "Boxes":
         """Convert boxes to relative pixel coordinates, if necessary"""
-        if self.type.is_relative:
+        if self.is_relative:
             return self
         x = self.array.copy()
         x[..., :4] /= self.scale
@@ -54,7 +58,7 @@ class Boxes(Chunk):
 
     def to_absolute(self) -> "Boxes":
         """Convert boxes to absolute pixel coordinates, if necessary"""
-        if self.type.is_absolute:
+        if self.is_absolute:
             return self
         x = self.array.copy()
         x[..., :4] *= self.scale
@@ -66,7 +70,7 @@ class Boxes(Chunk):
 
     def to_tlbr(self) -> "Boxes":
         """Convert boxes to tlbr format, if necessary"""
-        if self.type.is_tlbr:
+        if self.is_tlbr:
             return self
         x = self.array[..., 0]
         y = self.array[..., 1]
@@ -81,7 +85,7 @@ class Boxes(Chunk):
         )
 
     def to_tlwh(self) -> "Boxes":
-        if self.type.is_tlwh:
+        if self.is_tlwh:
             return self
         x1 = self.array[..., 0]
         y1 = self.array[..., 1]
@@ -94,3 +98,47 @@ class Boxes(Chunk):
             type=self.type.as_tlwh,
             **self.metadata_kwargs,
         )
+
+    @property
+    def x(self) -> np.ndarray:
+        return self.array[..., 0]
+
+    @property
+    def y(self) -> np.ndarray:
+        return self.array[..., 1]
+
+    @property
+    def w(self) -> np.ndarray:
+        if self.is_tlwh:
+            return self.array[..., 2]
+        if np.any(self.array[..., 0] > self.array[..., 2]):
+            raise ValueError("x2 must be >= x1 for all boxes")
+        return self.array[..., 2] - self.array[..., 0]
+
+    @property
+    def h(self) -> np.ndarray:
+        if self.is_tlwh:
+            return self.array[..., 3]
+        if np.any(self.array[..., 1] > self.array[..., 3]):
+            raise ValueError("y2 must >= y1 for all boxes")
+        return self.array[..., 3] - self.array[..., 1]
+
+    @property
+    def x1(self) -> np.ndarray:
+        return self.x
+
+    @property
+    def y1(self) -> np.ndarray:
+        return self.y
+
+    @property
+    def x2(self) -> np.ndarray:
+        if self.is_tlbr:
+            return self.array[..., 2]
+        return self.array[..., 0] + self.array[..., 2]
+
+    @property
+    def y2(self) -> np.ndarray:
+        if self.is_tlbr:
+            return self.array[..., 3]
+        return self.array[..., 1] + self.array[..., 3]
