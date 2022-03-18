@@ -45,3 +45,12 @@ def test_frame_augmented_boxes_iterator_makes_frame_augmented_boxes():
     for box in boxes:
         assert isinstance(box, SingleAugmentedBox)
         assert box.type == BoxType.absolute_tlwh
+
+
+def test_frame_augmented_boxes_can_become_darwin_dict():
+    boxes = FrameAugmentedBoxes(np.ones((2, 6)), type=BoxType.absolute_tlwh)
+    data = boxes.to_darwin_dict("foobar")
+    assert data["image"]["filename"] == "foobar"
+    for annotation in data["annotations"]:
+        assert "bounding_box" in annotation
+        assert annotation["name"] == "Unknown"

@@ -1,4 +1,4 @@
-from typing import Iterator
+from typing import Any, Dict, Iterator, List, Optional
 
 import numpy as np
 
@@ -30,3 +30,23 @@ class FrameAugmentedBoxes(AugmentedBoxes):
     def __iter__(self) -> Iterator[SingleAugmentedBox]:
         for box in self.view(AugmentedBoxes):
             yield box.view(SingleAugmentedBox)
+
+    def to_darwin_dict(
+        self,
+        filename: str,
+        path: str = "/",
+        label_names: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
+        boxes = self.to_absolute()
+        if label_names is None:
+            label_names = ["Unknown"] * (self.labels.max() + 1)
+        return {
+            "image": {"filename": filename, "path": path},
+            "annotations": [
+                {
+                    "bounding_box": {"x": box.x, "y": box.y, "w": box.w, "h": box.h},
+                    "name": label_names[box.label],
+                }
+                for box in boxes
+            ],
+        }
