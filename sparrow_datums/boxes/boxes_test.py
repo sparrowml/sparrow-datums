@@ -10,7 +10,7 @@ def test_bad_shape_throws_type_error():
         Boxes(np.ones(3))
 
 
-def test_boxes_to_relative_moves_boxes_to_0_1():
+def test_to_relative_moves_boxes_to_0_1():
     image_size = 512
     boxes_a = Boxes(
         np.random.uniform(size=(10, 4)) * image_size,
@@ -25,7 +25,7 @@ def test_boxes_to_relative_moves_boxes_to_0_1():
     assert boxes_c.is_relative
 
 
-def test_boxes_to_absolute_moves_boxes_to_0_image_size():
+def test_to_absolute_moves_boxes_to_0_image_size():
     image_size = 512
     boxes_a = Boxes(
         np.random.uniform(size=(10, 4)),
@@ -40,13 +40,13 @@ def test_boxes_to_absolute_moves_boxes_to_0_image_size():
     assert boxes_c.is_absolute
 
 
-def test_boxes_to_tlbr_moves_boxes_to_tlbr():
+def test_to_tlbr_moves_boxes_to_tlbr():
     x = np.concatenate([np.ones((5, 2)), np.zeros((5, 2))], -1)
     boxes = Boxes(x, BoxType.relative_tlwh).to_tlbr()
     np.testing.assert_equal(boxes.array, 1)
 
 
-def test_boxes_to_tlwh_moves_boxes_to_tlwh():
+def test_to_tlwh_moves_boxes_to_tlwh():
     result = np.concatenate([np.ones((5, 2)), np.zeros((5, 2))], -1)
     boxes = Boxes(np.ones((5, 4)), BoxType.relative_tlbr).to_tlwh()
     np.testing.assert_equal(boxes.array, result)

@@ -44,8 +44,10 @@ class Boxes(Chunk):
         """Convert boxes to relative pixel coordinates, if necessary"""
         if self.type.is_relative:
             return self
+        x = self.array.copy()
+        x[..., :4] /= self.scale
         return self.__class__(
-            self / self.scale,
+            x,
             type=self.type.as_relative,
             **self.metadata_kwargs,
         )
@@ -54,8 +56,10 @@ class Boxes(Chunk):
         """Convert boxes to absolute pixel coordinates, if necessary"""
         if self.type.is_absolute:
             return self
+        x = self.array.copy()
+        x[..., :4] *= self.scale
         return self.__class__(
-            self * self.scale,
+            x,
             type=self.type.as_absolute,
             **self.metadata_kwargs,
         )
@@ -69,7 +73,9 @@ class Boxes(Chunk):
         w = self.array[..., 2]
         h = self.array[..., 3]
         return self.__class__(
-            np.stack([x, y, x + w, y + h], -1),
+            np.concatenate(
+                [np.stack([x, y, x + w, y + h], -1), self.array[..., 4:]], -1
+            ),
             type=self.type.as_tlbr,
             **self.metadata_kwargs,
         )
@@ -82,17 +88,12 @@ class Boxes(Chunk):
         x2 = self.array[..., 2]
         y2 = self.array[..., 3]
         return self.__class__(
-            np.stack([x1, y1, x2 - x1, y2 - y1], -1),
+            np.concatenate(
+                [np.stack([x1, y1, x2 - x1, y2 - y1], -1), self.array[..., 4:]], -1
+            ),
             type=self.type.as_tlwh,
             **self.metadata_kwargs,
         )
-
-
-class SingleBox(Boxes):
-    def validate(self) -> None:
-        super().validate()
-        if self.ndim > 1:
-            raise ValueError("Single box must be a 1D array")
 
 
 class FrameBoxes(Boxes):
