@@ -1,7 +1,7 @@
 import numpy as np
 
 from .boxes import Boxes
-from .frame_boxes import FrameBoxes
+from .frame_boxes import FrameAugmentedBoxes, FrameBoxes
 from .iou import area, intersection, pairwise_iou
 from .single_box import SingleBox
 from .types import BoxType
@@ -37,5 +37,11 @@ def test_area_calculation():
 
 def test_pairwise_iou_creates_pairwise_shape():
     boxes = FrameBoxes(np.ones((5, 4)), BoxType.absolute_tlwh)
+    result = pairwise_iou(boxes, boxes)
+    assert result.shape == (5, 5)
+
+
+def test_pairwise_iou_works_for_frame_augmented_boxes():
+    boxes = FrameAugmentedBoxes(np.ones((5, 6)), BoxType.absolute_tlwh)
     result = pairwise_iou(boxes, boxes)
     assert result.shape == (5, 5)

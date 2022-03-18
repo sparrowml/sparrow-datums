@@ -1,7 +1,9 @@
+from typing import Union
+
 import numpy as np
 
 from .boxes import Boxes
-from .frame_boxes import FrameBoxes
+from .frame_boxes import FrameAugmentedBoxes, FrameBoxes
 
 
 def intersection(boxes_a: Boxes, boxes_b: Boxes) -> np.ndarray:
@@ -52,12 +54,29 @@ def area(boxes: Boxes) -> np.ndarray:
     return widths * heights
 
 
-def pairwise_iou(boxes_a: FrameBoxes, boxes_b: FrameBoxes) -> np.ndarray:
+def pairwise_iou(
+    boxes_a: Union[FrameAugmentedBoxes, FrameBoxes],
+    boxes_b: Union[FrameAugmentedBoxes, FrameBoxes],
+) -> np.ndarray:
     """
     Pairwise IoU for two sets of frame boxes
+
+    Parameters
+    ----------
+    boxes_a : FrameAugmentedBoxes or FrameBoxes
+        A frame of boxes
+    boxes_b : FrameAugmentedBoxes or FrameBoxes
+        A frame of boxes
+
+    Returns
+    -------
+    iou_scores : np.ndarray
+        A (n_boxes_a, n_boxes_b) matrix of iou scores
     """
-    boxes_a = boxes_a.to_tlbr().view(Boxes)[:, None, :]
-    boxes_b = boxes_b.to_tlbr().view(Boxes)[None, :, :]
+    boxes_a_parent = boxes_a.__class__.__base__
+    boxes_a = boxes_a.to_tlbr().view(boxes_a_parent)[:, None, :]
+    boxes_b_parent = boxes_b.__class__.__base__
+    boxes_b = boxes_b.to_tlbr().view(boxes_b_parent)[None, :, :]
     intersections = intersection(boxes_a, boxes_b)
     areas = area(boxes_a) + area(boxes_b)
     unions = areas - intersections
