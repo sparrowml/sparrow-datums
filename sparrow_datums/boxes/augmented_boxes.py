@@ -4,7 +4,7 @@ from .boxes import Boxes
 
 
 class AugmentedBoxes(Boxes):
-    """A (..., 6) boxes array with [boxes, labels, scores] components"""
+    """A (..., 6) boxes array with [boxes, scores, labels] components"""
 
     def validate(self) -> None:
         if not self.shape or self.shape[-1] != 6:
