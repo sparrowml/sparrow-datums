@@ -1,9 +1,10 @@
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 import abc
 import enum
 import gzip
 import json
+from pathlib import Path
 
 import numpy as np
 
@@ -126,8 +127,8 @@ class Chunk(np.ndarray):
             **self.metadata_kwargs,
         }
 
-    def to_file(self, path: str) -> None:
-        if not path.endswith(".json.gz"):
+    def to_file(self, path: Union[str, Path]) -> None:
+        if not str(path).endswith(".json.gz"):
             raise ValueError("Chunk file name must end with .json.gz")
         with gzip.open(path, "wt") as f:
             f.write(json.dumps(self.to_dict()))
@@ -146,6 +147,6 @@ class Chunk(np.ndarray):
         )
 
     @classmethod
-    def from_file(cls, path: str) -> "Chunk":
+    def from_file(cls, path: Union[str, Path]) -> "Chunk":
         with gzip.open(path, "rt") as f:
             return cls.from_dict(json.loads(f.read()))
