@@ -19,14 +19,14 @@ def test_wrong_shape_throws_value_error():
 
 def test_non_integer_labels_throws_value_error():
     x = np.ones((5, 6))
-    x[..., -2] += np.random.uniform(size=5)
+    x[..., -1] += np.random.uniform(size=5)
     with pytest.raises(ValueError):
         AugmentedBoxes(x)
 
 
 def test_invalid_scores_range_throws_value_error():
     x = np.ones((5, 6))
-    x[..., -1] += 1
+    x[..., -2] += 1
     with pytest.raises(ValueError):
         AugmentedBoxes(x)
 
@@ -35,7 +35,7 @@ def test_to_relative_moves_boxes_to_0_1():
     image_size = 512
     x = np.random.uniform(size=(10, 6))
     x[..., :4] *= image_size
-    x[..., -2] = np.round(x[..., -2])
+    x[..., -1] = np.round(x[..., -1])
     boxes_a = AugmentedBoxes(
         x,
         BoxType.absolute_tlwh,
@@ -52,7 +52,7 @@ def test_to_relative_moves_boxes_to_0_1():
 def test_to_absolute_moves_boxes_to_0_image_size():
     image_size = 512
     x = np.random.uniform(size=(10, 6))
-    x[..., -2] = np.round(x[..., -2])
+    x[..., -1] = np.round(x[..., -1])
     boxes_a = AugmentedBoxes(
         x,
         BoxType.relative_tlwh,
@@ -78,3 +78,14 @@ def test_to_tlwh_moves_boxes_to_tlwh():
     boxes = AugmentedBoxes(np.ones((5, 6)), BoxType.relative_tlbr).to_tlwh()
     np.testing.assert_equal(boxes.array[..., :4], result)
     np.testing.assert_equal(boxes.array[..., 4:], 1)
+
+
+def test_scores_and_labels_attributes():
+    boxes_array = np.ones((6, 4))
+    scores = np.random.uniform(size=6)
+    labels = np.random.randint(10, size=6)
+    boxes = AugmentedBoxes(
+        np.concatenate([boxes_array, scores[:, None], labels[:, None]], -1)
+    )
+    np.testing.assert_equal(scores, boxes.scores)
+    np.testing.assert_equal(labels, boxes.labels)
