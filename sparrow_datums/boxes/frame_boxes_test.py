@@ -1,3 +1,6 @@
+import os
+import tempfile
+
 import numpy as np
 import pytest
 
@@ -54,3 +57,10 @@ def test_frame_augmented_boxes_can_become_darwin_dict():
     for annotation in data["annotations"]:
         assert "bounding_box" in annotation
         assert annotation["name"] == "Unknown"
+
+
+def test_darwin_dict_is_json_serializable():
+    boxes = FrameAugmentedBoxes(np.ones((2, 6)), type=BoxType.absolute_tlwh)
+    with tempfile.TemporaryDirectory() as tmpdir:
+        path = os.path.join(tmpdir, "test.json")
+        boxes.to_darwin_annotation_file(path, "foobar")

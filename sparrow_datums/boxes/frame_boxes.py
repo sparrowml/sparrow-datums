@@ -1,4 +1,8 @@
-from typing import Any, Dict, Iterator, List, Optional
+from typing import Any, Dict, Iterator, List, Optional, Union
+
+import json
+from pathlib import Path
+from tkinter import W
 
 import numpy as np
 
@@ -37,16 +41,34 @@ class FrameAugmentedBoxes(AugmentedBoxes):
         path: str = "/",
         label_names: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
-        boxes = self.to_absolute()
         if label_names is None:
             label_names = ["Unknown"] * (self.labels.max() + 1)
         return {
             "image": {"filename": filename, "path": path},
             "annotations": [
                 {
-                    "bounding_box": {"x": box.x, "y": box.y, "w": box.w, "h": box.h},
-                    "name": label_names[box.label],
+                    "bounding_box": {
+                        "x": float(box.x),
+                        "y": float(box.y),
+                        "w": float(box.w),
+                        "h": float(box.h),
+                    },
+                    "name": box.names(label_names),
                 }
-                for box in boxes
+                for box in self.to_absolute()
             ],
         }
+
+    def to_darwin_annotation_file(
+        self,
+        output_path: Union[str, Path],
+        filename: str,
+        path: str = "/",
+        label_names: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
+        with open(output_path, "w") as f:
+            f.write(
+                json.dumps(
+                    self.to_darwin_dict(filename, path=path, label_names=label_names)
+                )
+            )
