@@ -89,3 +89,15 @@ def test_scores_and_labels_attributes():
     )
     np.testing.assert_equal(scores, boxes.scores)
     np.testing.assert_equal(labels, boxes.labels)
+
+
+def test_multi_dimensional_label_names():
+    label_names = ["a", "b", "c", "d", "e", "f"]
+    boxes = np.ones((6, 4))
+    scores = np.random.uniform(size=6)
+    labels = np.arange(6)
+    x = np.concatenate([boxes, scores[:, None], labels[:, None]], -1)
+    boxes = AugmentedBoxes(x.reshape(2, 3, 6))
+    np.testing.assert_equal(
+        boxes.names(label_names), np.array(label_names).reshape(2, 3)
+    )

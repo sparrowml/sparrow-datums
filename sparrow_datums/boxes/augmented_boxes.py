@@ -1,3 +1,5 @@
+from typing import List
+
 import numpy as np
 
 from .boxes import Boxes
@@ -21,3 +23,6 @@ class AugmentedBoxes(Boxes):
     @property
     def labels(self) -> np.ndarray:
         return self.array[..., -1].astype(int)
+
+    def names(self, label_names: List[str]) -> np.ndarray:
+        return np.array(label_names)[self.labels]
