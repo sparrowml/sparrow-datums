@@ -1,4 +1,4 @@
-from typing import Any, Optional, Union
+from typing import Any, List, Optional, TypeVar, Union
 
 import abc
 import enum
@@ -7,19 +7,22 @@ import json
 from pathlib import Path
 
 import numpy as np
+import numpy.typing as npt
+
+ChunkType = TypeVar("ChunkType", bound=npt.NDArray[np.float64])
 
 
-class Chunk(np.ndarray):
+class Chunk(npt.NDArray[np.float64]):
     def __new__(
-        cls,
-        data: np.ndarray,
+        cls: ChunkType,
+        data: npt.NDArray[np.float64],
         type: Optional[enum.Enum] = None,
         image_width: Optional[float] = None,
         image_height: Optional[float] = None,
         fps: Optional[float] = None,
         object_ids: Optional[list[str]] = None,
-    ) -> None:
-        obj = np.asarray(data).view(cls)
+    ) -> ChunkType:
+        obj: ChunkType = np.asarray(data).view(cls)
         obj._type = type
         obj._image_width = image_width
         obj._image_height = image_height
@@ -30,7 +33,7 @@ class Chunk(np.ndarray):
 
     def __init__(
         self,
-        data: np.ndarray,
+        data: ChunkType,
         type: Optional[enum.Enum] = None,
         image_width: Optional[float] = None,
         image_height: Optional[float] = None,
@@ -63,12 +66,12 @@ class Chunk(np.ndarray):
     def __array_finalize__(self, obj: Optional["Chunk"]) -> None:
         if obj is None:
             return
-        self._type = getattr(obj, "_type", None)
-        self._image_width = getattr(obj, "_image_width", None)
-        self._image_height = getattr(obj, "_image_height", None)
-        self._fps = getattr(obj, "_fps", None)
-        self._object_ids = getattr(obj, "_object_ids", None)
-        self._scale = getattr(obj, "_scale", None)
+        self._type: Optional[enum.Enum] = getattr(obj, "_type", None)
+        self._image_width: Optional[float] = getattr(obj, "_image_width", None)
+        self._image_height: Optional[float] = getattr(obj, "_image_height", None)
+        self._fps: Optional[float] = getattr(obj, "_fps", None)
+        self._object_ids: Optional[List[str]] = getattr(obj, "_object_ids", None)
+        self._scale: Optional[npt.NDArray[np.float64]] = getattr(obj, "_scale", None)
         self.validate()
 
     @abc.abstractmethod
@@ -83,7 +86,7 @@ class Chunk(np.ndarray):
         raise NotImplementedError
 
     @property
-    def array(self) -> np.ndarray:
+    def array(self) -> npt.NDArray[np.float64]:
         """Dense data as an ndarray"""
         return self.view(np.ndarray)
 
@@ -102,7 +105,7 @@ class Chunk(np.ndarray):
         return self._image_height
 
     @property
-    def scale(self) -> np.ndarray:
+    def scale(self) -> npt.NDArray[np.float64]:
         """Scaling array"""
         if self._scale is None:
             width = self.image_width
