@@ -26,7 +26,7 @@ class Boxes(Chunk):
         Tracking IDs for the objects
     """
 
-    def check_shape(self) -> None:
+    def validate(self) -> None:
         if not self.shape or self.shape[-1] != 4:
             raise ValueError("Box arrays must have size-4 dimensions")
 
@@ -106,14 +106,14 @@ class Boxes(Chunk):
 
 
 class SingleBox(Boxes):
-    def check_shape(self) -> None:
-        super().check_shape()
+    def validate(self) -> None:
+        super().validate()
         if self.ndim > 1:
             raise ValueError("Single box must be a 1D array")
 
 
 class FrameBoxes(Boxes):
-    def check_shape(self) -> None:
-        super().check_shape()
+    def validate(self) -> None:
+        super().validate()
         if self.ndim != 2:
             raise ValueError("FrameBoxes should be (n_boxes, 4)")

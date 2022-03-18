@@ -32,7 +32,7 @@ class Chunk(np.ndarray):
         pass
 
     def __array_finalize__(self, obj: Optional["Chunk"]) -> None:
-        self.check_shape()
+        self.validate()
         if obj is None:
             return
         self._type = getattr(obj, "_type", None)
@@ -43,8 +43,8 @@ class Chunk(np.ndarray):
         self._scale = getattr(obj, "_scale", None)
 
     @abc.abstractmethod
-    def check_shape(self) -> None:
-        """Raise ValueError for incorrect shape"""
+    def validate(self) -> None:
+        """Raise ValueError for incorrect shape or values"""
         raise NotImplementedError
 
     @classmethod
