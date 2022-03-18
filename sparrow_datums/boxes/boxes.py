@@ -3,6 +3,7 @@ from typing import Optional
 from multiprocessing.sharedctypes import Value
 
 import numpy as np
+import numpy.typing as npt
 
 from ..chunk import Chunk
 from .types import BoxType
@@ -30,19 +31,19 @@ class Boxes(Chunk):
 
     @property
     def is_relative(self) -> bool:
-        return self.type.is_relative
+        return bool(self.type.is_relative)
 
     @property
     def is_absolute(self) -> bool:
-        return self.type.is_absolute
+        return bool(self.type.is_absolute)
 
     @property
     def is_tlbr(self) -> bool:
-        return self.type.is_tlbr
+        return bool(self.type.is_tlbr)
 
     @property
     def is_tlwh(self) -> bool:
-        return self.type.is_tlwh
+        return bool(self.type.is_tlwh)
 
     def to_relative(self) -> "Boxes":
         """Convert boxes to relative pixel coordinates, if necessary"""
@@ -100,15 +101,15 @@ class Boxes(Chunk):
         )
 
     @property
-    def x(self) -> np.ndarray:
+    def x(self) -> npt.NDArray[np.float64]:
         return self.array[..., 0]
 
     @property
-    def y(self) -> np.ndarray:
+    def y(self) -> npt.NDArray[np.float64]:
         return self.array[..., 1]
 
     @property
-    def w(self) -> np.ndarray:
+    def w(self) -> npt.NDArray[np.float64]:
         if self.is_tlwh:
             return self.array[..., 2]
         if np.any(self.array[..., 0] > self.array[..., 2]):
@@ -116,7 +117,7 @@ class Boxes(Chunk):
         return self.array[..., 2] - self.array[..., 0]
 
     @property
-    def h(self) -> np.ndarray:
+    def h(self) -> npt.NDArray[np.float64]:
         if self.is_tlwh:
             return self.array[..., 3]
         if np.any(self.array[..., 1] > self.array[..., 3]):
@@ -124,21 +125,21 @@ class Boxes(Chunk):
         return self.array[..., 3] - self.array[..., 1]
 
     @property
-    def x1(self) -> np.ndarray:
+    def x1(self) -> npt.NDArray[np.float64]:
         return self.x
 
     @property
-    def y1(self) -> np.ndarray:
+    def y1(self) -> npt.NDArray[np.float64]:
         return self.y
 
     @property
-    def x2(self) -> np.ndarray:
+    def x2(self) -> npt.NDArray[np.float64]:
         if self.is_tlbr:
             return self.array[..., 2]
         return self.array[..., 0] + self.array[..., 2]
 
     @property
-    def y2(self) -> np.ndarray:
+    def y2(self) -> npt.NDArray[np.float64]:
         if self.is_tlbr:
             return self.array[..., 3]
         return self.array[..., 1] + self.array[..., 3]
