@@ -5,9 +5,11 @@ from .single_box import SingleAugmentedBox, SingleBox
 from .types import BoxType
 
 
-def test_valid_single_box_succeeds():
-    box = SingleBox(np.ones(4), type=BoxType.absolute_tlwh)
-    assert box.type == BoxType.absolute_tlwh
+def test_single_box_conversion_creates_single_box():
+    box_a = SingleBox(np.ones(4), BoxType.absolute_tlbr)
+    box_b = box_a.to_tlwh()
+    assert box_b.is_tlwh
+    assert isinstance(box_b, SingleBox)
 
 
 def test_single_box_with_bad_shape_throws_value_error():
@@ -17,15 +19,11 @@ def test_single_box_with_bad_shape_throws_value_error():
         SingleBox(np.ones(3))
 
 
-def test_single_box_to_tlbr_works():
-    box = SingleBox(np.ones(4), type=BoxType.absolute_tlwh).to_tlbr()
-    assert box.is_tlbr
-    np.testing.assert_equal(box.array, np.array([1, 1, 2, 2]))
-
-
-def test_valid_single_augmented_box_succeeds():
-    box = SingleAugmentedBox(np.ones(6), type=BoxType.absolute_tlwh)
-    assert box.type == BoxType.absolute_tlwh
+def test_single_augmented_box_conversion_creates_single_augmented_box():
+    box_a = SingleAugmentedBox(np.ones(6), BoxType.absolute_tlwh)
+    box_b = box_a.to_tlbr()
+    assert box_b.is_tlbr
+    assert isinstance(box_b, SingleAugmentedBox)
 
 
 def test_single_augmented_box_with_bad_shape_throws_value_error():
@@ -33,10 +31,3 @@ def test_single_augmented_box_with_bad_shape_throws_value_error():
         SingleAugmentedBox(np.ones((2, 6)))
     with pytest.raises(ValueError):
         SingleAugmentedBox(np.ones(4))
-
-
-def test_single_augmented_box_to_tlbr_works():
-    box = SingleAugmentedBox(np.ones(6), type=BoxType.absolute_tlwh).to_tlbr()
-    assert box.is_tlbr
-    np.testing.assert_equal(box.array[..., :4], np.array([1, 1, 2, 2]))
-    np.testing.assert_equal(box.array[..., 4:], np.ones(2))
