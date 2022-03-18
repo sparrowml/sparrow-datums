@@ -1,9 +1,10 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional, Union
 
 import abc
 import enum
 import gzip
 import json
+from pathlib import Path
 
 import numpy as np
 
@@ -27,12 +28,39 @@ class Chunk(np.ndarray):
         obj._scale = None
         return obj
 
-    def __init__(self, *args, **kwargs) -> None:
-        """ndarray subclasses don't need __init__, but pylance does"""
+    def __init__(
+        self,
+        data: np.ndarray,
+        type: Optional[enum.Enum] = None,
+        image_width: Optional[float] = None,
+        image_height: Optional[float] = None,
+        fps: Optional[float] = None,
+        object_ids: Optional[list[str]] = None,
+    ) -> None:
+        """
+        Chunk subclasses
+
+        Parameters
+        ----------
+        data : np.ndarray
+            A (..., 4) array of boxes
+        type : BoxType, optional
+            The parameterization of the boxes
+        image_width : float, optional
+            The width of the image
+        image_height : float, optional
+            The height of the image
+        fps : float, optional
+            The framerate if the boxes are being tracked
+        object_ids : List[str], optional
+            Tracking IDs for the objects
+        """
+        # This method is defined for documentation
+        # and type hints.
+        # `np.ndarray` subclasses don't use `__init__()`.
         pass
 
     def __array_finalize__(self, obj: Optional["Chunk"]) -> None:
-        self.check_shape()
         if obj is None:
             return
         self._type = getattr(obj, "_type", None)
@@ -41,10 +69,11 @@ class Chunk(np.ndarray):
         self._fps = getattr(obj, "_fps", None)
         self._object_ids = getattr(obj, "_object_ids", None)
         self._scale = getattr(obj, "_scale", None)
+        self.validate()
 
     @abc.abstractmethod
-    def check_shape(self) -> None:
-        """Raise ValueError for incorrect shape"""
+    def validate(self) -> None:
+        """Raise ValueError for incorrect shape or values"""
         raise NotImplementedError
 
     @classmethod
@@ -98,8 +127,8 @@ class Chunk(np.ndarray):
             **self.metadata_kwargs,
         }
 
-    def to_file(self, path: str) -> None:
-        if not path.endswith(".json.gz"):
+    def to_file(self, path: Union[str, Path]) -> None:
+        if not str(path).endswith(".json.gz"):
             raise ValueError("Chunk file name must end with .json.gz")
         with gzip.open(path, "wt") as f:
             f.write(json.dumps(self.to_dict()))
@@ -118,6 +147,6 @@ class Chunk(np.ndarray):
         )
 
     @classmethod
-    def from_file(cls, path: str) -> "Chunk":
+    def from_file(cls, path: Union[str, Path]) -> "Chunk":
         with gzip.open(path, "rt") as f:
             return cls.from_dict(json.loads(f.read()))

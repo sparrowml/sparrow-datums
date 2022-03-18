@@ -16,7 +16,7 @@ class PolygonType(enum.Enum):
 
 
 class Polygons(Chunk):
-    def check_shape(self) -> None:
+    def validate(self) -> None:
         if self.shape[-1] != 2:
             raise ValueError("Uh oh")
 
