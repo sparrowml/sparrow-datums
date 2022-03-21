@@ -2,7 +2,7 @@ import numpy as np
 import numpy.typing as npt
 import pytest
 
-from ..types import BoxType
+from ..types import PType
 from .boxes import Boxes
 
 
@@ -15,7 +15,7 @@ def test_to_relative_moves_boxes_to_0_1():
     image_size = 512
     boxes_a = Boxes(
         np.random.uniform(size=(10, 4)) * image_size,
-        BoxType.absolute_tlwh,
+        PType.absolute_tlwh,
         image_width=image_size,
         image_height=image_size,
     )
@@ -30,7 +30,7 @@ def test_to_absolute_moves_boxes_to_0_image_size():
     image_size = 512
     boxes_a = Boxes(
         np.random.uniform(size=(10, 4)),
-        BoxType.relative_tlwh,
+        PType.relative_tlwh,
         image_width=image_size,
         image_height=image_size,
     )
@@ -43,7 +43,7 @@ def test_to_absolute_moves_boxes_to_0_image_size():
 
 def test_to_tlbr_moves_boxes_to_tlbr():
     x: npt.NDArray[np.float64] = np.concatenate([np.ones((5, 2)), np.zeros((5, 2))], -1)
-    boxes = Boxes(x, BoxType.relative_tlwh).to_tlbr()
+    boxes = Boxes(x, PType.relative_tlwh).to_tlbr()
     np.testing.assert_equal(boxes.array, 1)
 
 
@@ -51,13 +51,13 @@ def test_to_tlwh_moves_boxes_to_tlwh():
     result: npt.NDArray[np.float64] = np.concatenate(
         [np.ones((5, 2)), np.zeros((5, 2))], -1
     )
-    boxes = Boxes(np.ones((5, 4)), BoxType.relative_tlbr).to_tlwh()
+    boxes = Boxes(np.ones((5, 4)), PType.relative_tlbr).to_tlwh()
     np.testing.assert_equal(boxes.array, result)
 
 
 def test_boxes_to_tlbr_doesnt_change_original_instance():
     x: npt.NDArray[np.float64] = np.concatenate([np.ones((5, 2)), np.zeros((5, 2))], -1)
-    boxes = Boxes(x, BoxType.relative_tlwh)
+    boxes = Boxes(x, PType.relative_tlwh)
     _ = boxes.to_tlbr()
     assert boxes.is_tlwh
     assert boxes.is_relative

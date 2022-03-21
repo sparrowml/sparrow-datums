@@ -6,7 +6,7 @@ import numpy as np
 import numpy.typing as npt
 
 from ..chunk import Chunk
-from ..types import BoxType
+from ..types import PType
 
 
 class Boxes(Chunk):
@@ -19,17 +19,17 @@ class Boxes(Chunk):
             raise ValueError("Negative box values are not allowed")
 
     @property
-    def type(self) -> BoxType:
+    def type(self) -> PType:
         if self._type is None:
             raise ValueError("Instance is not typed")
-        _type: BoxType = self._type
+        _type: PType = self._type
         return _type
 
     @classmethod
-    def decode_type(cls, type_name: Optional[str]) -> Optional[BoxType]:
+    def decode_type(cls, type_name: Optional[str]) -> Optional[PType]:
         if type_name is None:
             return None
-        return BoxType(type_name)
+        return PType(type_name)
 
     @property
     def is_relative(self) -> bool:

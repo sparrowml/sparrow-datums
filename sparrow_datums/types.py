@@ -1,9 +1,14 @@
 import enum
 
 
-class BoxType(enum.Enum):
+class PType(enum.Enum):
     """
-    Enum for box parameterizations
+    Enum for chunk parameterization types
+    """
+
+    unknown = "unknown"
+    """
+    Unknown parameterization
     """
 
     absolute_tlbr = "absolute_tlbr"
@@ -43,34 +48,18 @@ class BoxType(enum.Enum):
         return "tlwh" in self.name
 
     @property
-    def as_relative(self) -> "BoxType":
+    def as_relative(self) -> "PType":
         """Convert box type to"""
-        if self.name == "absolute_tlbr":
-            return BoxType.relative_tlbr
-        elif self.name == "absolute_tlwh":
-            return BoxType.relative_tlwh
-        return self
+        return PType(self.name.replace("absolute", "relative"))
 
     @property
-    def as_absolute(self) -> "BoxType":
-        if self.name == "relative_tlbr":
-            return BoxType.absolute_tlbr
-        elif self.name == "relative_tlwh":
-            return BoxType.absolute_tlwh
-        return self
+    def as_absolute(self) -> "PType":
+        return PType(self.name.replace("relative", "absolute"))
 
     @property
-    def as_tlbr(self) -> "BoxType":
-        if self.name == "relative_tlwh":
-            return BoxType.relative_tlbr
-        elif self.name == "absolute_tlwh":
-            return BoxType.absolute_tlbr
-        return self
+    def as_tlbr(self) -> "PType":
+        return PType(self.name.replace("tlwh", "tlbr"))
 
     @property
-    def as_tlwh(self) -> "BoxType":
-        if self.name == "relative_tlbr":
-            return BoxType.relative_tlwh
-        elif self.name == "absolute_tlbr":
-            return BoxType.absolute_tlwh
-        return self
+    def as_tlwh(self) -> "PType":
+        return PType(self.name.replace("tlbr", "tlwh"))

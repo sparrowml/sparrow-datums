@@ -3,26 +3,27 @@ from typing import Any, List, Optional, Type, Union
 import abc
 import gzip
 import json
+import pty
 from pathlib import Path
 
 import numpy as np
 import numpy.typing as npt
 
-from .types import BoxType
+from .types import PType
 
 
 class Chunk(npt.NDArray[np.float64]):
     def __new__(
         cls: type["Chunk"],
         data: npt.NDArray[np.float64],
-        type: Optional[BoxType] = None,
+        ptype: PType = PType.unknown,
         image_width: Optional[float] = None,
         image_height: Optional[float] = None,
         fps: Optional[float] = None,
         object_ids: Optional[list[str]] = None,
     ) -> "Chunk":
         obj: "Chunk" = np.asarray(data).view(cls)
-        obj._type = type
+        obj.ptype = ptype
         obj._image_width = image_width
         obj._image_height = image_height
         obj._fps = fps
@@ -33,7 +34,7 @@ class Chunk(npt.NDArray[np.float64]):
     def __init__(
         self,
         data: npt.NDArray[np.float64],
-        type: Optional[BoxType] = None,
+        ptype: PType = PType.unknown,
         image_width: Optional[float] = None,
         image_height: Optional[float] = None,
         fps: Optional[float] = None,
@@ -46,8 +47,8 @@ class Chunk(npt.NDArray[np.float64]):
         ----------
         data : np.ndarray
             A (..., 4) array of boxes
-        type : BoxType, optional
-            The parameterization of the boxes
+        ptype : PType, optional
+            The parameterization of the elements
         image_width : float, optional
             The width of the image
         image_height : float, optional
@@ -65,7 +66,7 @@ class Chunk(npt.NDArray[np.float64]):
     def __array_finalize__(self, obj: Optional["Chunk"]) -> None:
         if obj is None:
             return
-        self._type: Optional[BoxType] = getattr(obj, "_type", None)
+        self.type: PType = getattr(obj, "type", PType.unknown)
         self._image_width: Optional[float] = getattr(obj, "_image_width", None)
         self._image_height: Optional[float] = getattr(obj, "_image_height", None)
         self._fps: Optional[float] = getattr(obj, "_fps", None)
@@ -76,12 +77,6 @@ class Chunk(npt.NDArray[np.float64]):
     @abc.abstractmethod
     def validate(self) -> None:
         """Raise ValueError for incorrect shape or values"""
-        raise NotImplementedError
-
-    @classmethod
-    @abc.abstractmethod
-    def decode_type(cls, type_name: Optional[str]) -> Optional[BoxType]:
-        """Decode the type string"""
         raise NotImplementedError
 
     @property
@@ -125,7 +120,7 @@ class Chunk(npt.NDArray[np.float64]):
         return {
             "data": np.where(np.isnan(self.array), np.array(None), self.array).tolist(),
             "classname": self.__class__.__name__,
-            "type": self._type.name if self._type else None,
+            "type": self.type.name,
             **self.metadata_kwargs,
         }
 
@@ -141,7 +136,7 @@ class Chunk(npt.NDArray[np.float64]):
         data[data == None] = np.nan
         return cls(
             data,
-            type=cls.decode_type(chunk_dict["type"]),
+            ptype=PType(chunk_dict["type"]),
             image_width=chunk_dict["image_width"],
             image_height=chunk_dict["image_height"],
             fps=chunk_dict["fps"],
