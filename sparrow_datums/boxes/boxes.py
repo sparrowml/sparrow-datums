@@ -3,9 +3,10 @@ from typing import Optional
 from multiprocessing.sharedctypes import Value
 
 import numpy as np
+import numpy.typing as npt
 
 from ..chunk import Chunk
-from .types import BoxType
+from ..types import PType
 
 
 class Boxes(Chunk):
@@ -18,31 +19,20 @@ class Boxes(Chunk):
             raise ValueError("Negative box values are not allowed")
 
     @property
-    def type(self) -> BoxType:
-        _type: BoxType = self._type
-        return _type
-
-    @classmethod
-    def decode_type(cls, type_name: Optional[str]) -> Optional[BoxType]:
-        if type_name is None:
-            return None
-        return BoxType(type_name)
-
-    @property
     def is_relative(self) -> bool:
-        return self.type.is_relative
+        return bool(self.ptype.is_relative)
 
     @property
     def is_absolute(self) -> bool:
-        return self.type.is_absolute
+        return bool(self.ptype.is_absolute)
 
     @property
     def is_tlbr(self) -> bool:
-        return self.type.is_tlbr
+        return bool(self.ptype.is_tlbr)
 
     @property
     def is_tlwh(self) -> bool:
-        return self.type.is_tlwh
+        return bool(self.ptype.is_tlwh)
 
     def to_relative(self) -> "Boxes":
         """Convert boxes to relative pixel coordinates, if necessary"""
@@ -52,7 +42,7 @@ class Boxes(Chunk):
         x[..., :4] /= self.scale
         return self.__class__(
             x,
-            type=self.type.as_relative,
+            ptype=self.ptype.as_relative,
             **self.metadata_kwargs,
         )
 
@@ -64,7 +54,7 @@ class Boxes(Chunk):
         x[..., :4] *= self.scale
         return self.__class__(
             x,
-            type=self.type.as_absolute,
+            ptype=self.ptype.as_absolute,
             **self.metadata_kwargs,
         )
 
@@ -80,7 +70,7 @@ class Boxes(Chunk):
             np.concatenate(
                 [np.stack([x, y, x + w, y + h], -1), self.array[..., 4:]], -1
             ),
-            type=self.type.as_tlbr,
+            ptype=self.ptype.as_tlbr,
             **self.metadata_kwargs,
         )
 
@@ -95,50 +85,66 @@ class Boxes(Chunk):
             np.concatenate(
                 [np.stack([x1, y1, x2 - x1, y2 - y1], -1), self.array[..., 4:]], -1
             ),
-            type=self.type.as_tlwh,
+            ptype=self.ptype.as_tlwh,
             **self.metadata_kwargs,
         )
 
     @property
-    def x(self) -> np.ndarray:
-        return self.array[..., 0]
+    def x(self) -> npt.NDArray[np.float64]:
+        result: npt.NDArray[np.float64]
+        result = self.array[..., 0]
+        return result
 
     @property
-    def y(self) -> np.ndarray:
-        return self.array[..., 1]
+    def y(self) -> npt.NDArray[np.float64]:
+        result: npt.NDArray[np.float64]
+        result = self.array[..., 1]
+        return result
 
     @property
-    def w(self) -> np.ndarray:
+    def w(self) -> npt.NDArray[np.float64]:
+        result: npt.NDArray[np.float64]
         if self.is_tlwh:
-            return self.array[..., 2]
+            result = self.array[..., 2]
+            return result
         if np.any(self.array[..., 0] > self.array[..., 2]):
             raise ValueError("x2 must be >= x1 for all boxes")
-        return self.array[..., 2] - self.array[..., 0]
+        result = self.array[..., 2] - self.array[..., 0]
+        return result
 
     @property
-    def h(self) -> np.ndarray:
+    def h(self) -> npt.NDArray[np.float64]:
+        result: npt.NDArray[np.float64]
         if self.is_tlwh:
-            return self.array[..., 3]
+            result = self.array[..., 3]
+            return result
         if np.any(self.array[..., 1] > self.array[..., 3]):
             raise ValueError("y2 must >= y1 for all boxes")
-        return self.array[..., 3] - self.array[..., 1]
+        result = self.array[..., 3] - self.array[..., 1]
+        return result
 
     @property
-    def x1(self) -> np.ndarray:
+    def x1(self) -> npt.NDArray[np.float64]:
         return self.x
 
     @property
-    def y1(self) -> np.ndarray:
+    def y1(self) -> npt.NDArray[np.float64]:
         return self.y
 
     @property
-    def x2(self) -> np.ndarray:
+    def x2(self) -> npt.NDArray[np.float64]:
+        result: npt.NDArray[np.float64]
         if self.is_tlbr:
-            return self.array[..., 2]
-        return self.array[..., 0] + self.array[..., 2]
+            result = self.array[..., 2]
+            return result
+        result = self.array[..., 0] + self.array[..., 2]
+        return result
 
     @property
-    def y2(self) -> np.ndarray:
+    def y2(self) -> npt.NDArray[np.float64]:
+        result: npt.NDArray[np.float64]
         if self.is_tlbr:
-            return self.array[..., 3]
-        return self.array[..., 1] + self.array[..., 3]
+            result = self.array[..., 3]
+            return result
+        result = self.array[..., 1] + self.array[..., 3]
+        return result

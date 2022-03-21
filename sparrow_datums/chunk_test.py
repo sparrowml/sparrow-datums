@@ -1,6 +1,3 @@
-from typing import Optional
-
-import enum
 import os
 import tempfile
 
@@ -8,28 +5,13 @@ import numpy as np
 import pytest
 
 from .chunk import Chunk
-
-
-class PolygonType(enum.Enum):
-    cool = "cool"
-    not_cool = "not_cool"
+from .types import PType
 
 
 class Polygons(Chunk):
     def validate(self) -> None:
         if self.shape[-1] != 2:
             raise ValueError("Uh oh")
-
-    @property
-    def type(self) -> PolygonType:
-        _type: PolygonType = self._type
-        return _type
-
-    @classmethod
-    def decode_type(cls, type_name: Optional[str]) -> Optional[PolygonType]:
-        if type_name is None:
-            return type_name
-        return PolygonType(type_name)
 
 
 def test_dense_with_no_width_throws_on_scale():
@@ -45,7 +27,7 @@ def test_dense_sliciing_by_rows_creates_new_object():
 
 
 def test_dense_serialization_preserves_data():
-    polygons_a = Polygons(np.random.uniform(size=(2,)), type=PolygonType.cool)
+    polygons_a = Polygons(np.random.uniform(size=(2,)), ptype=PType.unknown)
     polygons_a_dict = polygons_a.to_dict()
     # Classname gets serialized
     assert polygons_a_dict["classname"] == "Polygons"
@@ -56,7 +38,7 @@ def test_dense_serialization_preserves_data():
     # Serialization preserves dense data
     np.testing.assert_allclose(polygons_a.array, polygons_b.array)
     # Chunk type gets pulled back in
-    assert polygons_b.type == PolygonType.cool
+    assert polygons_b.ptype == PType.unknown
 
 
 def test_nan_in_dense_gets_preserved():

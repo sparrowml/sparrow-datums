@@ -4,13 +4,14 @@ import json
 from pathlib import Path
 
 import numpy as np
+import numpy.typing as npt
 
 from .augmented_boxes import AugmentedBoxes
 from .boxes import Boxes
 from .single_box import SingleAugmentedBox, SingleBox
 
 
-def _is_2d(x: np.ndarray) -> None:
+def _is_2d(x: npt.NDArray[np.float64]) -> None:
     if x.ndim != 2:
         raise ValueError("A frame boxes object must be a 2D array")
 
@@ -64,7 +65,7 @@ class FrameAugmentedBoxes(AugmentedBoxes):
         filename: str,
         path: str = "/",
         label_names: Optional[List[str]] = None,
-    ) -> Dict[str, Any]:
+    ) -> None:
         with open(output_path, "w") as f:
             f.write(
                 json.dumps(

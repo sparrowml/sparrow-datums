@@ -1,26 +1,29 @@
-from typing import Any, Optional, Union
+from typing import Any, List, Optional, Type, Union
 
 import abc
-import enum
 import gzip
 import json
+import pty
 from pathlib import Path
 
 import numpy as np
+import numpy.typing as npt
+
+from .types import PType
 
 
-class Chunk(np.ndarray):
+class Chunk(npt.NDArray[np.float64]):
     def __new__(
-        cls,
-        data: np.ndarray,
-        type: Optional[enum.Enum] = None,
+        cls: type["Chunk"],
+        data: npt.NDArray[np.float64],
+        ptype: PType = PType.unknown,
         image_width: Optional[float] = None,
         image_height: Optional[float] = None,
         fps: Optional[float] = None,
         object_ids: Optional[list[str]] = None,
-    ) -> None:
-        obj = np.asarray(data).view(cls)
-        obj._type = type
+    ) -> "Chunk":
+        obj: "Chunk" = np.asarray(data).view(cls)
+        obj.ptype = ptype
         obj._image_width = image_width
         obj._image_height = image_height
         obj._fps = fps
@@ -30,8 +33,8 @@ class Chunk(np.ndarray):
 
     def __init__(
         self,
-        data: np.ndarray,
-        type: Optional[enum.Enum] = None,
+        data: npt.NDArray[np.float64],
+        ptype: PType = PType.unknown,
         image_width: Optional[float] = None,
         image_height: Optional[float] = None,
         fps: Optional[float] = None,
@@ -44,8 +47,8 @@ class Chunk(np.ndarray):
         ----------
         data : np.ndarray
             A (..., 4) array of boxes
-        type : BoxType, optional
-            The parameterization of the boxes
+        ptype : PType
+            The parameterization of the elements
         image_width : float, optional
             The width of the image
         image_height : float, optional
@@ -63,12 +66,12 @@ class Chunk(np.ndarray):
     def __array_finalize__(self, obj: Optional["Chunk"]) -> None:
         if obj is None:
             return
-        self._type = getattr(obj, "_type", None)
-        self._image_width = getattr(obj, "_image_width", None)
-        self._image_height = getattr(obj, "_image_height", None)
-        self._fps = getattr(obj, "_fps", None)
-        self._object_ids = getattr(obj, "_object_ids", None)
-        self._scale = getattr(obj, "_scale", None)
+        self.ptype: PType = getattr(obj, "ptype", PType.unknown)
+        self._image_width: Optional[float] = getattr(obj, "_image_width", None)
+        self._image_height: Optional[float] = getattr(obj, "_image_height", None)
+        self._fps: Optional[float] = getattr(obj, "_fps", None)
+        self._object_ids: Optional[list[str]] = getattr(obj, "_object_ids", None)
+        self._scale: Optional[npt.NDArray[np.float64]] = getattr(obj, "_scale", None)
         self.validate()
 
     @abc.abstractmethod
@@ -76,14 +79,8 @@ class Chunk(np.ndarray):
         """Raise ValueError for incorrect shape or values"""
         raise NotImplementedError
 
-    @classmethod
-    @abc.abstractmethod
-    def decode_type(cls, type_name: Optional[str]) -> Optional[enum.Enum]:
-        """Decode the type string"""
-        raise NotImplementedError
-
     @property
-    def array(self) -> np.ndarray:
+    def array(self) -> npt.NDArray[np.float64]:
         """Dense data as an ndarray"""
         return self.view(np.ndarray)
 
@@ -102,7 +99,7 @@ class Chunk(np.ndarray):
         return self._image_height
 
     @property
-    def scale(self) -> np.ndarray:
+    def scale(self) -> npt.NDArray[np.float64]:
         """Scaling array"""
         if self._scale is None:
             width = self.image_width
@@ -121,9 +118,9 @@ class Chunk(np.ndarray):
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            "data": np.where(np.isnan(self), None, self).tolist(),
+            "data": np.where(np.isnan(self.array), np.array(None), self.array).tolist(),
             "classname": self.__class__.__name__,
-            "type": self._type.name if self._type else None,
+            "ptype": self.ptype.name,
             **self.metadata_kwargs,
         }
 
@@ -135,11 +132,11 @@ class Chunk(np.ndarray):
 
     @classmethod
     def from_dict(cls, chunk_dict: dict[str, Any]) -> "Chunk":
-        data = np.array(chunk_dict["data"]).astype("float64")
+        data: npt.NDArray[np.float64] = np.array(chunk_dict["data"]).astype("float64")
         data[data == None] = np.nan
         return cls(
             data,
-            type=cls.decode_type(chunk_dict["type"]),
+            ptype=PType(chunk_dict["ptype"]),
             image_width=chunk_dict["image_width"],
             image_height=chunk_dict["image_height"],
             fps=chunk_dict["fps"],

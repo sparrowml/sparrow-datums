@@ -1,12 +1,13 @@
 from typing import Union
 
 import numpy as np
+import numpy.typing as npt
 
 from .boxes import Boxes
 from .frame_boxes import FrameAugmentedBoxes, FrameBoxes
 
 
-def intersection(boxes_a: Boxes, boxes_b: Boxes) -> np.ndarray:
+def intersection(boxes_a: Boxes, boxes_b: Boxes) -> npt.NDArray[np.float64]:
     """
     Intersection areas of two sets of boxes
 
@@ -27,10 +28,11 @@ def intersection(boxes_a: Boxes, boxes_b: Boxes) -> np.ndarray:
     y1 = np.maximum(boxes_a.y1, boxes_b.y1)
     x2 = np.minimum(boxes_a.x2, boxes_b.x2)
     y2 = np.minimum(boxes_a.y2, boxes_b.y2)
-    return (x2 - x1) * (y2 - y1)
+    result: npt.NDArray[np.float64] = (x2 - x1) * (y2 - y1)
+    return result
 
 
-def area(boxes: Boxes) -> np.ndarray:
+def area(boxes: Boxes) -> npt.NDArray[np.float64]:
     """
     Areas of boxes
 
@@ -50,7 +52,7 @@ def area(boxes: Boxes) -> np.ndarray:
 def pairwise_iou(
     boxes_a: Union[FrameAugmentedBoxes, FrameBoxes],
     boxes_b: Union[FrameAugmentedBoxes, FrameBoxes],
-) -> np.ndarray:
+) -> npt.NDArray[np.float64]:
     """
     Pairwise IoU for two sets of frame boxes
 
@@ -67,11 +69,13 @@ def pairwise_iou(
         A (n_boxes_a, n_boxes_b) matrix of iou scores
     """
     boxes_a_parent = boxes_a.__class__.__base__
-    boxes_a = boxes_a.view(boxes_a_parent)[:, None, :]
+    boxes_a_view: Union[FrameAugmentedBoxes, FrameBoxes] = boxes_a.view(boxes_a_parent)
+    boxes_a_expanded = boxes_a_view[:, None, :]
     boxes_b_parent = boxes_b.__class__.__base__
-    boxes_b = boxes_b.view(boxes_b_parent)[None, :, :]
-    intersections = intersection(boxes_a, boxes_b)
-    areas = area(boxes_a) + area(boxes_b)
+    boxes_b_view: Union[FrameAugmentedBoxes, FrameBoxes] = boxes_b.view(boxes_b_parent)
+    boxes_b_expanded = boxes_b_view[None, :, :]
+    intersections = intersection(boxes_a_expanded, boxes_b_expanded)
+    areas = area(boxes_a_expanded) + area(boxes_b_expanded)
     unions = areas - intersections
     unions[unions == 0] = np.inf
     return intersections / unions
