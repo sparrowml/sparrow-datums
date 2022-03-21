@@ -66,7 +66,7 @@ class Chunk(npt.NDArray[np.float64]):
     def __array_finalize__(self, obj: Optional["Chunk"]) -> None:
         if obj is None:
             return
-        self.type: PType = getattr(obj, "type", PType.unknown)
+        self.ptype: PType = getattr(obj, "ptype", PType.unknown)
         self._image_width: Optional[float] = getattr(obj, "_image_width", None)
         self._image_height: Optional[float] = getattr(obj, "_image_height", None)
         self._fps: Optional[float] = getattr(obj, "_fps", None)
@@ -120,7 +120,7 @@ class Chunk(npt.NDArray[np.float64]):
         return {
             "data": np.where(np.isnan(self.array), np.array(None), self.array).tolist(),
             "classname": self.__class__.__name__,
-            "type": self.type.name,
+            "ptype": self.ptype.name,
             **self.metadata_kwargs,
         }
 
@@ -136,7 +136,7 @@ class Chunk(npt.NDArray[np.float64]):
         data[data == None] = np.nan
         return cls(
             data,
-            ptype=PType(chunk_dict["type"]),
+            ptype=PType(chunk_dict["ptype"]),
             image_width=chunk_dict["image_width"],
             image_height=chunk_dict["image_height"],
             fps=chunk_dict["fps"],

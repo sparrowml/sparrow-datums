@@ -8,8 +8,8 @@ from .augmented_boxes import AugmentedBoxes
 
 def test_augmented_boxes_with_6d_array_succeeds():
     x: npt.NDArray[np.float64] = np.ones((5, 6))
-    boxes = AugmentedBoxes(x, type=PType.relative_tlwh)
-    assert boxes.type == PType.relative_tlwh
+    boxes = AugmentedBoxes(x, ptype=PType.relative_tlwh)
+    assert boxes.ptype == PType.relative_tlwh
 
 
 def test_wrong_shape_throws_value_error():

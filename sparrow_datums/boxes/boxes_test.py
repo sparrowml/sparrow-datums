@@ -75,14 +75,14 @@ def test_boxes_deserializes_type():
     boxes = Boxes.from_dict(
         {
             "data": [1, 2, 3, 4],
-            "type": "relative_tlbr",
+            "ptype": "relative_tlbr",
             "image_width": None,
             "image_height": None,
             "fps": None,
             "object_ids": None,
         }
     )
-    assert boxes.type
+    assert boxes.ptype == PType.relative_tlbr
 
 
 def test_boxes_saves_classname():

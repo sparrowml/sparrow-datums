@@ -19,33 +19,20 @@ class Boxes(Chunk):
             raise ValueError("Negative box values are not allowed")
 
     @property
-    def type(self) -> PType:
-        if self._type is None:
-            raise ValueError("Instance is not typed")
-        _type: PType = self._type
-        return _type
-
-    @classmethod
-    def decode_type(cls, type_name: Optional[str]) -> Optional[PType]:
-        if type_name is None:
-            return None
-        return PType(type_name)
-
-    @property
     def is_relative(self) -> bool:
-        return bool(self.type.is_relative)
+        return bool(self.ptype.is_relative)
 
     @property
     def is_absolute(self) -> bool:
-        return bool(self.type.is_absolute)
+        return bool(self.ptype.is_absolute)
 
     @property
     def is_tlbr(self) -> bool:
-        return bool(self.type.is_tlbr)
+        return bool(self.ptype.is_tlbr)
 
     @property
     def is_tlwh(self) -> bool:
-        return bool(self.type.is_tlwh)
+        return bool(self.ptype.is_tlwh)
 
     def to_relative(self) -> "Boxes":
         """Convert boxes to relative pixel coordinates, if necessary"""
@@ -55,7 +42,7 @@ class Boxes(Chunk):
         x[..., :4] /= self.scale
         return self.__class__(
             x,
-            type=self.type.as_relative,
+            ptype=self.ptype.as_relative,
             **self.metadata_kwargs,
         )
 
@@ -67,7 +54,7 @@ class Boxes(Chunk):
         x[..., :4] *= self.scale
         return self.__class__(
             x,
-            type=self.type.as_absolute,
+            ptype=self.ptype.as_absolute,
             **self.metadata_kwargs,
         )
 
@@ -83,7 +70,7 @@ class Boxes(Chunk):
             np.concatenate(
                 [np.stack([x, y, x + w, y + h], -1), self.array[..., 4:]], -1
             ),
-            type=self.type.as_tlbr,
+            ptype=self.ptype.as_tlbr,
             **self.metadata_kwargs,
         )
 
@@ -98,7 +85,7 @@ class Boxes(Chunk):
             np.concatenate(
                 [np.stack([x1, y1, x2 - x1, y2 - y1], -1), self.array[..., 4:]], -1
             ),
-            type=self.type.as_tlwh,
+            ptype=self.ptype.as_tlwh,
             **self.metadata_kwargs,
         )
 

@@ -38,7 +38,7 @@ def test_dense_serialization_preserves_data():
     # Serialization preserves dense data
     np.testing.assert_allclose(polygons_a.array, polygons_b.array)
     # Chunk type gets pulled back in
-    assert polygons_b.type == PType.unknown
+    assert polygons_b.ptype == PType.unknown
 
 
 def test_nan_in_dense_gets_preserved():
