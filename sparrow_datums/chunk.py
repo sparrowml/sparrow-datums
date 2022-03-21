@@ -47,7 +47,7 @@ class Chunk(npt.NDArray[np.float64]):
         ----------
         data : np.ndarray
             A (..., 4) array of boxes
-        ptype : PType, optional
+        ptype : PType
             The parameterization of the elements
         image_width : float, optional
             The width of the image
