@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
+from ..types import BoxType
 from .single_box import SingleAugmentedBox, SingleBox
-from .types import BoxType
 
 
 def test_single_box_conversion_creates_single_box():

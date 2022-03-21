@@ -1,7 +1,6 @@
-from typing import Any, List, Optional, TypeVar, Union
+from typing import Any, List, Optional, Type, Union
 
 import abc
-import enum
 import gzip
 import json
 from pathlib import Path
@@ -9,20 +8,20 @@ from pathlib import Path
 import numpy as np
 import numpy.typing as npt
 
-ChunkType = TypeVar("ChunkType", bound=npt.NDArray[np.float64])
+from .types import BoxType
 
 
 class Chunk(npt.NDArray[np.float64]):
     def __new__(
-        cls: ChunkType,
+        cls: type["Chunk"],
         data: npt.NDArray[np.float64],
-        type: Optional[enum.Enum] = None,
+        type: Optional[BoxType] = None,
         image_width: Optional[float] = None,
         image_height: Optional[float] = None,
         fps: Optional[float] = None,
         object_ids: Optional[list[str]] = None,
-    ) -> ChunkType:
-        obj: ChunkType = np.asarray(data).view(cls)
+    ) -> "Chunk":
+        obj: "Chunk" = np.asarray(data).view(cls)
         obj._type = type
         obj._image_width = image_width
         obj._image_height = image_height
@@ -33,8 +32,8 @@ class Chunk(npt.NDArray[np.float64]):
 
     def __init__(
         self,
-        data: ChunkType,
-        type: Optional[enum.Enum] = None,
+        data: npt.NDArray[np.float64],
+        type: Optional[BoxType] = None,
         image_width: Optional[float] = None,
         image_height: Optional[float] = None,
         fps: Optional[float] = None,
@@ -66,11 +65,11 @@ class Chunk(npt.NDArray[np.float64]):
     def __array_finalize__(self, obj: Optional["Chunk"]) -> None:
         if obj is None:
             return
-        self._type: Optional[enum.Enum] = getattr(obj, "_type", None)
+        self._type: Optional[BoxType] = getattr(obj, "_type", None)
         self._image_width: Optional[float] = getattr(obj, "_image_width", None)
         self._image_height: Optional[float] = getattr(obj, "_image_height", None)
         self._fps: Optional[float] = getattr(obj, "_fps", None)
-        self._object_ids: Optional[List[str]] = getattr(obj, "_object_ids", None)
+        self._object_ids: Optional[list[str]] = getattr(obj, "_object_ids", None)
         self._scale: Optional[npt.NDArray[np.float64]] = getattr(obj, "_scale", None)
         self.validate()
 
@@ -81,7 +80,7 @@ class Chunk(npt.NDArray[np.float64]):
 
     @classmethod
     @abc.abstractmethod
-    def decode_type(cls, type_name: Optional[str]) -> Optional[enum.Enum]:
+    def decode_type(cls, type_name: Optional[str]) -> Optional[BoxType]:
         """Decode the type string"""
         raise NotImplementedError
 
@@ -124,7 +123,7 @@ class Chunk(npt.NDArray[np.float64]):
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            "data": np.where(np.isnan(self), None, self).tolist(),
+            "data": np.where(np.isnan(self.array), np.array(None), self.array).tolist(),
             "classname": self.__class__.__name__,
             "type": self._type.name if self._type else None,
             **self.metadata_kwargs,
@@ -138,7 +137,7 @@ class Chunk(npt.NDArray[np.float64]):
 
     @classmethod
     def from_dict(cls, chunk_dict: dict[str, Any]) -> "Chunk":
-        data = np.array(chunk_dict["data"]).astype("float64")
+        data: npt.NDArray[np.float64] = np.array(chunk_dict["data"]).astype("float64")
         data[data == None] = np.nan
         return cls(
             data,

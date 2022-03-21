@@ -4,9 +4,9 @@ import tempfile
 import numpy as np
 import pytest
 
+from ..types import BoxType
 from .frame_boxes import FrameAugmentedBoxes, FrameBoxes
 from .single_box import SingleAugmentedBox, SingleBox
-from .types import BoxType
 
 
 def test_frame_boxes_conversion_creates_frame_boxes():

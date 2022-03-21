@@ -6,7 +6,7 @@ import numpy as np
 import numpy.typing as npt
 
 from ..chunk import Chunk
-from .types import BoxType
+from ..types import BoxType
 
 
 class Boxes(Chunk):
@@ -20,6 +20,8 @@ class Boxes(Chunk):
 
     @property
     def type(self) -> BoxType:
+        if self._type is None:
+            raise ValueError("Instance is not typed")
         _type: BoxType = self._type
         return _type
 
@@ -102,27 +104,37 @@ class Boxes(Chunk):
 
     @property
     def x(self) -> npt.NDArray[np.float64]:
-        return self.array[..., 0]
+        result: npt.NDArray[np.float64]
+        result = self.array[..., 0]
+        return result
 
     @property
     def y(self) -> npt.NDArray[np.float64]:
-        return self.array[..., 1]
+        result: npt.NDArray[np.float64]
+        result = self.array[..., 1]
+        return result
 
     @property
     def w(self) -> npt.NDArray[np.float64]:
+        result: npt.NDArray[np.float64]
         if self.is_tlwh:
-            return self.array[..., 2]
+            result = self.array[..., 2]
+            return result
         if np.any(self.array[..., 0] > self.array[..., 2]):
             raise ValueError("x2 must be >= x1 for all boxes")
-        return self.array[..., 2] - self.array[..., 0]
+        result = self.array[..., 2] - self.array[..., 0]
+        return result
 
     @property
     def h(self) -> npt.NDArray[np.float64]:
+        result: npt.NDArray[np.float64]
         if self.is_tlwh:
-            return self.array[..., 3]
+            result = self.array[..., 3]
+            return result
         if np.any(self.array[..., 1] > self.array[..., 3]):
             raise ValueError("y2 must >= y1 for all boxes")
-        return self.array[..., 3] - self.array[..., 1]
+        result = self.array[..., 3] - self.array[..., 1]
+        return result
 
     @property
     def x1(self) -> npt.NDArray[np.float64]:
@@ -134,12 +146,18 @@ class Boxes(Chunk):
 
     @property
     def x2(self) -> npt.NDArray[np.float64]:
+        result: npt.NDArray[np.float64]
         if self.is_tlbr:
-            return self.array[..., 2]
-        return self.array[..., 0] + self.array[..., 2]
+            result = self.array[..., 2]
+            return result
+        result = self.array[..., 0] + self.array[..., 2]
+        return result
 
     @property
     def y2(self) -> npt.NDArray[np.float64]:
+        result: npt.NDArray[np.float64]
         if self.is_tlbr:
-            return self.array[..., 3]
-        return self.array[..., 1] + self.array[..., 3]
+            result = self.array[..., 3]
+            return result
+        result = self.array[..., 1] + self.array[..., 3]
+        return result

@@ -1,6 +1,7 @@
 from typing import List
 
 import numpy as np
+import numpy.typing as npt
 
 from .boxes import Boxes
 
@@ -17,12 +18,17 @@ class AugmentedBoxes(Boxes):
             raise ValueError("scores array must be floats in [0, 1]")
 
     @property
-    def scores(self) -> np.ndarray:
-        return self.array[..., -2]
+    def scores(self) -> npt.NDArray[np.float64]:
+        result: npt.NDArray[np.float64] = self.array[..., -2]
+        return result
 
     @property
-    def labels(self) -> np.ndarray:
-        return self.array[..., -1].astype(int)
+    def labels(self) -> npt.NDArray[np.int64]:
+        result: npt.NDArray[np.int64] = self.array[..., -1].astype(np.int64)
+        return result
 
-    def names(self, label_names: List[str]) -> np.ndarray:
-        return np.array(label_names)[self.labels]
+    def names(self, label_names: List[str]) -> npt.NDArray[np.str_]:
+        result: npt.NDArray[np.str_] = np.array(label_names)[self.labels].astype(
+            np.str_
+        )
+        return result
