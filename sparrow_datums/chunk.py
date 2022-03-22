@@ -1,4 +1,4 @@
-from typing import Any, List, Optional, Type, Union
+from typing import Any, Dict, Optional, Type, Union
 
 import abc
 import gzip

@@ -2,7 +2,8 @@ import numpy as np
 
 from ..types import PType
 from .boxes import Boxes
-from .frame_boxes import FrameAugmentedBoxes, FrameBoxes
+from .frame_augmented_boxes import FrameAugmentedBoxes
+from .frame_boxes import FrameBoxes
 from .iou import area, intersection, pairwise_iou
 from .single_box import SingleBox
 

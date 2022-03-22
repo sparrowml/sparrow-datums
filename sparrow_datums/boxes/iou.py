@@ -4,7 +4,8 @@ import numpy as np
 import numpy.typing as npt
 
 from .boxes import Boxes
-from .frame_boxes import FrameAugmentedBoxes, FrameBoxes
+from .frame_augmented_boxes import FrameAugmentedBoxes
+from .frame_boxes import FrameBoxes
 
 
 def intersection(boxes_a: Boxes, boxes_b: Boxes) -> npt.NDArray[np.float64]:

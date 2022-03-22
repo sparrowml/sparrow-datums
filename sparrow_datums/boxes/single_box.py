@@ -1,7 +1,6 @@
 import numpy as np
 import numpy.typing as npt
 
-from .augmented_boxes import AugmentedBoxes
 from .boxes import Boxes
 
 
@@ -14,17 +13,3 @@ class SingleBox(Boxes):
     def validate(self) -> None:
         super().validate()
         _is_1d(self)
-
-
-class SingleAugmentedBox(AugmentedBoxes):
-    def validate(self) -> None:
-        super().validate()
-        _is_1d(self)
-
-    @property
-    def score(self) -> float:
-        return float(self.scores)
-
-    @property
-    def label(self) -> int:
-        return int(self.labels)
