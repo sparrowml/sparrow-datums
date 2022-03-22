@@ -1,11 +1,13 @@
-from typing import Any, Dict, Iterator, List, Optional, Union
+from typing import Any, Dict, Iterator, List, Optional, Type, Union
 
 import json
+from operator import itemgetter
 from pathlib import Path
 
 import numpy as np
 import numpy.typing as npt
 
+from ..types import PType
 from .augmented_boxes import AugmentedBoxes
 from .boxes import Boxes
 from .single_box import SingleAugmentedBox, SingleBox
@@ -59,7 +61,7 @@ class FrameAugmentedBoxes(AugmentedBoxes):
             ],
         }
 
-    def to_darwin_annotation_file(
+    def to_darwin_file(
         self,
         output_path: Union[str, Path],
         filename: str,
@@ -72,3 +74,35 @@ class FrameAugmentedBoxes(AugmentedBoxes):
                     self.to_darwin_dict(filename, path=path, label_names=label_names)
                 )
             )
+
+    @classmethod
+    def from_darwin_dict(
+        cls: Type["FrameAugmentedBoxes"],
+        darwin_dict: Dict[str, Any],
+        label_names: List[str] = [],
+    ) -> "FrameAugmentedBoxes":
+        label_names_map = {name: float(idx) for idx, name in enumerate(label_names)}
+        image_width, image_height = itemgetter("width", "height")(darwin_dict["image"])
+        boxes = []
+        score = 1.0
+        for annotation in darwin_dict["annotations"]:
+            x, y, w, h = itemgetter("x", "y", "w", "h")(annotation["bounding_box"])
+            label = label_names_map.get(annotation["name"], -1.0)
+            boxes.append([x, y, w, h, score, label])
+        data: npt.NDArray[np.float64] = np.array(boxes).astype("float64")
+        return cls(
+            data,
+            ptype=PType.absolute_tlwh,
+            image_width=image_width,
+            image_height=image_height,
+        )
+
+    @classmethod
+    def from_darwin_file(
+        cls: Type["FrameAugmentedBoxes"],
+        path: Union[str, Path],
+        label_names: List[str] = [],
+    ) -> "FrameAugmentedBoxes":
+        with open(path) as f:
+            darwin_dict = json.loads(f.read())
+        return cls.from_darwin_dict(darwin_dict, label_names=label_names)
