@@ -1,12 +1,12 @@
-from typing import Optional
-
-from multiprocessing.sharedctypes import Value
+from typing import TypeVar
 
 import numpy as np
 import numpy.typing as npt
 
 from ..chunk import Chunk
 from ..types import PType
+
+T = TypeVar("T", bound="Boxes")
 
 
 class Boxes(Chunk):
@@ -34,7 +34,7 @@ class Boxes(Chunk):
     def is_tlwh(self) -> bool:
         return bool(self.ptype.is_tlwh)
 
-    def to_relative(self) -> "Boxes":
+    def to_relative(self: T) -> T:
         """Convert boxes to relative pixel coordinates, if necessary"""
         if self.is_relative:
             return self
@@ -46,7 +46,7 @@ class Boxes(Chunk):
             **self.metadata_kwargs,
         )
 
-    def to_absolute(self) -> "Boxes":
+    def to_absolute(self: T) -> T:
         """Convert boxes to absolute pixel coordinates, if necessary"""
         if self.is_absolute:
             return self
@@ -58,7 +58,7 @@ class Boxes(Chunk):
             **self.metadata_kwargs,
         )
 
-    def to_tlbr(self) -> "Boxes":
+    def to_tlbr(self: T) -> T:
         """Convert boxes to tlbr format, if necessary"""
         if self.is_tlbr:
             return self
@@ -74,7 +74,7 @@ class Boxes(Chunk):
             **self.metadata_kwargs,
         )
 
-    def to_tlwh(self) -> "Boxes":
+    def to_tlwh(self: T) -> T:
         if self.is_tlwh:
             return self
         x1 = self.array[..., 0]
