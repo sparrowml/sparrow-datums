@@ -1,9 +1,8 @@
-from typing import Any, Dict, Optional, Type, Union
+from typing import Any, Optional, TypeVar, Union
 
 import abc
 import gzip
 import json
-import pty
 from pathlib import Path
 
 import numpy as np
@@ -11,18 +10,20 @@ import numpy.typing as npt
 
 from .types import PType
 
+T = TypeVar("T", bound="Chunk")
+
 
 class Chunk(npt.NDArray[np.float64]):
     def __new__(
-        cls: type["Chunk"],
+        cls: type[T],
         data: npt.NDArray[np.float64],
         ptype: PType = PType.unknown,
         image_width: Optional[float] = None,
         image_height: Optional[float] = None,
         fps: Optional[float] = None,
         object_ids: Optional[list[str]] = None,
-    ) -> "Chunk":
-        obj: "Chunk" = np.asarray(data).view(cls)
+    ) -> T:
+        obj: T = np.asarray(data).view(cls)
         obj.ptype = ptype
         obj._image_width = image_width
         obj._image_height = image_height
@@ -63,7 +64,7 @@ class Chunk(npt.NDArray[np.float64]):
         # `np.ndarray` subclasses don't use `__init__()`.
         pass
 
-    def __array_finalize__(self, obj: Optional["Chunk"]) -> None:
+    def __array_finalize__(self, obj: Optional[T]) -> None:
         if obj is None:
             return
         self.ptype: PType = getattr(obj, "ptype", PType.unknown)
@@ -131,7 +132,7 @@ class Chunk(npt.NDArray[np.float64]):
             f.write(json.dumps(self.to_dict()))
 
     @classmethod
-    def from_dict(cls, chunk_dict: dict[str, Any]) -> "Chunk":
+    def from_dict(cls: type[T], chunk_dict: dict[str, Any]) -> T:
         data: npt.NDArray[np.float64] = np.array(chunk_dict["data"]).astype("float64")
         data[data == None] = np.nan
         return cls(
@@ -144,6 +145,6 @@ class Chunk(npt.NDArray[np.float64]):
         )
 
     @classmethod
-    def from_file(cls, path: Union[str, Path]) -> "Chunk":
+    def from_file(cls: type[T], path: Union[str, Path]) -> T:
         with gzip.open(path, "rt") as f:
             return cls.from_dict(json.loads(f.read()))
