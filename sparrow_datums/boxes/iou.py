@@ -10,7 +10,7 @@ from .frame_boxes import FrameBoxes
 
 def intersection(boxes_a: Boxes, boxes_b: Boxes) -> npt.NDArray[np.float64]:
     """
-    Intersection areas of two sets of boxes
+    Intersection areas of two sets of boxes.
 
     Parameters
     ----------
@@ -35,7 +35,7 @@ def intersection(boxes_a: Boxes, boxes_b: Boxes) -> npt.NDArray[np.float64]:
 
 def area(boxes: Boxes) -> npt.NDArray[np.float64]:
     """
-    Areas of boxes
+    Areas of boxes.
 
     Parameters
     ----------
@@ -55,7 +55,7 @@ def pairwise_iou(
     boxes_b: Union[FrameAugmentedBoxes, FrameBoxes],
 ) -> npt.NDArray[np.float64]:
     """
-    Pairwise IoU for two sets of frame boxes
+    Pairwise IoU for two sets of frame boxes.
 
     Parameters
     ----------

@@ -1,3 +1,4 @@
+"""Box chunks."""
 from .augmented_boxes import AugmentedBoxes
 from .boxes import Boxes
 from .frame_augmented_boxes import FrameAugmentedBoxes

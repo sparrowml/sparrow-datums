@@ -23,10 +23,6 @@ install:
 	poetry install -n
 	-poetry run mypy --install-types --non-interactive ./
 
-.PHONY: pre-commit-install
-pre-commit-install:
-	poetry run pre-commit install
-
 #* Formatters
 .PHONY: codestyle
 codestyle:
@@ -44,9 +40,10 @@ test:
 
 .PHONY: check-codestyle
 check-codestyle:
-	poetry run isort --diff --check-only --settings-path pyproject.toml ./
-	poetry run black --diff --check --config pyproject.toml ./
-	poetry run darglint --verbosity 2 sparrow_datums
+	poetry run isort --diff --check-only ./
+	poetry run black --diff --check ./
+	poetry run pylint sparrow_datums
+	poetry run pydocstyle
 
 .PHONY: mypy
 mypy:
@@ -63,7 +60,7 @@ lint: test check-codestyle mypy check-safety
 
 .PHONY: update-dev-deps
 update-dev-deps:
-	poetry add -D bandit@latest darglint@latest "isort[colors]@latest" mypy@latest pre-commit@latest pydocstyle@latest pylint@latest pytest@latest pyupgrade@latest safety@latest coverage@latest coverage-badge@latest pytest-html@latest pytest-cov@latest
+	poetry add -D bandit@latest "isort@latest" mypy@latest pydocstyle@latest pylint@latest pytest@latest pyupgrade@latest safety@latest coverage@latest coverage-badge@latest pytest-html@latest pytest-cov@latest
 	poetry add -D --allow-prereleases black@latest
 
 #* Docker

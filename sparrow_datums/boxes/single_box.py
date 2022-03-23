@@ -10,6 +10,9 @@ def _is_1d(x: npt.NDArray[np.float64]) -> None:
 
 
 class SingleBox(Boxes):
+    """A single box."""
+
     def validate(self) -> None:
+        """Check validity of boxes array."""
         super().validate()
         _is_1d(self)

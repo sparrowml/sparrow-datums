@@ -4,15 +4,15 @@ import numpy as np
 import numpy.typing as npt
 
 from ..chunk import Chunk
-from ..types import PType
 
 T = TypeVar("T", bound="Boxes")
 
 
 class Boxes(Chunk):
-    """Adds box_type to a NumPy array for strictness checking"""
+    """Adds box_type to a NumPy array for strictness checking."""
 
     def validate(self) -> None:
+        """Check validity of boxes array."""
         if not self.shape or self.shape[-1] != 4:
             raise ValueError("Box arrays must have size-4 dimensions")
         if np.any(self.array < 0):
@@ -20,22 +20,26 @@ class Boxes(Chunk):
 
     @property
     def is_relative(self) -> bool:
+        """Parameterization is relative."""
         return bool(self.ptype.is_relative)
 
     @property
     def is_absolute(self) -> bool:
+        """Parameterization is absolute."""
         return bool(self.ptype.is_absolute)
 
     @property
     def is_tlbr(self) -> bool:
+        """Parameterization is TLBR."""
         return bool(self.ptype.is_tlbr)
 
     @property
     def is_tlwh(self) -> bool:
+        """Parameterization is TLWH."""
         return bool(self.ptype.is_tlwh)
 
     def to_relative(self: T) -> T:
-        """Convert boxes to relative pixel coordinates, if necessary"""
+        """Convert boxes to relative pixel coordinates, if necessary."""
         if self.is_relative:
             return self
         x = self.array.copy()
@@ -47,7 +51,7 @@ class Boxes(Chunk):
         )
 
     def to_absolute(self: T) -> T:
-        """Convert boxes to absolute pixel coordinates, if necessary"""
+        """Convert boxes to absolute pixel coordinates, if necessary."""
         if self.is_absolute:
             return self
         x = self.array.copy()
@@ -59,7 +63,7 @@ class Boxes(Chunk):
         )
 
     def to_tlbr(self: T) -> T:
-        """Convert boxes to tlbr format, if necessary"""
+        """Convert boxes to TLBR format, if necessary."""
         if self.is_tlbr:
             return self
         x = self.array[..., 0]
@@ -75,6 +79,7 @@ class Boxes(Chunk):
         )
 
     def to_tlwh(self: T) -> T:
+        """Convert boxes to TLWH format, if necessary."""
         if self.is_tlwh:
             return self
         x1 = self.array[..., 0]
@@ -91,18 +96,21 @@ class Boxes(Chunk):
 
     @property
     def x(self) -> npt.NDArray[np.float64]:
+        """Slice the x dimension of the boxes."""
         result: npt.NDArray[np.float64]
         result = self.array[..., 0]
         return result
 
     @property
     def y(self) -> npt.NDArray[np.float64]:
+        """Slice the y dimension of the boxes."""
         result: npt.NDArray[np.float64]
         result = self.array[..., 1]
         return result
 
     @property
     def w(self) -> npt.NDArray[np.float64]:
+        """Slice the width dimension of the boxes."""
         result: npt.NDArray[np.float64]
         if self.is_tlwh:
             result = self.array[..., 2]
@@ -114,6 +122,7 @@ class Boxes(Chunk):
 
     @property
     def h(self) -> npt.NDArray[np.float64]:
+        """Slice the height dimension of the boxes."""
         result: npt.NDArray[np.float64]
         if self.is_tlwh:
             result = self.array[..., 3]
@@ -125,14 +134,17 @@ class Boxes(Chunk):
 
     @property
     def x1(self) -> npt.NDArray[np.float64]:
+        """Slice the x1 dimension of the boxes."""
         return self.x
 
     @property
     def y1(self) -> npt.NDArray[np.float64]:
+        """Slice the y1 dimension of the boxes."""
         return self.y
 
     @property
     def x2(self) -> npt.NDArray[np.float64]:
+        """Slice the x2 dimension of the boxes."""
         result: npt.NDArray[np.float64]
         if self.is_tlbr:
             result = self.array[..., 2]
@@ -142,6 +154,7 @@ class Boxes(Chunk):
 
     @property
     def y2(self) -> npt.NDArray[np.float64]:
+        """Slice the y2 dimension of the boxes."""
         result: npt.NDArray[np.float64]
         if self.is_tlbr:
             result = self.array[..., 3]

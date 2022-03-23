@@ -2,9 +2,7 @@ import enum
 
 
 class PType(enum.Enum):
-    """
-    Enum for chunk parameterization types
-    """
+    """Enum for chunk parameterization types."""
 
     unknown = "unknown"
     """
@@ -33,33 +31,40 @@ class PType(enum.Enum):
 
     @property
     def is_relative(self) -> bool:
+        """Whether the parameterization is in relative space."""
         return "relative" in self.name
 
     @property
     def is_absolute(self) -> bool:
+        """Whether the parameterization is in absolute space."""
         return "absolute" in self.name
 
     @property
     def is_tlbr(self) -> bool:
+        """Whether the parameterization is TLBR."""
         return "tlbr" in self.name
 
     @property
     def is_tlwh(self) -> bool:
+        """Whether the parameterization is TLWH."""
         return "tlwh" in self.name
 
     @property
     def as_relative(self) -> "PType":
-        """Convert box type to"""
+        """Convert parameterization type to relative."""
         return PType(self.name.replace("absolute", "relative"))
 
     @property
     def as_absolute(self) -> "PType":
+        """Convert parameterization type to absolute."""
         return PType(self.name.replace("relative", "absolute"))
 
     @property
     def as_tlbr(self) -> "PType":
+        """Convert parameterization type to TLBR."""
         return PType(self.name.replace("tlwh", "tlbr"))
 
     @property
     def as_tlwh(self) -> "PType":
+        """Convert parameterization type to TLWH."""
         return PType(self.name.replace("tlbr", "tlwh"))

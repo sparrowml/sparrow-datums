@@ -13,10 +13,14 @@ def _is_2d(x: npt.NDArray[np.float64]) -> None:
 
 
 class FrameBoxes(Boxes):
+    """A 2D frame of boxes."""
+
     def validate(self) -> None:
+        """Check validity of boxes array."""
         super().validate()
         _is_2d(self)
 
     def __iter__(self) -> Iterator[SingleBox]:
+        """Yield SingoeBox objects for each box."""
         for box in self.view(Boxes):
             yield box.view(SingleBox)

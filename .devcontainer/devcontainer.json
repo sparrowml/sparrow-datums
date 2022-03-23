@@ -8,9 +8,26 @@
 		"python.pythonPath": "/usr/local/bin/python",
 		"python.languageServer": "Pylance",
 		"python.linting.enabled": true,
+		// pydocstyle
+		"python.linting.pydocstyleEnabled": true,
+		"python.linting.pydocstylePath": "/usr/local/bin/pydocstyle",
+		// black
 		"python.formatting.blackPath": "/usr/local/bin/black",
 		"python.formatting.provider": "black",
 		"editor.formatOnSave": true,
+		// isort
+		"python.sortImports.path": "/usr/local/bin/isort",
+		"[python]": {
+			"editor.codeActionsOnSave": {
+				"source.organizeImports": true
+			}
+		},
+		// mypy
+		"python.linting.mypyEnabled": true,
+		"python.linting.mypyPath": "/usr/local/bin/mypy",
+		// pylint
+		"python.linting.pylintEnabled": true,
+		"python.linting.pylintPath": "/usr/local/bin/pylint",
 		"python.testing.pytestArgs": [
 			"sparrow_datums"
 		],

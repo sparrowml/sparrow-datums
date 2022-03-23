@@ -7,9 +7,10 @@ from .boxes import Boxes
 
 
 class AugmentedBoxes(Boxes):
-    """A (..., 6) boxes array with [boxes, scores, labels] components"""
+    """A (..., 6) boxes array with [boxes, scores, labels] components."""
 
     def validate(self) -> None:
+        """Check validity of boxes array."""
         if not self.shape or self.shape[-1] != 6:
             raise ValueError("AugmentedBoxes arrays must have size-6 dimensions")
         if not np.all(np.mod(self.array[..., -1], 1) == 0):
@@ -19,15 +20,18 @@ class AugmentedBoxes(Boxes):
 
     @property
     def scores(self) -> npt.NDArray[np.float64]:
+        """Confidence scores."""
         result: npt.NDArray[np.float64] = self.array[..., -2]
         return result
 
     @property
     def labels(self) -> npt.NDArray[np.int64]:
+        """Class label indices."""
         result: npt.NDArray[np.int64] = self.array[..., -1].astype(np.int64)
         return result
 
     def names(self, label_names: List[str]) -> npt.NDArray[np.str_]:
+        """Map class label indices to string names."""
         result: npt.NDArray[np.str_] = np.array(label_names)[self.labels].astype(
             np.str_
         )

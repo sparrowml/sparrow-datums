@@ -1,8 +1,7 @@
-from typing import Any, Dict, Iterator, List, Optional, Type, Union
-
 import json
 from operator import itemgetter
 from pathlib import Path
+from typing import Any, Dict, Iterator, List, Optional, Type, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -14,11 +13,15 @@ from .single_augmented_box import SingleAugmentedBox
 
 
 class FrameAugmentedBoxes(AugmentedBoxes):
+    """A 2D frame of boxes with scores and labels."""
+
     def validate(self) -> None:
+        """Check validity of boxes array."""
         super().validate()
         _is_2d(self)
 
     def __iter__(self) -> Iterator[SingleAugmentedBox]:
+        """Yield SingleAugmentedBox objects for each box."""
         for box in self.view(AugmentedBoxes):
             yield box.view(SingleAugmentedBox)
 
@@ -28,6 +31,7 @@ class FrameAugmentedBoxes(AugmentedBoxes):
         path: str = "/",
         label_names: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
+        """Serialize boxes to a Darwin annotation dict."""
         if label_names is None:
             label_names = ["Unknown"] * (self.labels.max() + 1)
         return {
@@ -53,6 +57,7 @@ class FrameAugmentedBoxes(AugmentedBoxes):
         path: str = "/",
         label_names: Optional[List[str]] = None,
     ) -> None:
+        """Write Darwin annotation dict to disk."""
         with open(output_path, "w") as f:
             f.write(
                 json.dumps(
@@ -66,6 +71,7 @@ class FrameAugmentedBoxes(AugmentedBoxes):
         darwin_dict: Dict[str, Any],
         label_names: List[str] = [],
     ) -> "FrameAugmentedBoxes":
+        """Create FrameAugmentedBoxes from a serialized Darwin dict."""
         label_names_map = {name: float(idx) for idx, name in enumerate(label_names)}
         image_width, image_height = itemgetter("width", "height")(darwin_dict["image"])
         boxes = []
@@ -88,6 +94,7 @@ class FrameAugmentedBoxes(AugmentedBoxes):
         path: Union[str, Path],
         label_names: List[str] = [],
     ) -> "FrameAugmentedBoxes":
+        """Read FrameAugmentedBoxes from Darwin dict on disk."""
         with open(path) as f:
             darwin_dict = json.loads(f.read())
         return cls.from_darwin_dict(darwin_dict, label_names=label_names)
