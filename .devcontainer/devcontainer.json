@@ -28,6 +28,7 @@
 		// pylint
 		"python.linting.pylintEnabled": true,
 		"python.linting.pylintPath": "/usr/local/bin/pylint",
+		// pytest
 		"python.testing.pytestArgs": [
 			"sparrow_datums"
 		],
