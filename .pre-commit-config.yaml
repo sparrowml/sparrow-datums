@@ -10,3 +10,7 @@ repos:
         name: test
         entry: make test
         language: system
+      - id: check-codestyle
+        name: check-codestyle
+        entry: make check-codestyle
+        language: system
