@@ -13,7 +13,34 @@ from .single_augmented_box import SingleAugmentedBox
 
 
 class FrameAugmentedBoxes(AugmentedBoxes):
-    """A 2D frame of boxes with scores and labels."""
+    """
+    2D dense data arrays for augmented boxes.
+
+    The data contain ``[boxes, scores, labels]`` components.
+    It inherits from :class:`.AugmentedBoxes`.
+    The underlying NumPy array should have shape ``(n_boxes, 6)``,
+    with 4 dimensions reserved for boxes, and the last two for
+    scores and labels respectively.
+
+    Parameters
+    ----------
+    data : FloatArray
+        A numpy array of dense floats
+    ptype : PType
+        The parameterization of the dense data
+    image_width : int, optional
+        The width of the relevant image
+    image_height : int, optional
+        The height of the relevant image
+
+    Example
+    -------
+    >>> import numpy as np
+    >>> from sparrow_datums import FrameAugmentedBoxes, PType
+    >>> augmented_boxes = FrameAugmentedBoxes(np.array([[0, 0, 1, 1, 0.5, 3]]))
+    >>> for box in augmented_boxes: print(box)
+    [0.  0.  1.  1.  0.5 3. ]
+    """
 
     def validate(self) -> None:
         """Check validity of boxes array."""

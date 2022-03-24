@@ -1,15 +1,39 @@
 from typing import TypeVar
 
 import numpy as np
-import numpy.typing as npt
 
 from ..chunk import Chunk
+from ..types import FloatArray
 
 T = TypeVar("T", bound="Boxes")
 
 
 class Boxes(Chunk):
-    """Adds box_type to a NumPy array for strictness checking."""
+    """
+    Dense data arrays for boxes.
+
+    This mostly serves as a base class for more specific types of box chunks.
+    It inherits from :class:`.Chunk`.
+    The underlying NumPy array should have shape ``(..., 4)``.
+
+    Parameters
+    ----------
+    data : FloatArray
+        A numpy array of dense floats
+    ptype : PType
+        The parameterization of the dense data
+    image_width : int, optional
+        The width of the relevant image
+    image_height : int, optional
+        The height of the relevant image
+
+    Example
+    -------
+    >>> import numpy as np
+    >>> from sparrow_datums import Boxes, PType
+    >>> Boxes(np.ones(4), PType.absolute_tlbr).to_tlwh()
+    Boxes([1., 1., 0., 0.])
+    """
 
     def validate(self) -> None:
         """Check validity of boxes array."""
@@ -95,23 +119,23 @@ class Boxes(Chunk):
         )
 
     @property
-    def x(self) -> npt.NDArray[np.float64]:
+    def x(self) -> FloatArray:
         """Slice the x dimension of the boxes."""
-        result: npt.NDArray[np.float64]
+        result: FloatArray
         result = self.array[..., 0]
         return result
 
     @property
-    def y(self) -> npt.NDArray[np.float64]:
+    def y(self) -> FloatArray:
         """Slice the y dimension of the boxes."""
-        result: npt.NDArray[np.float64]
+        result: FloatArray
         result = self.array[..., 1]
         return result
 
     @property
-    def w(self) -> npt.NDArray[np.float64]:
+    def w(self) -> FloatArray:
         """Slice the width dimension of the boxes."""
-        result: npt.NDArray[np.float64]
+        result: FloatArray
         if self.is_tlwh:
             result = self.array[..., 2]
             return result
@@ -121,9 +145,9 @@ class Boxes(Chunk):
         return result
 
     @property
-    def h(self) -> npt.NDArray[np.float64]:
+    def h(self) -> FloatArray:
         """Slice the height dimension of the boxes."""
-        result: npt.NDArray[np.float64]
+        result: FloatArray
         if self.is_tlwh:
             result = self.array[..., 3]
             return result
@@ -133,19 +157,19 @@ class Boxes(Chunk):
         return result
 
     @property
-    def x1(self) -> npt.NDArray[np.float64]:
+    def x1(self) -> FloatArray:
         """Slice the x1 dimension of the boxes."""
         return self.x
 
     @property
-    def y1(self) -> npt.NDArray[np.float64]:
+    def y1(self) -> FloatArray:
         """Slice the y1 dimension of the boxes."""
         return self.y
 
     @property
-    def x2(self) -> npt.NDArray[np.float64]:
+    def x2(self) -> FloatArray:
         """Slice the x2 dimension of the boxes."""
-        result: npt.NDArray[np.float64]
+        result: FloatArray
         if self.is_tlbr:
             result = self.array[..., 2]
             return result
@@ -153,9 +177,9 @@ class Boxes(Chunk):
         return result
 
     @property
-    def y2(self) -> npt.NDArray[np.float64]:
+    def y2(self) -> FloatArray:
         """Slice the y2 dimension of the boxes."""
-        result: npt.NDArray[np.float64]
+        result: FloatArray
         if self.is_tlbr:
             result = self.array[..., 3]
             return result

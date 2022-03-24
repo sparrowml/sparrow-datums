@@ -1,9 +1,18 @@
+import doctest
+
 import numpy as np
 import numpy.typing as npt
 import pytest
 
 from ..types import PType
+from . import augmented_boxes
 from .augmented_boxes import AugmentedBoxes
+
+
+def test_docstring_example():
+    result = doctest.testmod(augmented_boxes)
+    assert result.attempted > 0
+    assert result.failed == 0
 
 
 def test_augmented_boxes_with_6d_array_succeeds():
@@ -90,8 +99,8 @@ def test_scores_and_labels_attributes():
     boxes = AugmentedBoxes(
         np.concatenate([boxes_array, scores[:, None], labels[:, None]], -1)
     )
-    np.testing.assert_equal(scores, boxes.scores)
-    np.testing.assert_equal(labels, boxes.labels)
+    np.testing.assert_almost_equal(scores, boxes.scores)
+    np.testing.assert_almost_equal(labels, boxes.labels)
 
 
 def test_multi_dimensional_label_names():

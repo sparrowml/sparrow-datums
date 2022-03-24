@@ -1,3 +1,6 @@
+"""Base class for dense data arrays with metadata."""
+from __future__ import annotations
+
 import abc
 import gzip
 import json
@@ -5,22 +8,38 @@ from pathlib import Path
 from typing import Any, Optional, TypeVar, Union
 
 import numpy as np
-import numpy.typing as npt
 
-from .types import PType
+from .types import FloatArray, PType
 
 T = TypeVar("T", bound="Chunk")
 
 
-class Chunk(npt.NDArray[np.float64]):
-    """Dense data arrays with metadata."""
+class Chunk(FloatArray):
+    """
+    Base class for dense data arrays with metadata.
+
+    Parameters
+    ----------
+    data : FloatArray
+        A numpy array of dense floats
+    ptype : PType
+        The parameterization of the dense data
+    image_width : int, optional
+        The width of the relevant image
+    image_height : int, optional
+        The height of the relevant image
+    fps : float, optional
+        The framerate of the chunk data (if tracking)
+    object_ids:  list[str], optional
+        Identifiers for the objects (if tracking)
+    """
 
     def __new__(
         cls: type[T],
-        data: npt.NDArray[np.float64],
+        data: FloatArray,
         ptype: PType = PType.unknown,
-        image_width: Optional[float] = None,
-        image_height: Optional[float] = None,
+        image_width: Optional[int] = None,
+        image_height: Optional[int] = None,
         fps: Optional[float] = None,
         object_ids: Optional[list[str]] = None,
     ) -> T:
@@ -34,38 +53,6 @@ class Chunk(npt.NDArray[np.float64]):
         obj._scale = None
         return obj
 
-    def __init__(
-        self,
-        data: npt.NDArray[np.float64],
-        ptype: PType = PType.unknown,
-        image_width: Optional[float] = None,
-        image_height: Optional[float] = None,
-        fps: Optional[float] = None,
-        object_ids: Optional[list[str]] = None,
-    ) -> None:
-        """
-        Dense data arrays with metadata.
-
-        Parameters
-        ----------
-        data : np.ndarray
-            A (..., 4) array of boxes
-        ptype : PType
-            The parameterization of the elements
-        image_width : float, optional
-            The width of the image
-        image_height : float, optional
-            The height of the image
-        fps : float, optional
-            The framerate if the boxes are being tracked
-        object_ids : List[str], optional
-            Tracking IDs for the objects
-        """
-        # This method is defined for documentation
-        # and type hints.
-        # `np.ndarray` subclasses don't use `__init__()`.
-        pass
-
     def __array_finalize__(self, obj: Optional[T]) -> None:
         """Instantiate a new chunk created from a view."""
         if obj is None:
@@ -75,7 +62,7 @@ class Chunk(npt.NDArray[np.float64]):
         self._image_height: Optional[float] = getattr(obj, "_image_height", None)
         self._fps: Optional[float] = getattr(obj, "_fps", None)
         self._object_ids: Optional[list[str]] = getattr(obj, "_object_ids", None)
-        self._scale: Optional[npt.NDArray[np.float64]] = getattr(obj, "_scale", None)
+        self._scale: Optional[FloatArray] = getattr(obj, "_scale", None)
         self.validate()
 
     @abc.abstractmethod
@@ -84,7 +71,7 @@ class Chunk(npt.NDArray[np.float64]):
         raise NotImplementedError
 
     @property
-    def array(self) -> npt.NDArray[np.float64]:
+    def array(self) -> FloatArray:
         """Dense data as an ndarray."""
         return self.view(np.ndarray)
 
@@ -103,7 +90,7 @@ class Chunk(npt.NDArray[np.float64]):
         return self._image_height
 
     @property
-    def scale(self) -> npt.NDArray[np.float64]:
+    def scale(self) -> FloatArray:
         """Scaling array."""
         if self._scale is None:
             width = self.image_width
@@ -140,7 +127,7 @@ class Chunk(npt.NDArray[np.float64]):
     @classmethod
     def from_dict(cls: type[T], chunk_dict: dict[str, Any]) -> T:
         """Create chunk from chunk dict."""
-        data: npt.NDArray[np.float64] = np.array(chunk_dict["data"]).astype("float64")
+        data: FloatArray = np.array(chunk_dict["data"]).astype("float64")
         data[data == None] = np.nan
         return cls(
             data,
