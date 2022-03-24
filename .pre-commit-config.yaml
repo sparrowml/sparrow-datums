@@ -14,3 +14,7 @@ repos:
         name: check-codestyle
         entry: make check-codestyle
         language: system
+      - id: docs
+        name: docs
+        entry: make docs
+        language: system
