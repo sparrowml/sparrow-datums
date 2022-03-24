@@ -1,9 +1,18 @@
+import doctest
+
 import numpy as np
 import pytest
 
 from ..types import PType
+from . import frame_boxes
 from .frame_boxes import FrameBoxes
 from .single_box import SingleBox
+
+
+def test_docstring_example():
+    result = doctest.testmod(frame_boxes)
+    assert result.attempted > 0
+    assert result.failed == 0
 
 
 def test_frame_boxes_conversion_creates_frame_boxes():

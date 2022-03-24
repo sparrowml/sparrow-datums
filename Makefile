@@ -117,3 +117,12 @@ endif
 .PHONY: publish
 publish: branchify
 	poetry publish --build --repository sparrow
+
+.PHONY: docs
+docs:
+	rm -f docs/sparrow_datums.*
+	cd docs && make html
+
+.PHONY: serve-docs
+serve-docs: docs
+	cd docs/build/html && python -m http.server

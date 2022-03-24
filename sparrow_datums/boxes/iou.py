@@ -1,3 +1,4 @@
+"""Intersection over union operations."""
 from typing import Union
 
 import numpy as np

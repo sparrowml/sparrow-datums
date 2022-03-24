@@ -1,3 +1,4 @@
+import doctest
 import os
 import tempfile
 
@@ -5,6 +6,7 @@ import numpy as np
 import pytest
 
 from ..types import PType
+from . import frame_augmented_boxes
 from .frame_augmented_boxes import FrameAugmentedBoxes
 from .single_augmented_box import SingleAugmentedBox
 
@@ -51,6 +53,12 @@ DARWIN_DICT = {
         },
     ],
 }
+
+
+def test_docstring_example():
+    result = doctest.testmod(frame_augmented_boxes)
+    assert result.attempted > 0
+    assert result.failed == 0
 
 
 def test_frame_augmented_boxes_conversion_creates_frame_augmented_boxes():

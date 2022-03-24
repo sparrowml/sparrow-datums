@@ -3,7 +3,24 @@ from .single_box import _is_1d
 
 
 class SingleAugmentedBox(AugmentedBoxes):
-    """A single box with score and label."""
+    """
+    1D dense data arrays for an augmented box.
+
+    The data contain ``[box, score, label]`` components.
+    It inherits from :class:`.AugmentedBoxes`.
+    The underlying NumPy array should have shape ``(6,)``.
+
+    Parameters
+    ----------
+    data : FloatArray
+        A numpy array of dense floats
+    ptype : PType
+        The parameterization of the dense data
+    image_width : int, optional
+        The width of the relevant image
+    image_height : int, optional
+        The height of the relevant image
+    """
 
     def validate(self) -> None:
         """Check validity of boxes array."""
