@@ -55,7 +55,7 @@ def test_add_box_with_different_attributes_fails():
 
 def test_add_box_with_same_attributes_works():
     data: FloatArray = np.random.uniform(size=4)
-    boxes = FrameBoxes.from_single_box(SingleBox(data))
+    boxes = FrameBoxes.from_single_boxes([SingleBox(data)])
     box_b = SingleBox(data + 1)
     new_boxes = boxes.add_box(box_b)
     assert len(new_boxes) == 2

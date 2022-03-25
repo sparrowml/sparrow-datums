@@ -1,8 +1,8 @@
-from typing import Iterator
+from typing import Iterator, Optional
 
 import numpy as np
 
-from ..types import FloatArray
+from ..types import FloatArray, PType
 from .boxes import Boxes
 from .single_box import SingleBox
 
@@ -56,6 +56,22 @@ class FrameBoxes(Boxes):
             box.array[None, :],
             ptype=box.ptype,
             **box.metadata_kwargs,
+        )
+
+    @classmethod
+    def from_single_boxes(
+        cls: type["FrameBoxes"],
+        boxes: list[SingleBox],
+        ptype: PType = PType.unknown,
+        image_width: Optional[int] = None,
+        image_height: Optional[int] = None,
+    ) -> "FrameBoxes":
+        """Create a FrameBoxes object from a list of SingleBox objects."""
+        return cls(
+            np.stack([box.array for box in boxes]),
+            ptype=ptype,
+            image_width=image_width,
+            image_height=image_height,
         )
 
     def add_box(self, box: SingleBox) -> "FrameBoxes":
