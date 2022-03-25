@@ -90,6 +90,20 @@ class Chunk(FloatArray):
         return self._image_height
 
     @property
+    def fps(self) -> float:
+        """Frames per second."""
+        if self._fps is None:
+            raise ValueError("fps not set")
+        return self._fps
+
+    @property
+    def object_ids(self) -> list[str]:
+        """Frames per second."""
+        if self._object_ids is None:
+            raise ValueError("object_ids not set")
+        return self._object_ids
+
+    @property
     def scale(self) -> FloatArray:
         """Scaling array."""
         if self._scale is None:
