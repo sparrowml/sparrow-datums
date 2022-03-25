@@ -1,4 +1,4 @@
-from typing import Iterator, Optional
+from typing import Any, Iterator, Optional
 
 import numpy as np
 
@@ -65,6 +65,7 @@ class FrameBoxes(Boxes):
         ptype: PType = PType.unknown,
         image_width: Optional[int] = None,
         image_height: Optional[int] = None,
+        **kwargs: dict[str, Any],
     ) -> "FrameBoxes":
         """Create a FrameBoxes object from a list of SingleBox objects."""
         return cls(
