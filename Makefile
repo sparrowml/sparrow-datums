@@ -117,6 +117,7 @@ endif
 .PHONY: publish
 publish: branchify
 	poetry publish --build --repository sparrow
+	git checkout -- pyproject.toml
 
 .PHONY: docs
 docs:
