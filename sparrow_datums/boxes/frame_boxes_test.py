@@ -59,3 +59,10 @@ def test_add_box_with_same_attributes_works():
     box_b = SingleBox(data + 1)
     new_boxes = boxes.add_box(box_b)
     assert len(new_boxes) == 2
+
+
+def test_get_single_box_returns_single_box():
+    boxes = FrameBoxes(np.ones((2, 4)), PType.relative_tlbr)
+    single_box = boxes.get_single_box(0)
+    assert isinstance(single_box, SingleBox)
+    assert single_box.ptype == boxes.ptype

@@ -69,3 +69,8 @@ class FrameBoxes(Boxes):
             ptype=self.ptype,
             **self.metadata_kwargs,
         )
+
+    def get_single_box(self, i: int) -> SingleBox:
+        """Get the ith element as a SingleBox."""
+        result: SingleBox = self.view(Boxes)[i].view(SingleBox)
+        return result
