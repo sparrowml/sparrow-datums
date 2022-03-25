@@ -3,7 +3,7 @@ from typing import TypeVar
 import numpy as np
 
 from ..chunk import Chunk
-from ..types import FloatArray
+from ..types import FloatArray, PType
 
 T = TypeVar("T", bound="Boxes")
 
@@ -116,9 +116,21 @@ class Boxes(Chunk):
             **self.metadata_kwargs,
         )
 
+    def validate_known_ptype(self) -> None:
+        """Make sure PType is a known box parameterization."""
+        known_box_parameterizations = {
+            PType.absolute_tlbr,
+            PType.absolute_tlwh,
+            PType.relative_tlbr,
+            PType.relative_tlwh,
+        }
+        if self.ptype not in known_box_parameterizations:
+            raise ValueError(f"Unknown box parameterization: {self.ptype.name}")
+
     @property
     def x(self) -> FloatArray:
         """Slice the x dimension of the boxes."""
+        self.validate_known_ptype()
         result: FloatArray
         result = self.array[..., 0]
         return result
@@ -126,6 +138,7 @@ class Boxes(Chunk):
     @property
     def y(self) -> FloatArray:
         """Slice the y dimension of the boxes."""
+        self.validate_known_ptype()
         result: FloatArray
         result = self.array[..., 1]
         return result
@@ -133,6 +146,7 @@ class Boxes(Chunk):
     @property
     def w(self) -> FloatArray:
         """Slice the width dimension of the boxes."""
+        self.validate_known_ptype()
         result: FloatArray
         if self.is_tlwh:
             result = self.array[..., 2]
@@ -143,6 +157,7 @@ class Boxes(Chunk):
     @property
     def h(self) -> FloatArray:
         """Slice the height dimension of the boxes."""
+        self.validate_known_ptype()
         result: FloatArray
         if self.is_tlwh:
             result = self.array[..., 3]
@@ -153,16 +168,19 @@ class Boxes(Chunk):
     @property
     def x1(self) -> FloatArray:
         """Slice the x1 dimension of the boxes."""
+        self.validate_known_ptype()
         return self.x
 
     @property
     def y1(self) -> FloatArray:
         """Slice the y1 dimension of the boxes."""
+        self.validate_known_ptype()
         return self.y
 
     @property
     def x2(self) -> FloatArray:
         """Slice the x2 dimension of the boxes."""
+        self.validate_known_ptype()
         result: FloatArray
         if self.is_tlbr:
             result = self.array[..., 2]
@@ -173,6 +191,7 @@ class Boxes(Chunk):
     @property
     def y2(self) -> FloatArray:
         """Slice the y2 dimension of the boxes."""
+        self.validate_known_ptype()
         result: FloatArray
         if self.is_tlbr:
             result = self.array[..., 3]
