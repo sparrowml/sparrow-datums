@@ -39,8 +39,6 @@ class Boxes(Chunk):
         """Check validity of boxes array."""
         if not self.shape or self.shape[-1] != 4:
             raise ValueError("Box arrays must have size-4 dimensions")
-        if np.any(self.array < 0):
-            raise ValueError("Negative box values are not allowed")
 
     @property
     def is_relative(self) -> bool:
@@ -139,8 +137,6 @@ class Boxes(Chunk):
         if self.is_tlwh:
             result = self.array[..., 2]
             return result
-        if np.any(self.array[..., 0] > self.array[..., 2]):
-            raise ValueError("x2 must be >= x1 for all boxes")
         result = self.array[..., 2] - self.array[..., 0]
         return result
 
@@ -151,8 +147,6 @@ class Boxes(Chunk):
         if self.is_tlwh:
             result = self.array[..., 3]
             return result
-        if np.any(self.array[..., 1] > self.array[..., 3]):
-            raise ValueError("y2 must >= y1 for all boxes")
         result = self.array[..., 3] - self.array[..., 1]
         return result
 
