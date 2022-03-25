@@ -46,3 +46,12 @@ class FrameBoxes(Boxes):
         """Yield SingoeBox objects for each box."""
         for box in self.view(Boxes):
             yield box.view(SingleBox)
+
+    @classmethod
+    def from_single_box(cls: type["FrameBoxes"], box: SingleBox) -> "FrameBoxes":
+        """Create a FrameBoxes object from a SingleBox."""
+        return cls(
+            box.array[None, :],
+            ptype=box.ptype,
+            **box.metadata_kwargs,
+        )

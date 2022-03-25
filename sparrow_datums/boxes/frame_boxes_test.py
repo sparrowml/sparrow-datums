@@ -33,3 +33,10 @@ def test_frame_boxes_iterator_makes_single_boxes():
     for box in boxes:
         assert isinstance(box, SingleBox)
         assert box.ptype == PType.relative_tlbr
+
+
+def test_from_single_box_preserves_data():
+    box = SingleBox(np.random.uniform(size=4))
+    frame_boxes = FrameBoxes.from_single_box(box)
+    np.testing.assert_equal(box.array, frame_boxes.array.ravel())
+    assert box.ptype == frame_boxes.ptype
