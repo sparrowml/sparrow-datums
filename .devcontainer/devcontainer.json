@@ -1,7 +1,7 @@
 {
 	"name": "sparrow-datums",
 	"build": {
-		"dockerfile": "../docker/Dockerfile",
+		"dockerfile": "../Dockerfile",
 		"context": ".."
 	},
 	"settings": {
@@ -44,4 +44,7 @@
 	],
 	"workspaceFolder": "/code",
 	"workspaceMount": "source=${localWorkspaceFolder},target=/code,type=bind,consistency=cached",
+	"runArgs": [
+		"--env-file=.devcontainer/.env"
+	]
 }

@@ -96,6 +96,6 @@ def test_boxes_saves_classname():
     assert data["classname"] == "Boxes"
 
 
-def test_negative_box_values_throw():
+def test_box_attributes_require_known_box_parameterization():
     with pytest.raises(ValueError):
-        Boxes(-np.ones(4))
+        Boxes(np.ones(4)).x

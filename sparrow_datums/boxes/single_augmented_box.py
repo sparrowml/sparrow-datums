@@ -1,5 +1,5 @@
 from .augmented_boxes import AugmentedBoxes
-from .single_box import _is_1d
+from .single_box import SingleBox, _is_1d
 
 
 class SingleAugmentedBox(AugmentedBoxes):
@@ -36,3 +36,11 @@ class SingleAugmentedBox(AugmentedBoxes):
     def label(self) -> int:
         """Singular alias for labels."""
         return int(self.labels)
+
+    def to_single_box(self) -> SingleBox:
+        """Convert to SingleBox."""
+        return SingleBox(
+            self.array[:4],
+            ptype=self.ptype,
+            **self.metadata_kwargs,
+        )

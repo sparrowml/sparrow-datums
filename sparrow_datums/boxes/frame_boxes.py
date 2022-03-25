@@ -1,6 +1,8 @@
-from typing import Iterator
+from typing import Any, Iterator, Optional
 
-from ..types import FloatArray
+import numpy as np
+
+from ..types import FloatArray, PType
 from .boxes import Boxes
 from .single_box import SingleBox
 
@@ -46,3 +48,46 @@ class FrameBoxes(Boxes):
         """Yield SingoeBox objects for each box."""
         for box in self.view(Boxes):
             yield box.view(SingleBox)
+
+    @classmethod
+    def from_single_box(cls: type["FrameBoxes"], box: SingleBox) -> "FrameBoxes":
+        """Create a FrameBoxes object from a SingleBox."""
+        return cls(
+            box.array[None, :],
+            ptype=box.ptype,
+            **box.metadata_kwargs,
+        )
+
+    @classmethod
+    def from_single_boxes(
+        cls: type["FrameBoxes"],
+        boxes: list[SingleBox],
+        ptype: PType = PType.unknown,
+        image_width: Optional[int] = None,
+        image_height: Optional[int] = None,
+        **kwargs: dict[str, Any],
+    ) -> "FrameBoxes":
+        """Create a FrameBoxes object from a list of SingleBox objects."""
+        return cls(
+            np.stack([box.array for box in boxes]),
+            ptype=ptype,
+            image_width=image_width,
+            image_height=image_height,
+        )
+
+    def add_box(self, box: SingleBox) -> "FrameBoxes":
+        """Concatenate a single box."""
+        if self.ptype != box.ptype:
+            raise ValueError("SingleBox with different PType cannot be concatenated")
+        if self.metadata_kwargs != box.metadata_kwargs:
+            raise ValueError("SingleBox with different metadata cannot be concatenated")
+        return FrameBoxes(
+            np.concatenate([self.array, box.array[None]]),
+            ptype=self.ptype,
+            **self.metadata_kwargs,
+        )
+
+    def get_single_box(self, i: int) -> SingleBox:
+        """Get the ith element as a SingleBox."""
+        result: SingleBox = self.view(Boxes)[i].view(SingleBox)
+        return result
