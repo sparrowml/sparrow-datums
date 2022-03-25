@@ -1,5 +1,7 @@
 from typing import Iterator
 
+import numpy as np
+
 from ..types import FloatArray
 from .boxes import Boxes
 from .single_box import SingleBox
@@ -54,4 +56,16 @@ class FrameBoxes(Boxes):
             box.array[None, :],
             ptype=box.ptype,
             **box.metadata_kwargs,
+        )
+
+    def add_box(self, box: SingleBox) -> "FrameBoxes":
+        """Concatenate a single box."""
+        if self.ptype != box.ptype:
+            raise ValueError("SingleBox with different PType cannot be concatenated")
+        if self.metadata_kwargs != box.metadata_kwargs:
+            raise ValueError("SingleBox with different metadata cannot be concatenated")
+        return FrameBoxes(
+            np.concatenate([self.array, box.array[None]]),
+            ptype=self.ptype,
+            **self.metadata_kwargs,
         )
