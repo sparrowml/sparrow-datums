@@ -25,6 +25,7 @@
       ~FrameAugmentedBoxes.to_tlbr
       ~FrameAugmentedBoxes.to_tlwh
       ~FrameAugmentedBoxes.validate
+      ~FrameAugmentedBoxes.validate_known_ptype
    
    
 
@@ -35,6 +36,7 @@
    .. autosummary::
    
       ~FrameAugmentedBoxes.array
+      ~FrameAugmentedBoxes.fps
       ~FrameAugmentedBoxes.h
       ~FrameAugmentedBoxes.image_height
       ~FrameAugmentedBoxes.image_width
@@ -44,6 +46,7 @@
       ~FrameAugmentedBoxes.is_tlwh
       ~FrameAugmentedBoxes.labels
       ~FrameAugmentedBoxes.metadata_kwargs
+      ~FrameAugmentedBoxes.object_ids
       ~FrameAugmentedBoxes.scale
       ~FrameAugmentedBoxes.scores
       ~FrameAugmentedBoxes.w

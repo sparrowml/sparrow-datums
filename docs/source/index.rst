@@ -67,6 +67,19 @@ A Python package for data structures.
    intersection
    pairwise_iou
 
+``sparrow_datums.tracking``
+---------------------------
+
+.. automodule:: sparrow_datums.tracking
+
+.. currentmodule:: sparrow_datums.tracking
+
+.. autosummary::
+   :toctree: .
+   :template: class.rst
+
+   BoxTracking
+
 *****
 Index
 *****

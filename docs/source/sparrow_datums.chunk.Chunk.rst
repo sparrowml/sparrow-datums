@@ -26,9 +26,11 @@
    .. autosummary::
    
       ~Chunk.array
+      ~Chunk.fps
       ~Chunk.image_height
       ~Chunk.image_width
       ~Chunk.metadata_kwargs
+      ~Chunk.object_ids
       ~Chunk.scale
    
    

@@ -20,6 +20,7 @@
       ~SingleBox.to_tlbr
       ~SingleBox.to_tlwh
       ~SingleBox.validate
+      ~SingleBox.validate_known_ptype
    
    
 
@@ -30,6 +31,7 @@
    .. autosummary::
    
       ~SingleBox.array
+      ~SingleBox.fps
       ~SingleBox.h
       ~SingleBox.image_height
       ~SingleBox.image_width
@@ -38,6 +40,7 @@
       ~SingleBox.is_tlbr
       ~SingleBox.is_tlwh
       ~SingleBox.metadata_kwargs
+      ~SingleBox.object_ids
       ~SingleBox.scale
       ~SingleBox.w
       ~SingleBox.x

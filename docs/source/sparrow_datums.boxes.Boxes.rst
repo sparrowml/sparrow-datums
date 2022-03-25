@@ -20,6 +20,7 @@
       ~Boxes.to_tlbr
       ~Boxes.to_tlwh
       ~Boxes.validate
+      ~Boxes.validate_known_ptype
    
    
 
@@ -30,6 +31,7 @@
    .. autosummary::
    
       ~Boxes.array
+      ~Boxes.fps
       ~Boxes.h
       ~Boxes.image_height
       ~Boxes.image_width
@@ -38,6 +40,7 @@
       ~Boxes.is_tlbr
       ~Boxes.is_tlwh
       ~Boxes.metadata_kwargs
+      ~Boxes.object_ids
       ~Boxes.scale
       ~Boxes.w
       ~Boxes.x

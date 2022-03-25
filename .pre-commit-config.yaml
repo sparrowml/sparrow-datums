@@ -6,10 +6,6 @@ default_stages: [commit, push]
 repos:
   - repo: local
     hooks:
-      - id: test
-        name: test
-        entry: make test
-        language: system
       - id: check-codestyle
         name: check-codestyle
         entry: make check-codestyle

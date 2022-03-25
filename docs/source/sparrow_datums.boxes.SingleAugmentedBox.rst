@@ -18,9 +18,11 @@
       ~SingleAugmentedBox.to_dict
       ~SingleAugmentedBox.to_file
       ~SingleAugmentedBox.to_relative
+      ~SingleAugmentedBox.to_single_box
       ~SingleAugmentedBox.to_tlbr
       ~SingleAugmentedBox.to_tlwh
       ~SingleAugmentedBox.validate
+      ~SingleAugmentedBox.validate_known_ptype
    
    
 
@@ -31,6 +33,7 @@
    .. autosummary::
    
       ~SingleAugmentedBox.array
+      ~SingleAugmentedBox.fps
       ~SingleAugmentedBox.h
       ~SingleAugmentedBox.image_height
       ~SingleAugmentedBox.image_width
@@ -41,6 +44,7 @@
       ~SingleAugmentedBox.label
       ~SingleAugmentedBox.labels
       ~SingleAugmentedBox.metadata_kwargs
+      ~SingleAugmentedBox.object_ids
       ~SingleAugmentedBox.scale
       ~SingleAugmentedBox.score
       ~SingleAugmentedBox.scores

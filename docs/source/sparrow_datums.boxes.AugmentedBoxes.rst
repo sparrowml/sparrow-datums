@@ -21,6 +21,7 @@
       ~AugmentedBoxes.to_tlbr
       ~AugmentedBoxes.to_tlwh
       ~AugmentedBoxes.validate
+      ~AugmentedBoxes.validate_known_ptype
    
    
 
@@ -31,6 +32,7 @@
    .. autosummary::
    
       ~AugmentedBoxes.array
+      ~AugmentedBoxes.fps
       ~AugmentedBoxes.h
       ~AugmentedBoxes.image_height
       ~AugmentedBoxes.image_width
@@ -40,6 +42,7 @@
       ~AugmentedBoxes.is_tlwh
       ~AugmentedBoxes.labels
       ~AugmentedBoxes.metadata_kwargs
+      ~AugmentedBoxes.object_ids
       ~AugmentedBoxes.scale
       ~AugmentedBoxes.scores
       ~AugmentedBoxes.w
