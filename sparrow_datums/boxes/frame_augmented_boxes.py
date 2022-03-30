@@ -129,3 +129,12 @@ class FrameAugmentedBoxes(AugmentedBoxes):
         with open(path) as f:
             darwin_dict = json.loads(f.read())
         return cls.from_darwin_dict(darwin_dict, label_names=label_names)
+
+    @classmethod
+    def from_dict(
+        cls: type["FrameAugmentedBoxes"],
+        chunk_dict: dict[str, Any],
+        dims: Optional[int] = None,
+    ) -> "FrameAugmentedBoxes":
+        """Create chunk from chunk dict."""
+        return super().from_dict(chunk_dict, dims=6)

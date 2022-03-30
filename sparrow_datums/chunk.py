@@ -139,9 +139,15 @@ class Chunk(FloatArray):
             f.write(json.dumps(self.to_dict()))
 
     @classmethod
-    def from_dict(cls: type[T], chunk_dict: dict[str, Any]) -> T:
+    def from_dict(
+        cls: type[T], chunk_dict: dict[str, Any], dims: Optional[int] = None
+    ) -> T:
         """Create chunk from chunk dict."""
-        data: FloatArray = np.array(chunk_dict["data"]).astype("float64")
+        data: FloatArray
+        if len(chunk_dict["data"]) == 0 and dims:
+            data = np.zeros((0, dims), "float64")
+        else:
+            data = np.array(chunk_dict["data"]).astype("float64")
         data[data == None] = np.nan
         return cls(
             data,

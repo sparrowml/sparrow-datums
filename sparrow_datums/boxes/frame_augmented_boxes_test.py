@@ -113,3 +113,18 @@ def test_from_darwin_dict_creates_frame_augmented_boxes_with_no_boxes():
     empty_darwin_dict["annotations"] = []
     boxes = FrameAugmentedBoxes.from_darwin_dict(empty_darwin_dict)
     assert isinstance(boxes, FrameAugmentedBoxes)
+
+
+def test_from_dict_with_empty_data():
+    boxes = FrameAugmentedBoxes.from_dict(
+        {
+            "data": [],
+            "ptype": "unknown",
+            "image_width": None,
+            "image_height": None,
+            "fps": None,
+            "object_ids": None,
+        }
+    )
+    assert isinstance(boxes, FrameAugmentedBoxes)
+    assert len(boxes) == 0
