@@ -107,7 +107,11 @@ class FrameAugmentedBoxes(AugmentedBoxes):
             x, y, w, h = itemgetter("x", "y", "w", "h")(annotation["bounding_box"])
             label = label_names_map.get(annotation["name"], -1.0)
             boxes.append([x, y, w, h, score, label])
-        data: npt.NDArray[np.float64] = np.array(boxes).astype("float64")
+        data: npt.NDArray[np.float64]
+        if len(boxes):
+            data = np.array(boxes).astype("float64")
+        else:
+            data = np.zeros((0, 6), "float64")
         return cls(
             data,
             ptype=PType.absolute_tlwh,

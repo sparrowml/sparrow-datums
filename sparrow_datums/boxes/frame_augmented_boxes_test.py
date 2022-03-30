@@ -106,3 +106,10 @@ def test_from_darwin_dict_creates_frame_augmented_boxes():
     assert boxes.image_width
     assert boxes.image_height
     np.testing.assert_equal(boxes.labels, -1)
+
+
+def test_from_darwin_dict_creates_frame_augmented_boxes_with_no_boxes():
+    empty_darwin_dict = DARWIN_DICT.copy()
+    empty_darwin_dict["annotations"] = []
+    boxes = FrameAugmentedBoxes.from_darwin_dict(empty_darwin_dict)
+    assert isinstance(boxes, FrameAugmentedBoxes)

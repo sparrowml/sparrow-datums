@@ -20,12 +20,6 @@ def test_dense_with_no_width_throws_on_scale():
         polygons.scale
 
 
-def test_dense_sliciing_by_rows_creates_new_object():
-    polygons = Polygons(np.random.uniform(size=(4, 4, 2)), image_width=100)
-    assert isinstance(polygons[:2], Polygons)
-    assert polygons[:2].image_width == 100
-
-
 def test_dense_serialization_preserves_data():
     polygons_a = Polygons(np.random.uniform(size=(2,)), ptype=PType.unknown)
     polygons_a_dict = polygons_a.to_dict()
