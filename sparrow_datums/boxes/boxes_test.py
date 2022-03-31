@@ -99,3 +99,12 @@ def test_boxes_saves_classname():
 def test_box_attributes_require_known_box_parameterization():
     with pytest.raises(ValueError):
         Boxes(np.ones(4)).x
+
+
+def test_resize():
+    boxes = Boxes(np.ones(4), ptype=PType.absolute_tlwh, image_width=4, image_height=4)
+    new_boxes = boxes.resize(32, 16)
+    assert new_boxes.ptype == PType.absolute_tlwh
+    assert new_boxes.image_width == 32
+    assert new_boxes.image_height == 16
+    np.testing.assert_equal(new_boxes.array, np.array([8, 4, 8, 4]))

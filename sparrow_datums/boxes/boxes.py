@@ -60,6 +60,21 @@ class Boxes(Chunk):
         """Parameterization is TLWH."""
         return bool(self.ptype.is_tlwh)
 
+    def resize(self: T, image_width: int, image_height: int) -> T:
+        """Resize boxes to a new width and height."""
+        relative_boxes = self.to_relative()
+        new_scale = np.array([image_width, image_height, image_width, image_height])
+        x = relative_boxes.array.copy()
+        x[..., :4] *= new_scale
+        metadata_kwargs = self.metadata_kwargs.copy()
+        metadata_kwargs["image_width"] = image_width
+        metadata_kwargs["image_height"] = image_height
+        return self.__class__(
+            x,
+            ptype=self.ptype.as_absolute,
+            **metadata_kwargs,
+        )
+
     def to_relative(self: T) -> T:
         """Convert boxes to relative pixel coordinates, if necessary."""
         if self.is_relative:
