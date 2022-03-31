@@ -103,7 +103,7 @@ def test_box_attributes_require_known_box_parameterization():
 
 def test_resize():
     boxes = Boxes(np.ones(4), ptype=PType.absolute_tlwh, image_width=4, image_height=4)
-    new_boxes = boxes.resize(32, 16)
+    new_boxes = boxes.box_resize(32, 16)
     assert new_boxes.ptype == PType.absolute_tlwh
     assert new_boxes.image_width == 32
     assert new_boxes.image_height == 16
