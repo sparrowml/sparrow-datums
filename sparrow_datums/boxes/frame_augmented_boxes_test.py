@@ -128,3 +128,10 @@ def test_from_dict_with_empty_data():
     )
     assert isinstance(boxes, FrameAugmentedBoxes)
     assert len(boxes) == 0
+
+
+def test_from_darwin_dict_creates_frame_augmented_boxes_with_non_bounding_box_annotations():
+    non_box_dict = DARWIN_DICT.copy()
+    non_box_dict["annotations"] = [{"foo": "bar"}]
+    boxes = FrameAugmentedBoxes.from_darwin_dict(non_box_dict)
+    assert isinstance(boxes, FrameAugmentedBoxes)

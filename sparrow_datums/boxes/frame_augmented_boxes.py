@@ -104,6 +104,8 @@ class FrameAugmentedBoxes(AugmentedBoxes):
         boxes = []
         score = 1.0
         for annotation in darwin_dict["annotations"]:
+            if "bounding_box" not in annotation:
+                continue
             x, y, w, h = itemgetter("x", "y", "w", "h")(annotation["bounding_box"])
             label = label_names_map.get(annotation["name"], -1.0)
             boxes.append([x, y, w, h, score, label])
