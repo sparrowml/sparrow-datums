@@ -152,3 +152,31 @@ class AugmentedBoxTracking(AugmentedBoxes):
     ) -> "AugmentedBoxTracking":
         """Create chunk from chunk dict."""
         return super().from_dict(chunk_dict, dims=6)
+
+    @classmethod
+    def from_frame_augmented_boxes(
+        cls: type["AugmentedBoxTracking"],
+        boxes: list[FrameAugmentedBoxes],
+        ptype: PType = PType.unknown,
+        image_width: Optional[int] = None,
+        image_height: Optional[int] = None,
+        fps: Optional[float] = None,
+        object_ids: Optional[list[str]] = None,
+    ) -> "AugmentedBoxTracking":
+        """
+        Create an AugmentedBoxTracking chunk from a list of FrameAugmentedBoxes objects.
+
+        This is typically used for storing detections on a video.
+        """
+        max_boxes = max(map(len, boxes))
+        data = np.zeros((len(boxes), max_boxes, 6)) * np.nan
+        for i, frame in enumerate(boxes):
+            data[i, : len(frame)] = frame.array
+        return cls(
+            data,
+            ptype=ptype,
+            image_width=image_width,
+            image_height=image_height,
+            fps=fps,
+            object_ids=object_ids,
+        )

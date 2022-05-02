@@ -140,3 +140,12 @@ def test_from_darwin_dict_creates_augmented_box_tracking():
     assert chunk.image_height
     np.testing.assert_equal(chunk.labels, -1)
     assert "8ffd95e2-0641-445a-83e5-47c664edaaa5" in chunk.object_ids
+
+
+def test_from_frame_augmented_boxes():
+    boxes_a = FrameAugmentedBoxes(np.ones((2, 6)), PType.absolute_tlwh)
+    boxes_b = FrameAugmentedBoxes(np.ones((3, 6)), PType.absolute_tlwh)
+    chunk = AugmentedBoxTracking.from_frame_augmented_boxes(
+        [boxes_a, boxes_b], ptype=PType.absolute_tlwh
+    )
+    assert chunk.shape == (2, 3, 6)
