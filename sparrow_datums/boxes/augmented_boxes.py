@@ -43,9 +43,10 @@ class AugmentedBoxes(Boxes):
         """Check validity of boxes array."""
         if not self.shape or self.shape[-1] != 6:
             raise ValueError("AugmentedBoxes arrays must have size-6 dimensions")
-        if not np.all(np.mod(self.array[..., -1], 1) == 0):
+        if not np.all(np.nan_to_num(np.mod(self.array[..., -1], 1)) == 0):
             raise ValueError("labels must be whole number class indices")
-        if not np.all(self.scores >= 0) or not np.all(self.scores <= 1):
+        nonan_scores = np.nan_to_num(self.scores)
+        if not np.all(nonan_scores >= 0) or not np.all(nonan_scores <= 1):
             raise ValueError("scores array must be floats in [0, 1]")
 
     @property

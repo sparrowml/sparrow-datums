@@ -145,7 +145,10 @@ class Chunk(FloatArray):
         """Create chunk from chunk dict."""
         data: FloatArray
         if len(chunk_dict["data"]) == 0 and dims:
-            data = np.zeros((0, dims), "float64")
+            if "tracking" in cls.__name__.lower():
+                data = np.zeros((0, 0, dims), "float64")
+            else:
+                data = np.zeros((0, dims), "float64")
         else:
             data = np.array(chunk_dict["data"]).astype("float64")
         data[data == None] = np.nan
