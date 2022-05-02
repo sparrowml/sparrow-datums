@@ -1,6 +1,8 @@
 """AugmentedBoxTracking chunk."""
+import json
 from operator import itemgetter
-from typing import Any, Iterator, Optional
+from pathlib import Path
+from typing import Any, Iterator, Optional, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -76,16 +78,16 @@ class AugmentedBoxTracking(AugmentedBoxes):
             object_ids=object_ids,
         )
 
-    # @classmethod
-    # def from_darwin_file(
-    #     cls: Type["FrameAugmentedBoxes"],
-    #     path: Union[str, Path],
-    #     label_names: List[str] = [],
-    # ) -> "FrameAugmentedBoxes":
-    #     """Read FrameAugmentedBoxes from Darwin dict on disk."""
-    #     with open(path) as f:
-    #         darwin_dict = json.loads(f.read())
-    #     return cls.from_darwin_dict(darwin_dict, label_names=label_names)
+    @classmethod
+    def from_darwin_file(
+        cls: type["AugmentedBoxTracking"],
+        path: Union[str, Path],
+        label_names: list[str] = [],
+    ) -> "AugmentedBoxTracking":
+        """Read AugmentedBoxTracking from Darwin dict on disk."""
+        with open(path) as f:
+            darwin_dict = json.loads(f.read())
+        return cls.from_darwin_dict(darwin_dict, label_names=label_names)
 
     @classmethod
     def from_dict(
