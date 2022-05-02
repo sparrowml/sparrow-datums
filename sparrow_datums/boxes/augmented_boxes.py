@@ -58,7 +58,9 @@ class AugmentedBoxes(Boxes):
     @property
     def labels(self) -> npt.NDArray[np.int64]:
         """Class label indices."""
-        result: npt.NDArray[np.int64] = self.array[..., -1].astype(np.int64)
+        result: npt.NDArray[np.int64] = np.nan_to_num(
+            self.array[..., -1], nan=-1
+        ).astype(np.int64)
         return result
 
     def names(self, label_names: List[str]) -> npt.NDArray[np.str_]:

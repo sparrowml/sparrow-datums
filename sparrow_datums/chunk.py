@@ -5,7 +5,7 @@ import abc
 import gzip
 import json
 from pathlib import Path
-from typing import Any, Optional, TypeVar, Union
+from typing import Any, TypeVar
 
 import numpy as np
 
@@ -38,10 +38,10 @@ class Chunk(FloatArray):
         cls: type[T],
         data: FloatArray,
         ptype: PType = PType.unknown,
-        image_width: Optional[int] = None,
-        image_height: Optional[int] = None,
-        fps: Optional[float] = None,
-        object_ids: Optional[list[str]] = None,
+        image_width: int | None = None,
+        image_height: int | None = None,
+        fps: float | None = None,
+        object_ids: list[str] | None = None,
     ) -> T:
         """Instantiate a new chunk."""
         obj: T = np.asarray(data).view(cls)
@@ -53,16 +53,16 @@ class Chunk(FloatArray):
         obj._scale = None
         return obj
 
-    def __array_finalize__(self, obj: Optional[T]) -> None:
+    def __array_finalize__(self, obj: T | None) -> None:
         """Instantiate a new chunk created from a view."""
         if obj is None:
             return
         self.ptype: PType = getattr(obj, "ptype", PType.unknown)
-        self._image_width: Optional[float] = getattr(obj, "_image_width", None)
-        self._image_height: Optional[float] = getattr(obj, "_image_height", None)
-        self._fps: Optional[float] = getattr(obj, "_fps", None)
-        self._object_ids: Optional[list[str]] = getattr(obj, "_object_ids", None)
-        self._scale: Optional[FloatArray] = getattr(obj, "_scale", None)
+        self._image_width: float | None = getattr(obj, "_image_width", None)
+        self._image_height: float | None = getattr(obj, "_image_height", None)
+        self._fps: float | None = getattr(obj, "_fps", None)
+        self._object_ids: list[str] | None = getattr(obj, "_object_ids", None)
+        self._scale: FloatArray | None = getattr(obj, "_scale", None)
         self.validate()
 
     @abc.abstractmethod
@@ -131,7 +131,7 @@ class Chunk(FloatArray):
             **self.metadata_kwargs,
         }
 
-    def to_file(self, path: Union[str, Path]) -> None:
+    def to_file(self, path: str | Path) -> None:
         """Write serialized chunk to disk."""
         if not str(path).endswith(".json.gz"):
             raise ValueError("Chunk file name must end with .json.gz")
@@ -140,7 +140,7 @@ class Chunk(FloatArray):
 
     @classmethod
     def from_dict(
-        cls: type[T], chunk_dict: dict[str, Any], dims: Optional[int] = None
+        cls: type[T], chunk_dict: dict[str, Any], dims: int | None = None
     ) -> T:
         """Create chunk from chunk dict."""
         data: FloatArray
@@ -162,7 +162,7 @@ class Chunk(FloatArray):
         )
 
     @classmethod
-    def from_file(cls: type[T], path: Union[str, Path]) -> T:
+    def from_file(cls: type[T], path: str | Path) -> T:
         """Read chunk from disk."""
         with gzip.open(path, "rt") as f:
             return cls.from_dict(json.loads(f.read()))

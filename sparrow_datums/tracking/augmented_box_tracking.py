@@ -45,6 +45,61 @@ class AugmentedBoxTracking(AugmentedBoxes):
         for box in self.view(AugmentedBoxes):
             yield box.view(FrameAugmentedBoxes)
 
+    def to_darwin_dict(
+        self,
+        filename: str,
+        path: str = "/",
+        label_names: Optional[list[str]] = None,
+    ) -> dict[str, Any]:
+        """Serialize boxes to a Darwin annotation dict."""
+        if label_names is None:
+            label_names = ["Unknown"] * (self.labels.max() + 1)
+
+        annotations: list[dict[str, Any]] = [
+            {"frames": {}} for _ in range(self.shape[1])
+        ]
+        for i, frame in enumerate(self.to_absolute()):
+            for j, box in enumerate(frame):
+                if np.isnan(box.array).any():
+                    continue
+                name = box.names(label_names)
+                frame_dict = {
+                    "bounding_box": {
+                        "x": float(box.x),
+                        "y": float(box.y),
+                        "w": float(box.w),
+                        "h": float(box.h),
+                    },
+                    "keyframe": True,
+                }
+                annotations[j]["name"] = name
+                annotations[j]["frames"][str(i)] = frame_dict
+                annotations[j]["id"] = self.object_ids[j]
+        for j in range(len(annotations)):
+            frame_ids = list(map(int, annotations[j]["frames"].keys()))
+            min_frame = min(frame_ids)
+            max_frame = max(frame_ids)
+            annotations[j]["segments"] = [[min_frame, max_frame]]
+        return {
+            "image": {"filename": filename, "path": path},
+            "annotations": annotations,
+        }
+
+    def to_darwin_file(
+        self,
+        output_path: Union[str, Path],
+        filename: str,
+        path: str = "/",
+        label_names: Optional[list[str]] = None,
+    ) -> None:
+        """Write Darwin annotation dict to disk."""
+        with open(output_path, "w") as f:
+            f.write(
+                json.dumps(
+                    self.to_darwin_dict(filename, path=path, label_names=label_names)
+                )
+            )
+
     @classmethod
     def from_darwin_dict(
         cls: type["AugmentedBoxTracking"],
