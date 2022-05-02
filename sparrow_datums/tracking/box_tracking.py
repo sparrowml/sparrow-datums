@@ -1,5 +1,7 @@
 """BoxTracking chunk."""
-from ..boxes import Boxes
+from typing import Iterator
+
+from ..boxes import Boxes, FrameBoxes
 
 
 class BoxTracking(Boxes):
@@ -30,3 +32,8 @@ class BoxTracking(Boxes):
         if self.ndim != 3:
             raise ValueError("Tracking chunks must have 3 dimensions")
         super().validate()
+
+    def __iter__(self) -> Iterator[FrameBoxes]:
+        """Yield FrameBoxes objects for each frame."""
+        for box in self.view(Boxes):
+            yield box.view(FrameBoxes)
