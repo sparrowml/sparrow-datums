@@ -139,3 +139,4 @@ def test_from_darwin_dict_creates_augmented_box_tracking():
     assert chunk.image_width
     assert chunk.image_height
     np.testing.assert_equal(chunk.labels, -1)
+    assert "8ffd95e2-0641-445a-83e5-47c664edaaa5" in chunk.object_ids
