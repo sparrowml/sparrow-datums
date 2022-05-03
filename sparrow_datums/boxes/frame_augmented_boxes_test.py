@@ -135,3 +135,10 @@ def test_from_darwin_dict_creates_frame_augmented_boxes_with_non_bounding_box_an
     non_box_dict["annotations"] = [{"foo": "bar"}]
     boxes = FrameAugmentedBoxes.from_darwin_dict(non_box_dict)
     assert isinstance(boxes, FrameAugmentedBoxes)
+
+
+def test_from_single_box():
+    box = SingleAugmentedBox(np.ones(6), PType.absolute_tlbr)
+    frame_augmented_boxes = FrameAugmentedBoxes.from_single_box(box)
+    assert frame_augmented_boxes.shape == (1, 6)
+    assert frame_augmented_boxes.ptype == PType.absolute_tlbr

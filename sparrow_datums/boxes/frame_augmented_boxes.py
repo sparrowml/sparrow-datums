@@ -140,3 +140,14 @@ class FrameAugmentedBoxes(AugmentedBoxes):
     ) -> "FrameAugmentedBoxes":
         """Create chunk from chunk dict."""
         return super().from_dict(chunk_dict, dims=6)
+
+    @classmethod
+    def from_single_box(
+        cls: type["FrameAugmentedBoxes"], box: SingleAugmentedBox
+    ) -> "FrameAugmentedBoxes":
+        """Create a FrameBoxes object from a SingleBox."""
+        return cls(
+            box.array[None, :],
+            ptype=box.ptype,
+            **box.metadata_kwargs,
+        )
