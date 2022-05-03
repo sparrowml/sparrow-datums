@@ -151,3 +151,19 @@ class FrameAugmentedBoxes(AugmentedBoxes):
             ptype=box.ptype,
             **box.metadata_kwargs,
         )
+
+    def add_box(self, box: SingleAugmentedBox) -> "FrameAugmentedBoxes":
+        """Concatenate a single augmented box."""
+        if self.ptype != box.ptype:
+            raise ValueError(
+                "SingleAugmentedBox with different PType cannot be concatenated"
+            )
+        if self.metadata_kwargs != box.metadata_kwargs:
+            raise ValueError(
+                "SingleAugmentedBox with different metadata cannot be concatenated"
+            )
+        return FrameAugmentedBoxes(
+            np.concatenate([self.array, box.array[None]]),
+            ptype=self.ptype,
+            **self.metadata_kwargs,
+        )

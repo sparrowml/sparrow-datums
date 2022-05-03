@@ -142,3 +142,10 @@ def test_from_single_box():
     frame_augmented_boxes = FrameAugmentedBoxes.from_single_box(box)
     assert frame_augmented_boxes.shape == (1, 6)
     assert frame_augmented_boxes.ptype == PType.absolute_tlbr
+
+
+def test_add_box():
+    box = SingleAugmentedBox(np.ones(6), PType.absolute_tlbr)
+    frame_augmented_boxes = FrameAugmentedBoxes.from_single_box(box)
+    frame_augmented_boxes = frame_augmented_boxes.add_box(box)
+    assert frame_augmented_boxes.shape == (2, 6)
