@@ -9,9 +9,10 @@ import numpy.typing as npt
 
 from ..boxes import AugmentedBoxes, FrameAugmentedBoxes
 from ..types import PType
+from .tracking import Tracking
 
 
-class AugmentedBoxTracking(AugmentedBoxes):
+class AugmentedBoxTracking(Tracking, AugmentedBoxes):
     """
     Dense data arrays for box tracking with [boxes, scores, labels].
 
@@ -35,10 +36,9 @@ class AugmentedBoxTracking(AugmentedBoxes):
     """
 
     def validate(self) -> None:
-        """Check shape of box tracking array."""
-        if self.ndim != 3:
-            raise ValueError("Tracking chunks must have 3 dimensions")
+        """Validate tracking shape and boxes."""
         super().validate()
+        AugmentedBoxes.validate(self)
 
     def __iter__(self) -> Iterator[FrameAugmentedBoxes]:
         """Yield FrameAugmentedBoxes objects for each frame."""

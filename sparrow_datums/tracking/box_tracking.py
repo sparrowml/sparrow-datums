@@ -2,9 +2,10 @@
 from typing import Iterator
 
 from ..boxes import Boxes, FrameBoxes
+from .tracking import Tracking
 
 
-class BoxTracking(Boxes):
+class BoxTracking(Tracking, Boxes):
     """
     Dense data arrays for box tracking.
 
@@ -28,10 +29,9 @@ class BoxTracking(Boxes):
     """
 
     def validate(self) -> None:
-        """Check shape of box tracking array."""
-        if self.ndim != 3:
-            raise ValueError("Tracking chunks must have 3 dimensions")
+        """Validate tracking shape and boxes."""
         super().validate()
+        Boxes.validate(self)
 
     def __iter__(self) -> Iterator[FrameBoxes]:
         """Yield FrameBoxes objects for each frame."""
