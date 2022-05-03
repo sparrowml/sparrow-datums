@@ -149,3 +149,11 @@ def test_add_box():
     frame_augmented_boxes = FrameAugmentedBoxes.from_single_box(box)
     frame_augmented_boxes = frame_augmented_boxes.add_box(box)
     assert frame_augmented_boxes.shape == (2, 6)
+
+
+def test_get_single_box():
+    labels = ["car", "bicycle", "chair"]
+    boxes = FrameAugmentedBoxes.from_darwin_dict(DARWIN_DICT, label_names=labels)
+    box = boxes.get_single_box(-1)
+    assert box.shape == (6,)
+    assert labels[box.label] == "car"

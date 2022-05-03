@@ -167,3 +167,10 @@ class FrameAugmentedBoxes(AugmentedBoxes):
             ptype=self.ptype,
             **self.metadata_kwargs,
         )
+
+    def get_single_box(self, i: int) -> SingleAugmentedBox:
+        """Get the ith element as a SingleAugmentedBox."""
+        result: SingleAugmentedBox = self.view(AugmentedBoxes)[i].view(
+            SingleAugmentedBox
+        )
+        return result
