@@ -46,3 +46,19 @@ def test_pairwise_iou_works_for_frame_augmented_boxes():
     boxes = FrameAugmentedBoxes(np.ones((5, 6)), PType.absolute_tlwh)
     result = pairwise_iou(boxes, boxes)
     assert result.shape == (5, 5)
+
+
+def test_max_iou_is_1():
+    frame_a = FrameAugmentedBoxes(
+        [[130.02, 582.8, 87.96, 57.14, 1.0, 2.0]],
+        PType.absolute_tlwh,
+        image_width=1920,
+        image_height=1080,
+    )
+    frame_b = FrameAugmentedBoxes(
+        [[1.82, 499.01, 41.07, 38.85, 1.0, 3.0]],
+        PType.absolute_tlwh,
+        image_width=1920,
+        image_height=1080,
+    )
+    assert pairwise_iou(frame_a, frame_b) < 1
