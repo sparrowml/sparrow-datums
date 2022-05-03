@@ -7,8 +7,9 @@ from typing import Any, Iterator, Optional, Union
 import numpy as np
 import numpy.typing as npt
 
-from ..boxes import AugmentedBoxes, FrameAugmentedBoxes
+from ..boxes import AugmentedBoxes, FrameAugmentedBoxes, FrameBoxes
 from ..types import PType
+from .box_tracking import BoxTracking
 from .tracking import Tracking
 
 
@@ -179,4 +180,16 @@ class AugmentedBoxTracking(Tracking, AugmentedBoxes):
             image_height=image_height,
             fps=fps,
             object_ids=object_ids,
+        )
+
+    def filter_by_class(self, class_idx: int) -> BoxTracking:
+        """Get a single class and return a new BoxTracking chunk."""
+        frames: list[FrameBoxes] = []
+        for augmented_frame in self:
+            mask = augmented_frame.labels == class_idx
+            frames.append(augmented_frame[mask].to_frame_boxes())
+        return BoxTracking.from_frame_boxes(
+            frames,
+            ptype=self.ptype,
+            **self.metadata_kwargs,
         )

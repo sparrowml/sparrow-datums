@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 from sparrow_datums.boxes.frame_augmented_boxes import FrameAugmentedBoxes
+from sparrow_datums.tracking.box_tracking import BoxTracking
 
 from ..types import PType
 from .augmented_box_tracking import AugmentedBoxTracking
@@ -95,7 +96,7 @@ DARWIN_DICT = {
             "id": "8ffd95e2-0641-445a-83e5-47c664edaaa5",
             "interpolate_algorithm": "linear-1.1",
             "interpolated": True,
-            "name": "car",
+            "name": "bicycle",
             "segments": [[0, 3783]],
         },
     ],
@@ -149,3 +150,14 @@ def test_from_frame_augmented_boxes():
         [boxes_a, boxes_b], ptype=PType.absolute_tlwh
     )
     assert chunk.shape == (2, 3, 6)
+
+
+def test_filter_by_class():
+    chunk = AugmentedBoxTracking.from_darwin_dict(
+        DARWIN_DICT, label_names=["car", "bicycle"]
+    )
+    cars = chunk.filter_by_class(0)
+    bikes = chunk.filter_by_class(1)
+    assert isinstance(cars, BoxTracking)
+    assert isinstance(bikes, BoxTracking)
+    assert cars.shape[1] + bikes.shape[1] == chunk.shape[1]

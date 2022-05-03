@@ -5,6 +5,8 @@ import tempfile
 import numpy as np
 import pytest
 
+from sparrow_datums.boxes.frame_boxes import FrameBoxes
+
 from ..types import PType
 from . import frame_augmented_boxes
 from .frame_augmented_boxes import FrameAugmentedBoxes
@@ -157,3 +159,10 @@ def test_get_single_box():
     box = boxes.get_single_box(-1)
     assert box.shape == (6,)
     assert labels[box.label] == "car"
+
+
+def test_to_frame_boxes():
+    boxes = FrameAugmentedBoxes.from_darwin_dict(DARWIN_DICT)
+    boxes = boxes.to_frame_boxes()
+    assert isinstance(boxes, FrameBoxes)
+    assert boxes.shape[-1] == 4

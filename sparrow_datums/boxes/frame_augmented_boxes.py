@@ -8,7 +8,7 @@ import numpy.typing as npt
 
 from ..types import PType
 from .augmented_boxes import AugmentedBoxes
-from .frame_boxes import _is_2d
+from .frame_boxes import FrameBoxes, _is_2d
 from .single_augmented_box import SingleAugmentedBox
 
 
@@ -174,3 +174,10 @@ class FrameAugmentedBoxes(AugmentedBoxes):
             SingleAugmentedBox
         )
         return result
+
+    def to_frame_boxes(self) -> FrameBoxes:
+        """Drop augmented part of the data."""
+        return FrameBoxes(
+            self.array[..., :4],
+            **self.metadata_kwargs,
+        )

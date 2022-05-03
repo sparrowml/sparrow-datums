@@ -1,7 +1,10 @@
 """BoxTracking chunk."""
-from typing import Iterator
+from typing import Iterator, Optional
+
+import numpy as np
 
 from ..boxes import Boxes, FrameBoxes
+from ..types import PType
 from .tracking import Tracking
 
 
@@ -37,3 +40,31 @@ class BoxTracking(Tracking, Boxes):
         """Yield FrameBoxes objects for each frame."""
         for box in self.view(Boxes):
             yield box.view(FrameBoxes)
+
+    @classmethod
+    def from_frame_boxes(
+        cls: type["BoxTracking"],
+        boxes: list[FrameBoxes],
+        ptype: PType = PType.unknown,
+        image_width: Optional[int] = None,
+        image_height: Optional[int] = None,
+        fps: Optional[float] = None,
+        object_ids: Optional[list[str]] = None,
+    ) -> "BoxTracking":
+        """
+        Create an BoxTracking chunk from a list of FrameBoxes objects.
+
+        This is typically used for storing detections on a video.
+        """
+        max_boxes = max(map(len, boxes))
+        data = np.zeros((len(boxes), max_boxes, 4)) * np.nan
+        for i, frame in enumerate(boxes):
+            data[i, : len(frame)] = frame.array
+        return cls(
+            data,
+            ptype=ptype,
+            image_width=image_width,
+            image_height=image_height,
+            fps=fps,
+            object_ids=object_ids,
+        )
