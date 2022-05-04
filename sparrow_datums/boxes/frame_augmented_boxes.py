@@ -1,14 +1,14 @@
 import json
 from operator import itemgetter
 from pathlib import Path
-from typing import Any, Dict, Iterator, List, Optional, Type, Union
+from typing import Any, Iterator, Optional, Type, Union
 
 import numpy as np
 import numpy.typing as npt
 
 from ..types import PType
 from .augmented_boxes import AugmentedBoxes
-from .frame_boxes import _is_2d
+from .frame_boxes import FrameBoxes, _is_2d
 from .single_augmented_box import SingleAugmentedBox
 
 
@@ -56,8 +56,8 @@ class FrameAugmentedBoxes(AugmentedBoxes):
         self,
         filename: str,
         path: str = "/",
-        label_names: Optional[List[str]] = None,
-    ) -> Dict[str, Any]:
+        label_names: Optional[list[str]] = None,
+    ) -> dict[str, Any]:
         """Serialize boxes to a Darwin annotation dict."""
         if label_names is None:
             label_names = ["Unknown"] * (self.labels.max() + 1)
@@ -82,7 +82,7 @@ class FrameAugmentedBoxes(AugmentedBoxes):
         output_path: Union[str, Path],
         filename: str,
         path: str = "/",
-        label_names: Optional[List[str]] = None,
+        label_names: Optional[list[str]] = None,
     ) -> None:
         """Write Darwin annotation dict to disk."""
         with open(output_path, "w") as f:
@@ -95,8 +95,8 @@ class FrameAugmentedBoxes(AugmentedBoxes):
     @classmethod
     def from_darwin_dict(
         cls: Type["FrameAugmentedBoxes"],
-        darwin_dict: Dict[str, Any],
-        label_names: List[str] = [],
+        darwin_dict: dict[str, Any],
+        label_names: list[str] = [],
     ) -> "FrameAugmentedBoxes":
         """Create FrameAugmentedBoxes from a serialized Darwin dict."""
         label_names_map = {name: float(idx) for idx, name in enumerate(label_names)}
@@ -123,9 +123,9 @@ class FrameAugmentedBoxes(AugmentedBoxes):
 
     @classmethod
     def from_darwin_file(
-        cls: Type["FrameAugmentedBoxes"],
+        cls: type["FrameAugmentedBoxes"],
         path: Union[str, Path],
-        label_names: List[str] = [],
+        label_names: list[str] = [],
     ) -> "FrameAugmentedBoxes":
         """Read FrameAugmentedBoxes from Darwin dict on disk."""
         with open(path) as f:
@@ -140,3 +140,44 @@ class FrameAugmentedBoxes(AugmentedBoxes):
     ) -> "FrameAugmentedBoxes":
         """Create chunk from chunk dict."""
         return super().from_dict(chunk_dict, dims=6)
+
+    @classmethod
+    def from_single_box(
+        cls: type["FrameAugmentedBoxes"], box: SingleAugmentedBox
+    ) -> "FrameAugmentedBoxes":
+        """Create a FrameBoxes object from a SingleBox."""
+        return cls(
+            box.array[None, :],
+            ptype=box.ptype,
+            **box.metadata_kwargs,
+        )
+
+    def add_box(self, box: SingleAugmentedBox) -> "FrameAugmentedBoxes":
+        """Concatenate a single augmented box."""
+        if self.ptype != box.ptype:
+            raise ValueError(
+                "SingleAugmentedBox with different PType cannot be concatenated"
+            )
+        if self.metadata_kwargs != box.metadata_kwargs:
+            raise ValueError(
+                "SingleAugmentedBox with different metadata cannot be concatenated"
+            )
+        return FrameAugmentedBoxes(
+            np.concatenate([self.array, box.array[None]]),
+            ptype=self.ptype,
+            **self.metadata_kwargs,
+        )
+
+    def get_single_box(self, i: int) -> SingleAugmentedBox:
+        """Get the ith element as a SingleAugmentedBox."""
+        result: SingleAugmentedBox = self.view(AugmentedBoxes)[i].view(
+            SingleAugmentedBox
+        )
+        return result
+
+    def to_frame_boxes(self) -> FrameBoxes:
+        """Drop augmented part of the data."""
+        return FrameBoxes(
+            self.array[..., :4],
+            **self.metadata_kwargs,
+        )

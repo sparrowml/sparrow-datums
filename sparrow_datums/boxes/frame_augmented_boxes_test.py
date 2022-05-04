@@ -5,6 +5,8 @@ import tempfile
 import numpy as np
 import pytest
 
+from sparrow_datums.boxes.frame_boxes import FrameBoxes
+
 from ..types import PType
 from . import frame_augmented_boxes
 from .frame_augmented_boxes import FrameAugmentedBoxes
@@ -135,3 +137,32 @@ def test_from_darwin_dict_creates_frame_augmented_boxes_with_non_bounding_box_an
     non_box_dict["annotations"] = [{"foo": "bar"}]
     boxes = FrameAugmentedBoxes.from_darwin_dict(non_box_dict)
     assert isinstance(boxes, FrameAugmentedBoxes)
+
+
+def test_from_single_box():
+    box = SingleAugmentedBox(np.ones(6), PType.absolute_tlbr)
+    frame_augmented_boxes = FrameAugmentedBoxes.from_single_box(box)
+    assert frame_augmented_boxes.shape == (1, 6)
+    assert frame_augmented_boxes.ptype == PType.absolute_tlbr
+
+
+def test_add_box():
+    box = SingleAugmentedBox(np.ones(6), PType.absolute_tlbr)
+    frame_augmented_boxes = FrameAugmentedBoxes.from_single_box(box)
+    frame_augmented_boxes = frame_augmented_boxes.add_box(box)
+    assert frame_augmented_boxes.shape == (2, 6)
+
+
+def test_get_single_box():
+    labels = ["car", "bicycle", "chair"]
+    boxes = FrameAugmentedBoxes.from_darwin_dict(DARWIN_DICT, label_names=labels)
+    box = boxes.get_single_box(-1)
+    assert box.shape == (6,)
+    assert labels[box.label] == "car"
+
+
+def test_to_frame_boxes():
+    boxes = FrameAugmentedBoxes.from_darwin_dict(DARWIN_DICT)
+    boxes = boxes.to_frame_boxes()
+    assert isinstance(boxes, FrameBoxes)
+    assert boxes.shape[-1] == 4

@@ -30,7 +30,7 @@ def intersection(boxes_a: Boxes, boxes_b: Boxes) -> npt.NDArray[np.float64]:
     y1 = np.maximum(boxes_a.y1, boxes_b.y1)
     x2 = np.minimum(boxes_a.x2, boxes_b.x2)
     y2 = np.minimum(boxes_a.y2, boxes_b.y2)
-    result: npt.NDArray[np.float64] = (x2 - x1) * (y2 - y1)
+    result: npt.NDArray[np.float64] = np.maximum(x2 - x1, 0) * np.maximum(y2 - y1, 0)
     return result
 
 
