@@ -179,5 +179,6 @@ class FrameAugmentedBoxes(AugmentedBoxes):
         """Drop augmented part of the data."""
         return FrameBoxes(
             self.array[..., :4],
+            ptype=self.ptype,
             **self.metadata_kwargs,
         )

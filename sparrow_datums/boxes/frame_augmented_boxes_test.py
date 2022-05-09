@@ -165,4 +165,5 @@ def test_to_frame_boxes():
     boxes = FrameAugmentedBoxes.from_darwin_dict(DARWIN_DICT)
     boxes = boxes.to_frame_boxes()
     assert isinstance(boxes, FrameBoxes)
+    assert boxes.ptype == PType.absolute_tlwh
     assert boxes.shape[-1] == 4
