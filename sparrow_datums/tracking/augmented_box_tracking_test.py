@@ -161,3 +161,15 @@ def test_filter_by_class():
     assert isinstance(cars, BoxTracking)
     assert isinstance(bikes, BoxTracking)
     assert cars.shape[1] + bikes.shape[1] == chunk.shape[1]
+
+
+def test_from_box_tracking():
+    chunk = AugmentedBoxTracking.from_darwin_dict(
+        DARWIN_DICT, label_names=["car", "bicycle"]
+    )
+    cars = chunk.filter_by_class(0)
+    augmented_cars = AugmentedBoxTracking.from_box_tracking(
+        cars, score=1.0, class_idx=0
+    )
+    assert isinstance(augmented_cars, AugmentedBoxTracking)
+    np.testing.assert_equal(cars.array, augmented_cars.array[..., :4])

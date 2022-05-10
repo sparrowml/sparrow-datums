@@ -193,3 +193,22 @@ class AugmentedBoxTracking(Tracking, AugmentedBoxes):
             ptype=self.ptype,
             **self.metadata_kwargs,
         )
+
+    @classmethod
+    def from_box_tracking(
+        cls: type["AugmentedBoxTracking"],
+        chunk: BoxTracking,
+        score: float = 0.0,
+        class_idx: int = 0,
+    ) -> "AugmentedBoxTracking":
+        """Create AugmentedBoxTracking chunk from BoxTracking chunk."""
+        pad_shape = np.ones(chunk.shape[:2] + (1,))
+        data = np.concatenate(
+            [
+                chunk.array[..., :4],
+                pad_shape * score,
+                pad_shape * class_idx,
+            ],
+            axis=-1,
+        )
+        return cls(data, ptype=chunk.ptype, **chunk.metadata_kwargs)
