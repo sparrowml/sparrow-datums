@@ -7,7 +7,7 @@ from typing import Any, Iterator, Optional, Union
 import numpy as np
 import numpy.typing as npt
 
-from ..boxes import AugmentedBoxes, FrameAugmentedBoxes, FrameBoxes
+from ..boxes import AugmentedBoxes, FrameAugmentedBoxes
 from ..types import PType
 from .box_tracking import BoxTracking
 from .tracking import Tracking
@@ -184,12 +184,12 @@ class AugmentedBoxTracking(Tracking, AugmentedBoxes):
 
     def filter_by_class(self, class_idx: int) -> BoxTracking:
         """Get a single class and return a new BoxTracking chunk."""
-        frames: list[FrameBoxes] = []
-        for augmented_frame in self:
-            mask = augmented_frame.labels == class_idx
-            frames.append(augmented_frame[mask].to_frame_boxes())
-        return BoxTracking.from_frame_boxes(
-            frames,
+        object_mask: list[int] = []
+        for j in range(self.shape[1]):
+            if class_idx in set(self.array[:, j, -1].ravel()):
+                object_mask.append(j)
+        return BoxTracking(
+            self.array[:, np.array(object_mask), :4],
             ptype=self.ptype,
             **self.metadata_kwargs,
         )
