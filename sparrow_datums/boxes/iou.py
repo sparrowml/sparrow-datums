@@ -1,5 +1,5 @@
 """Intersection over union operations."""
-from typing import Union
+from typing import Union, no_type_check
 
 import numpy as np
 import numpy.typing as npt
@@ -51,6 +51,7 @@ def area(boxes: Boxes) -> npt.NDArray[np.float64]:
     return boxes.w * boxes.h
 
 
+@no_type_check
 def pairwise_iou(
     boxes_a: Union[FrameAugmentedBoxes, FrameBoxes],
     boxes_b: Union[FrameAugmentedBoxes, FrameBoxes],
