@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "sparrow-datums"
-version = "0.6.4"
+version = "0.6.5"
 description = "A Python package for data structures"
 readme = "README.md"
 authors = ["Sparrow Computing <ben@sparrow.dev>"]
@@ -21,7 +21,7 @@ url = "https://pypi.fury.io/sparrow/"
 name = "sparrow"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.8"
 
 typer = {extras = ["all"], version = "^0.4.0"}
 rich = "^10.14.0"
@@ -29,7 +29,7 @@ numpy = "^1.20.0"
 
 [tool.poetry.dev-dependencies]
 bandit = "^1.7.1"
-black = {version = "^21.10b0", allow-prereleases = true}
+black = "^22.3.0"
 darglint = "^1.8.1"
 isort = {extras = ["colors"], version = "^5.10.1"}
 mypy = "^0.910"
