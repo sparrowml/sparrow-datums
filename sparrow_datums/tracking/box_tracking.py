@@ -1,5 +1,7 @@
 """BoxTracking chunk."""
-from typing import Iterator, List, Optional, Type
+from __future__ import annotations
+
+from typing import Iterator, Optional
 
 import numpy as np
 
@@ -27,7 +29,7 @@ class BoxTracking(Tracking, Boxes):
         The height of the relevant image
     fps : float, optional
         The framerate of the chunk data (if tracking)
-    object_ids:  List[str], optional
+    object_ids:  list[str], optional
         Identifiers for the objects (if tracking)
     """
 
@@ -43,13 +45,13 @@ class BoxTracking(Tracking, Boxes):
 
     @classmethod
     def from_frame_boxes(
-        cls: Type["BoxTracking"],
-        boxes: List[FrameBoxes],
+        cls: type["BoxTracking"],
+        boxes: list[FrameBoxes],
         ptype: PType = PType.unknown,
         image_width: Optional[int] = None,
         image_height: Optional[int] = None,
         fps: Optional[float] = None,
-        object_ids: Optional[List[str]] = None,
+        object_ids: Optional[list[str]] = None,
     ) -> "BoxTracking":
         """
         Create an BoxTracking chunk from a list of FrameBoxes objects.

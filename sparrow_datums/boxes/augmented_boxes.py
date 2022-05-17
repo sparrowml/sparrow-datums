@@ -1,4 +1,4 @@
-from typing import List
+from __future__ import annotations
 
 import numpy as np
 import numpy.typing as npt
@@ -63,7 +63,7 @@ class AugmentedBoxes(Boxes):
         ).astype(np.int64)
         return result
 
-    def names(self, label_names: List[str]) -> npt.NDArray[np.str_]:
+    def names(self, label_names: list[str]) -> npt.NDArray[np.str_]:
         """Map class label indices to string names."""
         result: npt.NDArray[np.str_] = np.array(label_names)[self.labels].astype(
             np.str_

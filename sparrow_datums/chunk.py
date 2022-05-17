@@ -5,7 +5,7 @@ import abc
 import gzip
 import json
 from pathlib import Path
-from typing import Any, Dict, List, Type, TypeVar
+from typing import Any, TypeVar
 
 import numpy as np
 

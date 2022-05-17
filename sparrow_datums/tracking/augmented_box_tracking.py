@@ -1,8 +1,10 @@
 """AugmentedBoxTracking chunk."""
+from __future__ import annotations
+
 import json
 from operator import itemgetter
 from pathlib import Path
-from typing import Any, Dict, Iterator, List, Optional, Type, Union
+from typing import Any, Iterator, Optional, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -50,13 +52,13 @@ class AugmentedBoxTracking(Tracking, AugmentedBoxes):
         self,
         filename: str,
         path: str = "/",
-        label_names: Optional[List[str]] = None,
-    ) -> Dict[str, Any]:
+        label_names: Optional[list[str]] = None,
+    ) -> dict[str, Any]:
         """Serialize boxes to a Darwin annotation dict."""
         if label_names is None:
             label_names = ["Unknown"] * (self.labels.max() + 1)
 
-        annotations: List[Dict[str, Any]] = [
+        annotations: list[dict[str, Any]] = [
             {"frames": {}} for _ in range(self.shape[1])
         ]
         for i, frame in enumerate(self.to_absolute()):
@@ -91,7 +93,7 @@ class AugmentedBoxTracking(Tracking, AugmentedBoxes):
         output_path: Union[str, Path],
         filename: str,
         path: str = "/",
-        label_names: Optional[List[str]] = None,
+        label_names: Optional[list[str]] = None,
     ) -> None:
         """Write Darwin annotation dict to disk."""
         with open(output_path, "w") as f:
@@ -103,9 +105,9 @@ class AugmentedBoxTracking(Tracking, AugmentedBoxes):
 
     @classmethod
     def from_darwin_dict(
-        cls: Type["AugmentedBoxTracking"],
-        darwin_dict: Dict[str, Any],
-        label_names: List[str] = [],
+        cls: type["AugmentedBoxTracking"],
+        darwin_dict: dict[str, Any],
+        label_names: list[str] = [],
     ) -> "AugmentedBoxTracking":
         """Create AugmentedBoxTracking chunk from a serialized Darwin dict."""
         label_names_map = {name: float(idx) for idx, name in enumerate(label_names)}
@@ -116,7 +118,7 @@ class AugmentedBoxTracking(Tracking, AugmentedBoxes):
         n_objects = len(darwin_dict["annotations"])
         data: npt.NDArray[np.float64] = np.zeros((n_frames, n_objects, 6)) * np.nan
         score = 1.0
-        object_ids: List[str] = [t["id"] for t in darwin_dict["annotations"]]
+        object_ids: list[str] = [t["id"] for t in darwin_dict["annotations"]]
         for i in range(n_frames):
             for j, tracklet in enumerate(darwin_dict["annotations"]):
                 annotation = tracklet["frames"].get(str(i), {})
@@ -136,9 +138,9 @@ class AugmentedBoxTracking(Tracking, AugmentedBoxes):
 
     @classmethod
     def from_darwin_file(
-        cls: Type["AugmentedBoxTracking"],
+        cls: type["AugmentedBoxTracking"],
         path: Union[str, Path],
-        label_names: List[str] = [],
+        label_names: list[str] = [],
     ) -> "AugmentedBoxTracking":
         """Read AugmentedBoxTracking from Darwin dict on disk."""
         with open(path) as f:
@@ -147,8 +149,8 @@ class AugmentedBoxTracking(Tracking, AugmentedBoxes):
 
     @classmethod
     def from_dict(
-        cls: Type["AugmentedBoxTracking"],
-        chunk_dict: Dict[str, Any],
+        cls: type["AugmentedBoxTracking"],
+        chunk_dict: dict[str, Any],
         dims: Optional[int] = None,
     ) -> "AugmentedBoxTracking":
         """Create chunk from chunk dict."""
@@ -156,13 +158,13 @@ class AugmentedBoxTracking(Tracking, AugmentedBoxes):
 
     @classmethod
     def from_frame_augmented_boxes(
-        cls: Type["AugmentedBoxTracking"],
-        boxes: List[FrameAugmentedBoxes],
+        cls: type["AugmentedBoxTracking"],
+        boxes: list[FrameAugmentedBoxes],
         ptype: PType = PType.unknown,
         image_width: Optional[int] = None,
         image_height: Optional[int] = None,
         fps: Optional[float] = None,
-        object_ids: Optional[List[str]] = None,
+        object_ids: Optional[list[str]] = None,
     ) -> "AugmentedBoxTracking":
         """
         Create an AugmentedBoxTracking chunk from a list of FrameAugmentedBoxes objects.
@@ -184,7 +186,7 @@ class AugmentedBoxTracking(Tracking, AugmentedBoxes):
 
     def filter_by_class(self, class_idx: int) -> BoxTracking:
         """Get a single class and return a new BoxTracking chunk."""
-        object_mask: List[int] = []
+        object_mask: list[int] = []
         for j in range(self.shape[1]):
             if class_idx in set(self.array[:, j, -1].ravel()):
                 object_mask.append(j)
@@ -196,7 +198,7 @@ class AugmentedBoxTracking(Tracking, AugmentedBoxes):
 
     @classmethod
     def from_box_tracking(
-        cls: Type["AugmentedBoxTracking"],
+        cls: type["AugmentedBoxTracking"],
         chunk: BoxTracking,
         score: float = 0.0,
         class_idx: int = 0,

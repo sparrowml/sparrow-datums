@@ -1,4 +1,6 @@
-from typing import Any, Dict, Iterator, List, Optional, Type
+from __future__ import annotations
+
+from typing import Any, Iterator, Optional
 
 import numpy as np
 
@@ -50,7 +52,7 @@ class FrameBoxes(Boxes):
             yield box.view(SingleBox)
 
     @classmethod
-    def from_single_box(cls: Type["FrameBoxes"], box: SingleBox) -> "FrameBoxes":
+    def from_single_box(cls: type["FrameBoxes"], box: SingleBox) -> "FrameBoxes":
         """Create a FrameBoxes object from a SingleBox."""
         return cls(
             box.array[None, :],
@@ -60,12 +62,12 @@ class FrameBoxes(Boxes):
 
     @classmethod
     def from_single_boxes(
-        cls: Type["FrameBoxes"],
-        boxes: List[SingleBox],
+        cls: type["FrameBoxes"],
+        boxes: list[SingleBox],
         ptype: PType = PType.unknown,
         image_width: Optional[int] = None,
         image_height: Optional[int] = None,
-        **kwargs: Dict[str, Any],
+        **kwargs: dict[str, Any],
     ) -> "FrameBoxes":
         """Create a FrameBoxes object from a list of SingleBox objects."""
         return cls(
