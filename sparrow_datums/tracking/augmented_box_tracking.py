@@ -1,4 +1,6 @@
 """AugmentedBoxTracking chunk."""
+from __future__ import annotations
+
 import json
 from operator import itemgetter
 from pathlib import Path
@@ -32,7 +34,7 @@ class AugmentedBoxTracking(Tracking, AugmentedBoxes):
         The height of the relevant image
     fps : float, optional
         The framerate of the chunk data (if tracking)
-    object_ids:  list[str], optional
+    object_ids:  List[str], optional
         Identifiers for the objects (if tracking)
     """
 

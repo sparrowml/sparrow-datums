@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import json
 from operator import itemgetter
 from pathlib import Path
-from typing import Any, Iterator, Optional, Type, Union
+from typing import Any, Iterator, Optional, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -94,7 +96,7 @@ class FrameAugmentedBoxes(AugmentedBoxes):
 
     @classmethod
     def from_darwin_dict(
-        cls: Type["FrameAugmentedBoxes"],
+        cls: type["FrameAugmentedBoxes"],
         darwin_dict: dict[str, Any],
         label_names: list[str] = [],
     ) -> "FrameAugmentedBoxes":

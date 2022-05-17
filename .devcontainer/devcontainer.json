@@ -22,9 +22,6 @@
 				"source.organizeImports": true
 			}
 		},
-		// mypy
-		"python.linting.mypyEnabled": true,
-		"python.linting.mypyPath": "/usr/local/bin/mypy",
 		// pylint
 		"python.linting.pylintEnabled": true,
 		"python.linting.pylintPath": "/usr/local/bin/pylint",
@@ -45,6 +42,7 @@
 	"workspaceFolder": "/code",
 	"workspaceMount": "source=${localWorkspaceFolder},target=/code,type=bind,consistency=cached",
 	"runArgs": [
-		"--env-file=.devcontainer/.env"
+		"--env-file=.devcontainer/.env",
+		"--ipc=host",
 	]
 }
