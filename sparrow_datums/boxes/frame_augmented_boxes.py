@@ -56,8 +56,8 @@ class FrameAugmentedBoxes(AugmentedBoxes):
         self,
         filename: str,
         path: str = "/",
-        label_names: Optional[list[str]] = None,
-    ) -> dict[str, Any]:
+        label_names: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
         """Serialize boxes to a Darwin annotation dict."""
         if label_names is None:
             label_names = ["Unknown"] * (self.labels.max() + 1)
@@ -82,7 +82,7 @@ class FrameAugmentedBoxes(AugmentedBoxes):
         output_path: Union[str, Path],
         filename: str,
         path: str = "/",
-        label_names: Optional[list[str]] = None,
+        label_names: Optional[List[str]] = None,
     ) -> None:
         """Write Darwin annotation dict to disk."""
         with open(output_path, "w") as f:
@@ -95,15 +95,15 @@ class FrameAugmentedBoxes(AugmentedBoxes):
     @classmethod
     def from_darwin_dict(
         cls: Type["FrameAugmentedBoxes"],
-        darwin_dict: dict[str, Any],
-        label_names: list[str] = [],
+        darwin_dict: Dict[str, Any],
+        label_names: List[str] = [],
     ) -> "FrameAugmentedBoxes":
         """Create FrameAugmentedBoxes from a serialized Darwin dict."""
         label_names_map = {name: float(idx) for idx, name in enumerate(label_names)}
-        image_width, image_height = itemgetter("width", "height")(darwin_dict["image"])
+        image_width, image_height = itemgetter("width", "height")(darwin_Dict["image"])
         boxes = []
         score = 1.0
-        for annotation in darwin_dict["annotations"]:
+        for annotation in darwin_Dict["annotations"]:
             if "bounding_box" not in annotation:
                 continue
             x, y, w, h = itemgetter("x", "y", "w", "h")(annotation["bounding_box"])
@@ -123,9 +123,9 @@ class FrameAugmentedBoxes(AugmentedBoxes):
 
     @classmethod
     def from_darwin_file(
-        cls: type["FrameAugmentedBoxes"],
+        cls: Type["FrameAugmentedBoxes"],
         path: Union[str, Path],
-        label_names: list[str] = [],
+        label_names: List[str] = [],
     ) -> "FrameAugmentedBoxes":
         """Read FrameAugmentedBoxes from Darwin dict on disk."""
         with open(path) as f:
@@ -134,8 +134,8 @@ class FrameAugmentedBoxes(AugmentedBoxes):
 
     @classmethod
     def from_dict(
-        cls: type["FrameAugmentedBoxes"],
-        chunk_dict: dict[str, Any],
+        cls: Type["FrameAugmentedBoxes"],
+        chunk_dict: Dict[str, Any],
         dims: Optional[int] = None,
     ) -> "FrameAugmentedBoxes":
         """Create chunk from chunk dict."""
@@ -143,7 +143,7 @@ class FrameAugmentedBoxes(AugmentedBoxes):
 
     @classmethod
     def from_single_box(
-        cls: type["FrameAugmentedBoxes"], box: SingleAugmentedBox
+        cls: Type["FrameAugmentedBoxes"], box: SingleAugmentedBox
     ) -> "FrameAugmentedBoxes":
         """Create a FrameBoxes object from a SingleBox."""
         return cls(

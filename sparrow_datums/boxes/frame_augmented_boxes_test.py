@@ -112,7 +112,7 @@ def test_from_darwin_dict_creates_frame_augmented_boxes():
 
 def test_from_darwin_dict_creates_frame_augmented_boxes_with_no_boxes():
     empty_darwin_dict = DARWIN_DICT.copy()
-    empty_darwin_dict["annotations"] = []
+    empty_darwin_Dict["annotations"] = []
     boxes = FrameAugmentedBoxes.from_darwin_dict(empty_darwin_dict)
     assert isinstance(boxes, FrameAugmentedBoxes)
 
@@ -134,7 +134,7 @@ def test_from_dict_with_empty_data():
 
 def test_from_darwin_dict_creates_frame_augmented_boxes_with_non_bounding_box_annotations():
     non_box_dict = DARWIN_DICT.copy()
-    non_box_dict["annotations"] = [{"foo": "bar"}]
+    non_box_Dict["annotations"] = [{"foo": "bar"}]
     boxes = FrameAugmentedBoxes.from_darwin_dict(non_box_dict)
     assert isinstance(boxes, FrameAugmentedBoxes)
 
