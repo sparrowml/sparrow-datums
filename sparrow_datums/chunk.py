@@ -35,13 +35,13 @@ class Chunk(FloatArray):
     """
 
     def __new__(
-        cls: Type[T],
+        cls: type[T],
         data: FloatArray,
         ptype: PType = PType.unknown,
         image_width: int | None = None,
         image_height: int | None = None,
         fps: float | None = None,
-        object_ids: List[str] | None = None,
+        object_ids: list[str] | None = None,
     ) -> T:
         """Instantiate a new chunk."""
         obj: T = np.asarray(data).view(cls)
@@ -61,7 +61,7 @@ class Chunk(FloatArray):
         self._image_width: float | None = getattr(obj, "_image_width", None)
         self._image_height: float | None = getattr(obj, "_image_height", None)
         self._fps: float | None = getattr(obj, "_fps", None)
-        self._object_ids: List[str] | None = getattr(obj, "_object_ids", None)
+        self._object_ids: list[str] | None = getattr(obj, "_object_ids", None)
         self._scale: FloatArray | None = getattr(obj, "_scale", None)
         self.validate()
 
@@ -97,7 +97,7 @@ class Chunk(FloatArray):
         return self._fps
 
     @property
-    def object_ids(self) -> List[str]:
+    def object_ids(self) -> list[str]:
         """Frames per second."""
         if self._object_ids is None:
             raise ValueError("object_ids not set")
@@ -113,7 +113,7 @@ class Chunk(FloatArray):
         return self._scale
 
     @property
-    def metadata_kwargs(self) -> Dict[str, Any]:
+    def metadata_kwargs(self) -> dict[str, Any]:
         """Metadata kwargs for downstream constructors."""
         return {
             "image_width": self._image_width,
@@ -122,7 +122,7 @@ class Chunk(FloatArray):
             "object_ids": self._object_ids,
         }
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Serialize chunk to a dict."""
         return {
             "data": np.where(np.isnan(self.array), np.array(None), self.array).tolist(),
@@ -140,29 +140,29 @@ class Chunk(FloatArray):
 
     @classmethod
     def from_dict(
-        cls: Type[T], chunk_dict: Dict[str, Any], dims: int | None = None
+        cls: type[T], chunk_dict: dict[str, Any], dims: int | None = None
     ) -> T:
         """Create chunk from chunk dict."""
         data: FloatArray
-        if len(chunk_Dict["data"]) == 0 and dims:
+        if len(chunk_dict["data"]) == 0 and dims:
             if "tracking" in cls.__name__.lower():
                 data = np.zeros((0, 0, dims), "float64")
             else:
                 data = np.zeros((0, dims), "float64")
         else:
-            data = np.array(chunk_Dict["data"]).astype("float64")
+            data = np.array(chunk_dict["data"]).astype("float64")
         data[data == None] = np.nan
         return cls(
             data,
-            ptype=PType(chunk_Dict["ptype"]),
-            image_width=chunk_Dict["image_width"],
-            image_height=chunk_Dict["image_height"],
-            fps=chunk_Dict["fps"],
-            object_ids=chunk_Dict["object_ids"],
+            ptype=PType(chunk_dict["ptype"]),
+            image_width=chunk_dict["image_width"],
+            image_height=chunk_dict["image_height"],
+            fps=chunk_dict["fps"],
+            object_ids=chunk_dict["object_ids"],
         )
 
     @classmethod
-    def from_file(cls: Type[T], path: str | Path) -> T:
+    def from_file(cls: type[T], path: str | Path) -> T:
         """Read chunk from disk."""
         with gzip.open(path, "rt") as f:
             return cls.from_dict(json.loads(f.read()))

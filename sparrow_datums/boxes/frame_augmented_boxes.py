@@ -1,7 +1,7 @@
 import json
 from operator import itemgetter
 from pathlib import Path
-from typing import Any, Iterator, Optional, Type, Union
+from typing import Any, Dict, Iterator, List, Optional, Type, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -100,10 +100,10 @@ class FrameAugmentedBoxes(AugmentedBoxes):
     ) -> "FrameAugmentedBoxes":
         """Create FrameAugmentedBoxes from a serialized Darwin dict."""
         label_names_map = {name: float(idx) for idx, name in enumerate(label_names)}
-        image_width, image_height = itemgetter("width", "height")(darwin_Dict["image"])
+        image_width, image_height = itemgetter("width", "height")(darwin_dict["image"])
         boxes = []
         score = 1.0
-        for annotation in darwin_Dict["annotations"]:
+        for annotation in darwin_dict["annotations"]:
             if "bounding_box" not in annotation:
                 continue
             x, y, w, h = itemgetter("x", "y", "w", "h")(annotation["bounding_box"])

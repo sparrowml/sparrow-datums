@@ -2,7 +2,7 @@
 import json
 from operator import itemgetter
 from pathlib import Path
-from typing import Any, Iterator, List, Optional, Type, Union
+from typing import Any, Dict, Iterator, List, Optional, Type, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -109,16 +109,16 @@ class AugmentedBoxTracking(Tracking, AugmentedBoxes):
     ) -> "AugmentedBoxTracking":
         """Create AugmentedBoxTracking chunk from a serialized Darwin dict."""
         label_names_map = {name: float(idx) for idx, name in enumerate(label_names)}
-        image_width = darwin_Dict["image"]["width"]
-        image_height = darwin_Dict["image"]["height"]
-        fps = darwin_Dict["image"]["fps"]
-        n_frames = darwin_Dict["image"]["frame_count"]
-        n_objects = len(darwin_Dict["annotations"])
+        image_width = darwin_dict["image"]["width"]
+        image_height = darwin_dict["image"]["height"]
+        fps = darwin_dict["image"]["fps"]
+        n_frames = darwin_dict["image"]["frame_count"]
+        n_objects = len(darwin_dict["annotations"])
         data: npt.NDArray[np.float64] = np.zeros((n_frames, n_objects, 6)) * np.nan
         score = 1.0
-        object_ids: List[str] = [t["id"] for t in darwin_Dict["annotations"]]
+        object_ids: List[str] = [t["id"] for t in darwin_dict["annotations"]]
         for i in range(n_frames):
-            for j, tracklet in enumerate(darwin_Dict["annotations"]):
+            for j, tracklet in enumerate(darwin_dict["annotations"]):
                 annotation = tracklet["frames"].get(str(i), {})
                 if "bounding_box" not in annotation:
                     continue

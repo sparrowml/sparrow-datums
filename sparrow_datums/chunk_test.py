@@ -24,7 +24,7 @@ def test_dense_serialization_preserves_data():
     polygons_a = Polygons(np.random.uniform(size=(2,)), ptype=PType.unknown)
     polygons_a_dict = polygons_a.to_dict()
     # Classname gets serialized
-    assert polygons_a_Dict["classname"] == "Polygons"
+    assert polygons_a_dict["classname"] == "Polygons"
     with tempfile.TemporaryDirectory() as tmpdir:
         path = os.path.join(tmpdir, "test.json.gz")
         polygons_a.to_file(path)
