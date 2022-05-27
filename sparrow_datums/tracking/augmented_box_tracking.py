@@ -84,7 +84,13 @@ class AugmentedBoxTracking(Tracking, AugmentedBoxes):
             max_frame = max(frame_ids)
             annotations[j]["segments"] = [[min_frame, max_frame]]
         return {
-            "image": {"filename": filename, "path": path},
+            "image": {
+                "filename": filename,
+                "path": path,
+                "fps": self.fps,
+                "width": self.image_width,
+                "height": self.image_height,
+            },
             "annotations": annotations,
         }
 
