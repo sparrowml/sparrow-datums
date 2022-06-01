@@ -24,3 +24,10 @@ def test_nms_removes_overlapping_boxes_by_class():
     boxes = FrameAugmentedBoxes(data, ptype=PType.absolute_tlwh)
     filtered_boxes = non_max_suppression(boxes)
     assert set(filtered_boxes.scores) == {0.65, 0.7}
+
+
+def test_nms_handles_empty_array():
+    data = np.array([[0, 0, 1, 1, 0.4, 0]])
+    boxes = FrameAugmentedBoxes(data, ptype=PType.absolute_tlwh)
+    filtered_boxes = non_max_suppression(boxes)
+    assert len(filtered_boxes) == 0

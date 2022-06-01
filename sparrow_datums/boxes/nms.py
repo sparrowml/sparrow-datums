@@ -35,4 +35,10 @@ def non_max_suppression(
             index = np.where(iou <= iou_threshold)[0]
             score_order = score_order[index + 1]
 
-    return boxes[np.array(keepers)]
+    if len(keepers):
+        return boxes[np.array(keepers)]
+    return FrameAugmentedBoxes(
+        np.zeros((0, 6)),
+        ptype=boxes.ptype,
+        **boxes.metadata_kwargs,
+    )
