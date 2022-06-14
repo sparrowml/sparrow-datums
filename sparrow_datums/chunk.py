@@ -30,8 +30,10 @@ class Chunk(FloatArray):
         The height of the relevant image
     fps : float, optional
         The framerate of the chunk data (if tracking)
-    object_ids:  List[str], optional
+    object_ids:  list[str], optional
         Identifiers for the objects (if tracking)
+    start_time: float, optional
+        Start time of chunk with respect to video (if tracking)
     """
 
     def __new__(
@@ -42,6 +44,7 @@ class Chunk(FloatArray):
         image_height: int | None = None,
         fps: float | None = None,
         object_ids: list[str] | None = None,
+        start_time: float | None = None,
     ) -> T:
         """Instantiate a new chunk."""
         obj: T = np.asarray(data).view(cls)
@@ -50,6 +53,7 @@ class Chunk(FloatArray):
         obj._image_height = image_height
         obj._fps = fps
         obj._object_ids = object_ids
+        obj._start_time = start_time
         obj._scale = None
         return obj
 
@@ -62,6 +66,7 @@ class Chunk(FloatArray):
         self._image_height: float | None = getattr(obj, "_image_height", None)
         self._fps: float | None = getattr(obj, "_fps", None)
         self._object_ids: list[str] | None = getattr(obj, "_object_ids", None)
+        self._start_time: float | None = getattr(obj, "_start_time", None)
         self._scale: FloatArray | None = getattr(obj, "_scale", None)
         self.validate()
 
@@ -98,10 +103,17 @@ class Chunk(FloatArray):
 
     @property
     def object_ids(self) -> list[str]:
-        """Frames per second."""
+        """List of IDs for tracked objects."""
         if self._object_ids is None:
             raise ValueError("object_ids not set")
         return self._object_ids
+
+    @property
+    def start_time(self) -> float:
+        """Start time of chunk with respect to a video."""
+        if self._start_time is None:
+            raise ValueError("start_time not set")
+        return self._start_time
 
     @property
     def scale(self) -> FloatArray:
@@ -120,6 +132,7 @@ class Chunk(FloatArray):
             "image_height": self._image_height,
             "fps": self._fps,
             "object_ids": self._object_ids,
+            "start_time": self._start_time,
         }
 
     def to_dict(self) -> dict[str, Any]:
@@ -159,6 +172,7 @@ class Chunk(FloatArray):
             image_height=chunk_dict["image_height"],
             fps=chunk_dict["fps"],
             object_ids=chunk_dict["object_ids"],
+            start_time=chunk_dict.get("start_time"),  # Backwards compatibility
         )
 
     @classmethod
