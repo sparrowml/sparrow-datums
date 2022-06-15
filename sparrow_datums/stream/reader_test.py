@@ -18,8 +18,6 @@ def test_chunk_stream_reader():
         writer.add_chunk(a)
         writer.add_chunk(b)
         writer.close()
-        with open(manifest_path) as f:
-            manifest_values = f.read().split("\n")
         reader = ChunkStreamReader(manifest_path, BoxTracking)
         assert reader.header.fps == 1
         assert len(reader) == 2

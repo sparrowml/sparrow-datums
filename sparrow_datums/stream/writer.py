@@ -37,6 +37,14 @@ class ChunkStreamWriter:
         self.next_start_time = start_time
         self.write_manifest()
 
+    def __enter__(self) -> "ChunkStreamWriter":
+        """Enter context manager."""
+        return self
+
+    def __exit__(self, *args, **kwargs) -> None:
+        """Exit context manager."""
+        self.close()
+
     def add_chunk(self, chunk: T) -> None:
         """Add chunk to stream and re-write the manifest."""
         if not isinstance(chunk, self.chunk_type):

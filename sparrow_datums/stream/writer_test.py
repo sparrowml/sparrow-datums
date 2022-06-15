@@ -3,6 +3,7 @@ import os
 import tempfile
 
 import numpy as np
+import pytest
 
 from sparrow_datums import BoxTracking
 
@@ -37,3 +38,13 @@ def test_writer_writes_chunks():
             data = json.loads(chunk_path)
             _ = BoxTracking.from_file(os.path.join(dir, data["path"]))
         assert writer.footer.is_done
+
+
+def test_context_manager_closes_stream():
+    with pytest.raises(ValueError):
+        with tempfile.TemporaryDirectory() as dir:
+            manifest_path = os.path.join(dir, "stream.jsonl")
+            with ChunkStreamWriter(manifest_path, BoxTracking, fps=1) as writer:
+                assert writer.footer.is_done == False
+                raise ValueError("foo bar")
+    assert writer.footer.is_done
