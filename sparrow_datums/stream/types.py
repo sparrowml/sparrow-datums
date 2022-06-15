@@ -54,6 +54,7 @@ class ChunkPath(StreamValue):
     """Information about a chunk in the stream for the manifest."""
 
     path: str
+    start_time: float
     duration: float
 
 

@@ -21,6 +21,6 @@ def test_header_serialization():
 
 
 def test_chunk_path_serialization():
-    value_dict = {"path": "0000.json.gz", "duration": 4.0}
+    value_dict = {"path": "0000.json.gz", "duration": 4.0, "start_time": 0}
     value = ChunkPath.from_dict(value_dict)
     assert value.duration == 4.0
