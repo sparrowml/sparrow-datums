@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Optional
 
 from ..chunk import T
+from ..types import PType
 from .types import ChunkPath, Footer, Header
 
 
@@ -14,23 +15,21 @@ class ChunkStreamWriter:
         self,
         manifest_path: str | Path,
         chunk_type: type[T],
-        fps: float,
+        fps: Optional[float] = None,
         start_time: float = 0,
-        ptype: Optional[str] = None,
+        ptype: Optional[PType] = None,
         image_width: Optional[int] = None,
         image_height: Optional[int] = None,
-        object_ids: Optional[list[str]] = None,
     ) -> None:
         self.manifest_path = Path(manifest_path)
         self.chunk_type = chunk_type
         self.header = Header(
             classname=chunk_type.__name__,
-            ptype=ptype,
+            ptype=ptype.name if ptype else None,
             image_width=image_width,
             image_height=image_height,
             fps=fps,
             start_time=start_time,
-            object_ids=object_ids,
         )
         self.chunk_paths: list[ChunkPath] = []
         self.footer = Footer(is_done=False)
@@ -47,10 +46,34 @@ class ChunkStreamWriter:
 
     def add_chunk(self, chunk: T) -> None:
         """Add chunk to stream and re-write the manifest."""
+        # Fill missing header values
+        if self.header.ptype is None:
+            self.header.ptype = chunk.ptype.name
+        if self.header.image_width is None:
+            self.header.image_width = chunk._image_width
+        if self.header.image_height is None:
+            self.header.image_height = chunk._image_height
+        if self.header.fps is None:
+            self.header.fps = chunk._fps
+        # Validation
         if not isinstance(chunk, self.chunk_type):
             raise TypeError(
                 (f"Incorrect chunk type {type(chunk)}. Expected {self.chunk_type}.")
             )
+        if self.header.ptype != chunk.ptype.name:
+            raise ValueError(
+                f"Incorrect PType {chunk.ptype.name}. Expected {self.header.ptype}."
+            )
+        if self.header.image_width != chunk._image_width:
+            raise ValueError(
+                f"Incorrect image_width {chunk._image_width}. Expected {self.header.image_width}."
+            )
+        if self.header.image_height != chunk._image_height:
+            raise ValueError(
+                f"Incorrect image_height {chunk._image_height}. Expected {self.header.image_height}."
+            )
+        if self.header.fps != chunk._fps:
+            raise ValueError(f"Incorrect fps {chunk._fps}. Expected {self.header.fps}.")
         if chunk.start_time != self.next_start_time:
             raise ValueError(
                 f"Incorrect start time {chunk.start_time}. Expected {self.next_start_time}."

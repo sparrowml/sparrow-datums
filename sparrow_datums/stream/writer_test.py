@@ -48,3 +48,12 @@ def test_context_manager_closes_stream():
                 assert writer.footer.is_done == False
                 raise ValueError("foo bar")
     assert writer.footer.is_done
+
+
+def test_first_chunk_can_set_header():
+    with tempfile.TemporaryDirectory() as dir:
+        manifest_path = os.path.join(dir, "stream.jsonl")
+        writer = ChunkStreamWriter(manifest_path, BoxTracking)
+        a = BoxTracking(np.ones((2, 2, 4)), fps=1, start_time=0)
+        writer.add_chunk(a)
+        assert writer.header.fps == 1

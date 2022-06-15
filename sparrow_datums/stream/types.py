@@ -36,17 +36,15 @@ class Header(StreamValue):
     """
     Header information for a chunk stream manifest.
 
-    This is equivalent to chunk metadata except that
-    fps and start_time are required.
+    This is roughly equivalent to chunk metadata.
     """
 
     classname: str
-    ptype: str
+    ptype: Union[str, None]
     image_width: Union[int, None]
     image_height: Union[int, None]
     fps: float
     start_time: float
-    object_ids: Union[list[str], None]
 
 
 @dataclass

@@ -12,12 +12,11 @@ def test_header_serialization():
         image_width=None,
         image_height=None,
         fps=1,
-        object_ids=None,
         start_time=0,
     ).to_json()
     value = json.loads(value_str)
     assert value["classname"] == "FrameAugmentedBoxes"
-    assert value["object_ids"] is None
+    assert value["image_height"] is None
 
 
 def test_chunk_path_serialization():
