@@ -48,3 +48,9 @@ def test_nan_in_dense_gets_preserved():
 def test_chunk_is_an_ndarray():
     polygons = Polygons(np.ones(2))
     assert isinstance(polygons, np.ndarray)
+
+
+def test_duration_raises_by_default():
+    polygons = Polygons(np.ones(2))
+    with pytest.raises(NotImplementedError):
+        polygons.duration

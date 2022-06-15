@@ -125,6 +125,11 @@ class Chunk(FloatArray):
         return self._scale
 
     @property
+    def duration(self) -> float:
+        """Duration of the chunk in seconds."""
+        raise NotImplementedError
+
+    @property
     def metadata_kwargs(self) -> dict[str, Any]:
         """Metadata kwargs for downstream constructors."""
         return {
