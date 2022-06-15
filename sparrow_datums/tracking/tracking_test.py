@@ -18,3 +18,8 @@ def test_resample_random_chunk():
     assert len(fast_chunk) == 20
     slow_chunk = fast_chunk.resample(20)
     np.testing.assert_equal(chunk.array, slow_chunk.array)
+
+
+def test_valid_duration():
+    tracking = Tracking(np.ones((2, 2, 2)), fps=30)
+    assert tracking.duration == 1 / 15

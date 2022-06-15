@@ -15,6 +15,11 @@ class Tracking(Chunk):
         if self.ndim != 3:
             raise ValueError("Tracking chunks must have 3 dimensions")
 
+    @property
+    def duration(self) -> float:
+        """Compute duration (in seconds) of tracking chunk."""
+        return len(self) / self.fps
+
     def resample(self: T, new_fps: float) -> T:
         """Modify fps for a tracking chunk."""
         n_current_frames = len(self)
