@@ -4,9 +4,7 @@ RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhisto
 
 ENV LANG=C.UTF-8 \
     LC_ALL=C.UTF-8 \
-    PATH="${PATH}:/root/.poetry/bin" \
-    POETRY_HTTP_BASIC_SPARROW_USERNAME=2duoZW-WIAwAQm7qwno4sYhLmYhQaztiI0 \
-    POETRY_HTTP_BASIC_SPARROW_PASSWORD=""
+    PATH="${PATH}:/root/.poetry/bin"
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
