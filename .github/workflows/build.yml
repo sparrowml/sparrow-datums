@@ -27,9 +27,6 @@ jobs:
         key: venv-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('poetry.lock') }}
 
     - name: Install dependencies
-      env:
-        POETRY_HTTP_BASIC_SPARROW_USERNAME: ${{ secrets.POETRY_HTTP_BASIC_SPARROW_USERNAME }}
-        POETRY_HTTP_BASIC_SPARROW_PASSWORD: ""
       run: |
         poetry config virtualenvs.in-project true
         poetry install
@@ -48,7 +45,7 @@ jobs:
 
     - name: Publish package
       env:
-        POETRY_HTTP_BASIC_SPARROW_USERNAME: ${{ secrets.POETRY_HTTP_BASIC_SPARROW_USERNAME }}
-        POETRY_HTTP_BASIC_SPARROW_PASSWORD: ""
+        PYPI_USERNAME: __token__
+        PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
         make publish
