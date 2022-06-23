@@ -87,9 +87,21 @@ class FrameAugmentedBoxes(AugmentedBoxes):
         label_names: Optional[list[str]] = None,
     ) -> None:
         """
-        'output_path' is path and filename for saving the Darwin-formatted file.
-        'filename' is image/video name that matches Darwin dataset.
-        'label_names' can be list or tuple of strings.
+
+        Write Darwin annotation dict to disk.
+
+        Parameters
+        ----------
+        output_path : str
+            The full path (including filename) where the Darwin annotation will be written on disk
+        filename : str
+            The fimename of the image or video as it's referenced within the Darwin
+        path : str, optional
+            The path of the file within Darwin. The path starts at root ("/"),
+            and expands including the folders in which the resource is stored within Darwin.
+        label_names : list of str, optional
+            The names of the labeled classes annotated in the image or video. If None,
+            "Unknown" will be used.
         """
         with open(output_path, "w") as f:
             f.write(
