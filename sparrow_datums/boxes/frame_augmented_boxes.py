@@ -87,7 +87,6 @@ class FrameAugmentedBoxes(AugmentedBoxes):
         label_names: Optional[list[str]] = None,
     ) -> None:
         """
-
         Write Darwin annotation dict to disk.
 
         Parameters
