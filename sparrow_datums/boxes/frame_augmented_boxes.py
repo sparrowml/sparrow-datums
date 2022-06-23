@@ -86,7 +86,11 @@ class FrameAugmentedBoxes(AugmentedBoxes):
         path: str = "/",
         label_names: Optional[list[str]] = None,
     ) -> None:
-        """Write Darwin annotation dict to disk."""
+        """
+        'output_path' is path and filename for saving the Darwin-formatted file.
+        'filename' is image/video name that matches Darwin dataset.
+        'label_names' can be list or tuple of strings.
+        """
         with open(output_path, "w") as f:
             f.write(
                 json.dumps(
