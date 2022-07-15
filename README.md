@@ -18,6 +18,7 @@ pip install -U sparrow-datums
 ## Switching between box parameterizations
 
 ```python
+import numpy as np
 from sparrow_datums import FrameBoxes, PType
 
 boxes = FrameBoxes(np.ones((4, 4)), PType.absolute_tlwh)
