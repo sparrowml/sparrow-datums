@@ -1,38 +1,13 @@
-# sparrow-datums
+# Sparrow Datums
 
-<div align="center">
+Sparrow Datums is a Python package for vision AI data structures, related operations and serialization/deserialization.
+Specifically, it makes it easier to work with bounding boxes, key points (TODO), and segmentation masks (TODO).
+It supports individual objects, frames of objects, multiple frames of objects, objects augmented with class labels and confidence scores, and more.
 
-A Python package for data structures
+Sparrow Datums also supports object tracking where the identity of the object is maintained. And that data
+can be streamed instead of keeping it all in a single file.
 
-</div>
-
-### Poetry
-
-Want to know more about Poetry? Check [its documentation](https://python-poetry.org/docs/).
-
-<details>
-<summary>Details about Poetry</summary>
-<p>
-
-Poetry's [commands](https://python-poetry.org/docs/cli/#commands) are very intuitive and easy to learn, like:
-
-- `poetry add numpy@latest`
-- `poetry run pytest`
-- `poetry publish --build`
-
-etc
-</p>
-</details>
-
-## Building and releasing your package
-
-Building a new version of the application contains steps:
-
-- Bump the version of your package `poetry version <version>`. You can pass the new version explicitly, or a rule such as `major`, `minor`, or `patch`. For more details, refer to the [Semantic Versions](https://semver.org/) standard.
-- Make a commit to `GitHub`.
-- Create a `GitHub release`.
-- And... publish 🙂 `poetry publish --build`
-
+# Quick Start Example
 
 ## Installation
 
@@ -40,215 +15,80 @@ Building a new version of the application contains steps:
 pip install -U sparrow-datums
 ```
 
-or install with `Poetry`
+## Switching between box parameterizations
 
-```bash
-poetry add sparrow-datums
+```python
+from sparrow_datums import FrameBoxes, PType
+
+boxes = FrameBoxes(np.ones((4, 4)), PType.absolute_tlwh)
+boxes.to_tlbr()
+
+# Expected result
+# FrameBoxes([[1., 1., 2., 2.],
+#             [1., 1., 2., 2.],
+#             [1., 1., 2., 2.],
+#             [1., 1., 2., 2.]])
 ```
 
-Then you can run
+## Slicing
 
-```bash
-sparrow-datums --help
+Notice that all "chunk" objects override basic NumPy arrays. This means that some filtering operations work as expected:
+
+```python
+boxes[:2]
+
+# Expected result
+# FrameBoxes([[1., 1., 1., 1.],
+#             [1., 1., 1., 1.]])
 ```
 
-or with `Poetry`:
+But sub-types do their own validation. For example, `FrameBoxes` must be a `(n, 4)` array. Therefore, selecting a single column throws an error:
 
-```bash
-poetry run sparrow-datums --help
+```python
+boxes[:, 0]
+
+# Expected exception
+# ValueError: A frame boxes object must be a 2D array
 ```
 
-### Makefile usage
+Instead, chunks expose different subsets of the data as properties. For example, you can get the `x` coordinate as an array:
 
-[`Makefile`](https://github.com/sparrowml/sparrow-datums/blob/master/Makefile) contains a lot of functions for faster development.
+```python
+boxes.x
 
-<details>
-<summary>1. Download and remove Poetry</summary>
-<p>
-
-To download and install Poetry run:
-
-```bash
-make poetry-download
+# Expected result
+# array([1., 1., 1., 1.])
 ```
 
-To uninstall
+Or the width of the boxes:
 
-```bash
-make poetry-remove
+```python
+boxes.w
+
+# Expected result
+# array([1., 1., 1., 1.])
 ```
 
-</p>
-</details>
+If you need to access the raw data, you can do that with a chunk's `array` property:
 
-<details>
-<summary>2. Install all dependencies and pre-commit hooks</summary>
-<p>
+```python
+boxes.array[0, 0]
 
-Install requirements:
-
-```bash
-make install
+# Expected result
+# 1.0
 ```
 
-Pre-commit hooks coulb be installed after `git init` via
+## Operations
 
-```bash
-make pre-commit-install
+Sparrow Datums comes with common operations for data types. For example, you can compute the pairwise IoU of two sets of `FrameBoxes`:
+
+```python
+from sparrow_datums import pairwise_iou
+
+pairwise_iou(boxes, boxes + 0.1)
+
+# array([[0.57857143, 0.57857143, 0.57857143, 0.57857143],
+#        [0.57857143, 0.57857143, 0.57857143, 0.57857143],
+#        [0.57857143, 0.57857143, 0.57857143, 0.57857143],
+#        [0.57857143, 0.57857143, 0.57857143, 0.57857143]])
 ```
-
-</p>
-</details>
-
-<details>
-<summary>3. Codestyle</summary>
-<p>
-
-Automatic formatting uses `pyupgrade`, `isort` and `black`.
-
-```bash
-make codestyle
-
-# or use synonym
-make formatting
-```
-
-Codestyle checks only, without rewriting files:
-
-```bash
-make check-codestyle
-```
-
-> Note: `check-codestyle` uses `isort`, `black` and `darglint` library
-
-Update all dev libraries to the latest version using one comand
-
-```bash
-make update-dev-deps
-```
-
-<details>
-<summary>4. Code security</summary>
-<p>
-
-```bash
-make check-safety
-```
-
-This command launches `Poetry` integrity checks as well as identifies security issues with `Safety` and `Bandit`.
-
-```bash
-make check-safety
-```
-
-</p>
-</details>
-
-</p>
-</details>
-
-<details>
-<summary>5. Type checks</summary>
-<p>
-
-Run `mypy` static type checker
-
-```bash
-make mypy
-```
-
-</p>
-</details>
-
-<details>
-<summary>6. Tests with coverage badges</summary>
-<p>
-
-Run `pytest`
-
-```bash
-make test
-```
-
-</p>
-</details>
-
-<details>
-<summary>7. All linters</summary>
-<p>
-
-Of course there is a command to ~~rule~~ run all linters in one:
-
-```bash
-make lint
-```
-
-the same as:
-
-```bash
-make test && make check-codestyle && make mypy && make check-safety
-```
-
-</p>
-</details>
-
-<details>
-<summary>8. Docker</summary>
-<p>
-
-```bash
-make docker-build
-```
-
-which is equivalent to:
-
-```bash
-make docker-build VERSION=latest
-```
-
-Remove docker image with
-
-```bash
-make docker-remove
-```
-
-More information [about docker](https://github.com/sparrowml/sparrow-datums/tree/master/docker).
-
-</p>
-</details>
-
-<details>
-<summary>9. Cleanup</summary>
-<p>
-Delete pycache files
-
-```bash
-make pycache-remove
-```
-
-Remove package build
-
-```bash
-make build-remove
-```
-
-Delete .DS_STORE files
-
-```bash
-make dsstore-remove
-```
-
-Remove .mypycache
-
-```bash
-make mypycache-remove
-```
-
-Or to remove all above run:
-
-```bash
-make cleanup
-```
-
-</p>
-</details>
