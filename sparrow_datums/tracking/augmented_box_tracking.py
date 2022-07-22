@@ -78,10 +78,13 @@ class AugmentedBoxTracking(Tracking, AugmentedBoxes):
                 annotations[j]["name"] = name
                 annotations[j]["frames"][str(i)] = frame_dict
                 annotations[j]["id"] = self.object_ids[j]
+
+        annotations = [x for x in annotations if len(x["frames"].keys()) != 0]
+
         for j in range(len(annotations)):
             frame_ids = list(map(int, annotations[j]["frames"].keys()))
             min_frame = min(frame_ids)
-            max_frame = max(frame_ids)
+            max_frame = max(frame_ids) + 1
             annotations[j]["segments"] = [[min_frame, max_frame]]
         return {
             "image": {
