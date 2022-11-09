@@ -119,12 +119,13 @@ class AugmentedBoxTracking(Tracking, AugmentedBoxes):
         cls: type["AugmentedBoxTracking"],
         darwin_dict: dict[str, Any],
         label_names: list[str] = [],
+        fps: Optional[float] = None,
     ) -> "AugmentedBoxTracking":
         """Create AugmentedBoxTracking chunk from a serialized Darwin dict."""
         label_names_map = {name: float(idx) for idx, name in enumerate(label_names)}
         image_width = darwin_dict["image"]["width"]
         image_height = darwin_dict["image"]["height"]
-        fps = darwin_dict["image"]["fps"]
+        fps = darwin_dict["image"].get("fps", fps)
         n_frames = darwin_dict["image"]["frame_count"]
         n_objects = len(darwin_dict["annotations"])
         data: npt.NDArray[np.float64] = np.zeros((n_frames, n_objects, 6)) * np.nan
@@ -152,11 +153,12 @@ class AugmentedBoxTracking(Tracking, AugmentedBoxes):
         cls: type["AugmentedBoxTracking"],
         path: Union[str, Path],
         label_names: list[str] = [],
+        fps: Optional[float] = None,
     ) -> "AugmentedBoxTracking":
         """Read AugmentedBoxTracking from Darwin dict on disk."""
         with open(path) as f:
             darwin_dict = json.loads(f.read())
-        return cls.from_darwin_dict(darwin_dict, label_names=label_names)
+        return cls.from_darwin_dict(darwin_dict, label_names=label_names, fps=fps)
 
     @classmethod
     def from_dict(
