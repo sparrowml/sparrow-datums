@@ -55,3 +55,11 @@ def test_duration_raises_by_default():
     polygons = Polygons(np.ones(2))
     with pytest.raises(NotImplementedError):
         polygons.duration
+
+
+def test_concat_concatenates_along_zeroth_axis():
+    polygons_a = Polygons(np.random.uniform(size=(1, 2)), ptype=PType.unknown)
+    polygons_b = Polygons(np.random.uniform(size=(2, 2)), ptype=PType.unknown)
+    polygons_c = polygons_a.concat(polygons_b)
+    assert polygons_c.shape == (3, 2)
+    assert polygons_c.ptype == PType.unknown
