@@ -165,15 +165,6 @@ class Chunk(FloatArray):
             "start_time": self._start_time,
         }
 
-    def concat(self, other: T) -> T:
-        """Concatenate another chunk along the 0th axis."""
-        data = np.concatenate([self.array, other.array])
-        return self.__class__(
-            data,
-            ptype=self.ptype,
-            **self.metadata_kwargs,
-        )
-
     def pad(self, shape: tuple[int, ...]) -> T:
         """Pad a chunk with NaN values."""
         try:
