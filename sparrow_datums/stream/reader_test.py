@@ -22,3 +22,5 @@ def test_chunk_stream_reader():
         assert reader.header.fps == 1
         assert len(reader) == 2
         assert isinstance(reader[1], BoxTracking)
+        assert reader.max_objects == 2
+        assert all(isinstance(chunk, BoxTracking) for chunk in reader)
