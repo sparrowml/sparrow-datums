@@ -58,7 +58,8 @@ DARWIN_DICT = {
                     "keyframe": False,
                 },
             },
-            "id": "c2c5e6c7-f4f5-4edb-b24a-00aa76b7674e",
+            # Leave id out of one annotation to make sure everything still works
+            # "id": "c2c5e6c7-f4f5-4edb-b24a-00aa76b7674e",
             "interpolate_algorithm": "linear-1.1",
             "interpolated": True,
             "name": "car",

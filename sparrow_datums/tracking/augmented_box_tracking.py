@@ -130,7 +130,9 @@ class AugmentedBoxTracking(Tracking, AugmentedBoxes):
         n_objects = len(darwin_dict["annotations"])
         data: npt.NDArray[np.float64] = np.zeros((n_frames, n_objects, 6)) * np.nan
         score = 1.0
-        object_ids: list[str] = [t["id"] for t in darwin_dict["annotations"]]
+        object_ids: list[str] = [
+            t.get("id", str(i)) for i, t in enumerate(darwin_dict["annotations"])
+        ]
         for i in range(n_frames):
             for j, tracklet in enumerate(darwin_dict["annotations"]):
                 annotation = tracklet["frames"].get(str(i), {})
