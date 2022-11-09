@@ -15,6 +15,7 @@ def test_chunk_stream_reader():
         writer = ChunkStreamWriter(manifest_path, BoxTracking, fps=1)
         a = BoxTracking(np.ones((2, 2, 4)), fps=1, start_time=0)
         b = BoxTracking(np.ones((2, 2, 4)), fps=1, start_time=a.duration)
+        c = BoxTracking(np.ones((2, 1, 4)))
         writer.add_chunk(a)
         writer.add_chunk(b)
         writer.close()
@@ -22,5 +23,4 @@ def test_chunk_stream_reader():
         assert reader.header.fps == 1
         assert len(reader) == 2
         assert isinstance(reader[1], BoxTracking)
-        assert reader.max_objects == 2
         assert all(isinstance(chunk, BoxTracking) for chunk in reader)

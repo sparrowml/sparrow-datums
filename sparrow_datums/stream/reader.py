@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from collections import Iterator
 from pathlib import Path
+from typing import Iterator
 
 from ..chunk import T
 from ..exceptions import ValidationError
@@ -57,11 +57,3 @@ class ChunkStreamReader:
         """Yield chunks from a stream."""
         for i in range(len(self)):
             yield self[i]
-
-    @property
-    def max_objects(self) -> int:
-        """Get the max number of objects in a chunk stream."""
-        n_objects = 0
-        for chunk in self:
-            n_objects = max(chunk.shape[1], n_objects)
-        return n_objects
