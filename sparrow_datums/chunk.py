@@ -37,6 +37,8 @@ class Chunk(FloatArray):
         Start time of chunk with respect to video (if tracking)
     """
 
+    empty_shape: tuple[int, ...]
+
     def __new__(
         cls: type[T],
         data: FloatArray,
@@ -75,6 +77,28 @@ class Chunk(FloatArray):
     def validate(self) -> None:
         """Raise ValidationError for incorrect shape or values."""
         raise NotImplementedError
+
+    @classmethod
+    def empty(
+        cls: type[T],
+        ptype: PType = PType.unknown,
+        image_width: int | None = None,
+        image_height: int | None = None,
+        fps: float | None = None,
+        object_ids: list[str] | None = None,
+        start_time: float | None = None,
+    ) -> T:
+        """Create an empty chunk."""
+        data = np.zeros(cls.empty_shape) * np.nan
+        return cls(
+            data,
+            ptype=ptype,
+            image_width=image_width,
+            image_height=image_height,
+            fps=fps,
+            object_ids=object_ids,
+            start_time=start_time,
+        )
 
     @property
     def array(self) -> FloatArray:

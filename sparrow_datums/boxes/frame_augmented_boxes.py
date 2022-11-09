@@ -45,6 +45,8 @@ class FrameAugmentedBoxes(AugmentedBoxes):
     [0.  0.  1.  1.  0.5 3. ]
     """
 
+    empty_shape: tuple[int, int] = (0, 6)
+
     def validate(self) -> None:
         """Check validity of boxes array."""
         super().validate()

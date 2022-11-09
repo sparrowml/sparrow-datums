@@ -33,6 +33,8 @@ class BoxTracking(Tracking, Boxes):
         Identifiers for the objects (if tracking)
     """
 
+    empty_shape: tuple[int, int, int] = (0, 0, 4)
+
     def validate(self) -> None:
         """Validate tracking shape and boxes."""
         super().validate()

@@ -10,6 +10,8 @@ from .types import PType
 
 
 class Polygons(Chunk):
+    empty_shape: tuple[int] = (2,)
+
     def validate(self) -> None:
         if self.shape[-1] != 2:
             raise ValidationError("Uh oh")
@@ -70,3 +72,8 @@ def test_pad_adds_nan_values():
     polygons_b = polygons_a.pad((4, 2))
     assert polygons_b.shape == (4, 2)
     assert np.isnan(polygons_b.array).mean() == 0.5
+
+
+def test_empty_polygons():
+    empty_polygons = Polygons.empty()
+    assert empty_polygons.shape == (2,)
