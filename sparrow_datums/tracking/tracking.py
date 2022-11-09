@@ -3,6 +3,7 @@ from typing import TypeVar
 import numpy as np
 
 from ..chunk import Chunk
+from ..exceptions import ValidationError
 
 T = TypeVar("T", bound="Tracking")
 
@@ -13,7 +14,7 @@ class Tracking(Chunk):
     def validate(self) -> None:
         """Check shape of tracking array."""
         if self.ndim != 3:
-            raise ValueError("Tracking chunks must have 3 dimensions")
+            raise ValidationError("Tracking chunks must have 3 dimensions")
 
     @property
     def duration(self) -> float:

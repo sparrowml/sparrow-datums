@@ -9,6 +9,7 @@ from typing import Any, TypeVar
 
 import numpy as np
 
+from .exceptions import ValidationError
 from .types import FloatArray, PType
 
 T = TypeVar("T", bound="Chunk")
@@ -72,7 +73,7 @@ class Chunk(FloatArray):
 
     @abc.abstractmethod
     def validate(self) -> None:
-        """Raise ValueError for incorrect shape or values."""
+        """Raise ValidationError for incorrect shape or values."""
         raise NotImplementedError
 
     @property
@@ -84,35 +85,35 @@ class Chunk(FloatArray):
     def image_width(self) -> float:
         """Image width."""
         if self._image_width is None:
-            raise ValueError("image_width not set")
+            raise ValidationError("image_width not set")
         return self._image_width
 
     @property
     def image_height(self) -> float:
         """Image height."""
         if self._image_height is None:
-            raise ValueError("image_height not set")
+            raise ValidationError("image_height not set")
         return self._image_height
 
     @property
     def fps(self) -> float:
         """Frames per second."""
         if self._fps is None:
-            raise ValueError("fps not set")
+            raise ValidationError("fps not set")
         return self._fps
 
     @property
     def object_ids(self) -> list[str]:
         """List of IDs for tracked objects."""
         if self._object_ids is None:
-            raise ValueError("object_ids not set")
+            raise ValidationError("object_ids not set")
         return self._object_ids
 
     @property
     def start_time(self) -> float:
         """Start time of chunk with respect to a video."""
         if self._start_time is None:
-            raise ValueError("start_time not set")
+            raise ValidationError("start_time not set")
         return self._start_time
 
     @property
@@ -152,7 +153,7 @@ class Chunk(FloatArray):
     def to_file(self, path: str | Path) -> None:
         """Write serialized chunk to disk."""
         if not str(path).endswith(".json.gz"):
-            raise ValueError("Chunk file name must end with .json.gz")
+            raise ValidationError("Chunk file name must end with .json.gz")
         with gzip.open(path, "wt") as f:
             f.write(json.dumps(self.to_dict()))
 

@@ -4,6 +4,7 @@ import numpy as np
 import numpy.typing as npt
 import pytest
 
+from ..exceptions import ValidationError
 from ..types import PType
 from . import augmented_boxes
 from .augmented_boxes import AugmentedBoxes
@@ -23,21 +24,21 @@ def test_augmented_boxes_with_6d_array_succeeds():
 
 def test_wrong_shape_throws_value_error():
     x: npt.NDArray[np.float64] = np.ones((5, 4))
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         AugmentedBoxes(x)
 
 
 def test_non_integer_labels_throws_value_error():
     x: npt.NDArray[np.float64] = np.ones((5, 6))
     x[..., -1] += np.random.uniform(size=5)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         AugmentedBoxes(x)
 
 
 def test_invalid_scores_range_throws_value_error():
     x: npt.NDArray[np.float64] = np.ones((5, 6))
     x[..., -2] += 1
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         AugmentedBoxes(x)
 
 

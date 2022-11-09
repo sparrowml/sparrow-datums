@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 
+from ..exceptions import ValidationError
 from ..types import PType
 from .single_augmented_box import SingleAugmentedBox
 
@@ -13,9 +14,9 @@ def test_single_augmented_box_conversion_creates_single_augmented_box():
 
 
 def test_single_augmented_box_with_bad_shape_throws_value_error():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         SingleAugmentedBox(np.ones((2, 6)))
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         SingleAugmentedBox(np.ones(4))
 
 

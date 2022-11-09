@@ -4,6 +4,7 @@ from typing import Any, Iterator, Optional
 
 import numpy as np
 
+from ..exceptions import ValidationError
 from ..types import FloatArray, PType
 from .boxes import Boxes
 from .single_box import SingleBox
@@ -11,7 +12,7 @@ from .single_box import SingleBox
 
 def _is_2d(x: FloatArray) -> None:
     if x.ndim != 2:
-        raise ValueError("A frame boxes object must be a 2D array")
+        raise ValidationError("A frame boxes object must be a 2D array")
 
 
 class FrameBoxes(Boxes):
@@ -80,9 +81,13 @@ class FrameBoxes(Boxes):
     def add_box(self, box: SingleBox) -> "FrameBoxes":
         """Concatenate a single box."""
         if self.ptype != box.ptype:
-            raise ValueError("SingleBox with different PType cannot be concatenated")
+            raise ValidationError(
+                "SingleBox with different PType cannot be concatenated"
+            )
         if self.metadata_kwargs != box.metadata_kwargs:
-            raise ValueError("SingleBox with different metadata cannot be concatenated")
+            raise ValidationError(
+                "SingleBox with different metadata cannot be concatenated"
+            )
         return FrameBoxes(
             np.concatenate([self.array, box.array[None]]),
             ptype=self.ptype,

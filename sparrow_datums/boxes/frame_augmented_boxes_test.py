@@ -7,6 +7,7 @@ import pytest
 
 from sparrow_datums.boxes.frame_boxes import FrameBoxes
 
+from ..exceptions import ValidationError
 from ..types import PType
 from . import frame_augmented_boxes
 from .frame_augmented_boxes import FrameAugmentedBoxes
@@ -71,9 +72,9 @@ def test_frame_augmented_boxes_conversion_creates_frame_augmented_boxes():
 
 
 def test_frame_augmented_boxes_with_bad_shape_throws_value_error():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         FrameAugmentedBoxes(np.ones(6))
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         FrameAugmentedBoxes(np.ones((2, 4)))
 
 

@@ -3,6 +3,7 @@ import doctest
 import numpy as np
 import pytest
 
+from ..exceptions import ValidationError
 from ..types import FloatArray, PType
 from . import boxes
 from .boxes import Boxes
@@ -15,7 +16,7 @@ def test_docstring_example():
 
 
 def test_bad_shape_throws_type_error():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         Boxes(np.ones(3))
 
 
@@ -71,7 +72,7 @@ def test_boxes_to_tlbr_doesnt_change_original_instance():
 
 def test_box_slicing_cols_throws_value_error():
     boxes = Boxes(np.random.uniform(size=(10, 4)))
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         boxes[:, :2]
     top_left = boxes.array[:, :2]
     assert isinstance(top_left, np.ndarray)
@@ -97,7 +98,7 @@ def test_boxes_saves_classname():
 
 
 def test_box_attributes_require_known_box_parameterization():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         Boxes(np.ones(4)).x
 
 

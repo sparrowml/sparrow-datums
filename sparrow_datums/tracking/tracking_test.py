@@ -1,11 +1,12 @@
 import numpy as np
 import pytest
 
+from ..exceptions import ValidationError
 from .tracking import Tracking
 
 
 def test_validate_tracking_chunk():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         Tracking(np.ones((2, 4)))
     Tracking(np.ones((2, 2, 2)))
 

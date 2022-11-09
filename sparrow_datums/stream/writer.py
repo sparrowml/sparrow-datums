@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Optional
 
 from ..chunk import T
+from ..exceptions import ValidationError
 from ..types import PType
 from .types import ChunkPath, Footer, Header
 
@@ -61,21 +62,23 @@ class ChunkStreamWriter:
                 (f"Incorrect chunk type {type(chunk)}. Expected {self.chunk_type}.")
             )
         if self.header.ptype != chunk.ptype.name:
-            raise ValueError(
+            raise ValidationError(
                 f"Incorrect PType {chunk.ptype.name}. Expected {self.header.ptype}."
             )
         if self.header.image_width != chunk._image_width:
-            raise ValueError(
+            raise ValidationError(
                 f"Incorrect image_width {chunk._image_width}. Expected {self.header.image_width}."
             )
         if self.header.image_height != chunk._image_height:
-            raise ValueError(
+            raise ValidationError(
                 f"Incorrect image_height {chunk._image_height}. Expected {self.header.image_height}."
             )
         if self.header.fps != chunk._fps:
-            raise ValueError(f"Incorrect fps {chunk._fps}. Expected {self.header.fps}.")
+            raise ValidationError(
+                f"Incorrect fps {chunk._fps}. Expected {self.header.fps}."
+            )
         if chunk.start_time != self.next_start_time:
-            raise ValueError(
+            raise ValidationError(
                 f"Incorrect start time {chunk.start_time}. Expected {self.next_start_time}."
             )
         chunk_index = len(self.chunk_paths)

@@ -7,42 +7,25 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.8"]
+        python-version: ["3.9"]
 
     steps:
     - uses: actions/checkout@v2
 
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python
       uses: actions/setup-python@v2.2.2
       with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Install poetry
-      run: make poetry-download
-
-    - name: Set up cache
-      uses: actions/cache@v2.1.6
-      with:
-        path: .venv
-        key: venv-${{ matrix.python-version }}-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('poetry.lock') }}
+        python-version: 3.9
 
     - name: Install dependencies
       run: |
-        poetry config virtualenvs.in-project true
-        poetry install
-
-    - name: Run style checks
-      run: |
-        make check-codestyle
-
+        pip install .[dev]
     - name: Run tests
       run: |
         make test
-
-    - name: Run safety checks
+    - name: Run style checks
       run: |
-        make check-safety
-
+        make check-codestyle
     - name: Publish package
       env:
         PYPI_USERNAME: __token__

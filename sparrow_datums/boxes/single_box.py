@@ -1,10 +1,11 @@
+from ..exceptions import ValidationError
 from ..types import FloatArray
 from .boxes import Boxes
 
 
 def _is_1d(x: FloatArray) -> None:
     if x.ndim != 1:
-        raise ValueError("Single box must be a 1D array")
+        raise ValidationError("Single box must be a 1D array")
 
 
 class SingleBox(Boxes):

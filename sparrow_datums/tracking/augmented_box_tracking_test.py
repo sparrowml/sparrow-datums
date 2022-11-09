@@ -4,6 +4,7 @@ import pytest
 from sparrow_datums.boxes.frame_augmented_boxes import FrameAugmentedBoxes
 from sparrow_datums.tracking.box_tracking import BoxTracking
 
+from ..exceptions import ValidationError
 from ..types import PType
 from .augmented_box_tracking import AugmentedBoxTracking
 
@@ -104,9 +105,9 @@ DARWIN_DICT = {
 
 
 def test_box_tracking_chunk_requires_3_dimensions():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         AugmentedBoxTracking(np.ones((2, 6)))
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         AugmentedBoxTracking(np.ones((2, 2, 4)))
 
 

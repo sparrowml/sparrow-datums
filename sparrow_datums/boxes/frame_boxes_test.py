@@ -3,6 +3,7 @@ import doctest
 import numpy as np
 import pytest
 
+from ..exceptions import ValidationError
 from ..types import FloatArray, PType
 from . import frame_boxes
 from .frame_boxes import FrameBoxes
@@ -22,9 +23,9 @@ def test_frame_boxes_conversion_creates_frame_boxes():
 
 
 def test_frame_boxes_with_bad_shape_throws_value_error():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         FrameBoxes(np.ones(4))
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         FrameBoxes(np.ones((2, 3)))
 
 
@@ -46,10 +47,10 @@ def test_add_box_with_different_attributes_fails():
     data: FloatArray = np.random.uniform(size=4)
     boxes = FrameBoxes.from_single_box(SingleBox(data))
     box_b = SingleBox(data, ptype=PType.relative_tlbr)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         boxes.add_box(box_b)
     box_c = SingleBox(data, image_width=100)
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         boxes.add_box(box_c)
 
 

@@ -3,6 +3,7 @@ from __future__ import annotations
 import numpy as np
 import numpy.typing as npt
 
+from ..exceptions import ValidationError
 from ..types import FloatArray
 from .boxes import Boxes
 
@@ -42,12 +43,12 @@ class AugmentedBoxes(Boxes):
     def validate(self) -> None:
         """Check validity of boxes array."""
         if not self.shape or self.shape[-1] != 6:
-            raise ValueError("AugmentedBoxes arrays must have size-6 dimensions")
+            raise ValidationError("AugmentedBoxes arrays must have size-6 dimensions")
         if not np.all(np.nan_to_num(np.mod(self.array[..., -1], 1)) == 0):
-            raise ValueError("labels must be whole number class indices")
+            raise ValidationError("labels must be whole number class indices")
         nonan_scores = np.nan_to_num(self.scores)
         if not np.all(nonan_scores >= 0) or not np.all(nonan_scores <= 1):
-            raise ValueError("scores array must be floats in [0, 1]")
+            raise ValidationError("scores array must be floats in [0, 1]")
 
     @property
     def scores(self) -> FloatArray:

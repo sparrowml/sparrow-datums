@@ -5,18 +5,19 @@ import numpy as np
 import pytest
 
 from .chunk import Chunk
+from .exceptions import ValidationError
 from .types import PType
 
 
 class Polygons(Chunk):
     def validate(self) -> None:
         if self.shape[-1] != 2:
-            raise ValueError("Uh oh")
+            raise ValidationError("Uh oh")
 
 
 def test_dense_with_no_width_throws_on_scale():
     polygons = Polygons(np.ones((10, 10, 2)))
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         polygons.scale
 
 

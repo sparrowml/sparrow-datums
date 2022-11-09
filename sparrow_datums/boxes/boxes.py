@@ -3,6 +3,7 @@ from typing import TypeVar
 import numpy as np
 
 from ..chunk import Chunk
+from ..exceptions import ValidationError
 from ..types import FloatArray, PType
 
 T = TypeVar("T", bound="Boxes")
@@ -38,7 +39,7 @@ class Boxes(Chunk):
     def validate(self) -> None:
         """Check validity of boxes array."""
         if not self.shape or self.shape[-1] != 4:
-            raise ValueError("Box arrays must have size-4 dimensions")
+            raise ValidationError("Box arrays must have size-4 dimensions")
 
     @property
     def is_relative(self) -> bool:
@@ -140,7 +141,7 @@ class Boxes(Chunk):
             PType.relative_tlwh,
         }
         if self.ptype not in known_box_parameterizations:
-            raise ValueError(f"Unknown box parameterization: {self.ptype.name}")
+            raise ValidationError(f"Unknown box parameterization: {self.ptype.name}")
 
     @property
     def x(self) -> FloatArray:

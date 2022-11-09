@@ -8,6 +8,7 @@ from typing import Any, Iterator, Optional, Union
 import numpy as np
 import numpy.typing as npt
 
+from ..exceptions import ValidationError
 from ..types import PType
 from .augmented_boxes import AugmentedBoxes
 from .frame_boxes import FrameBoxes, _is_2d
@@ -172,11 +173,11 @@ class FrameAugmentedBoxes(AugmentedBoxes):
     def add_box(self, box: SingleAugmentedBox) -> "FrameAugmentedBoxes":
         """Concatenate a single augmented box."""
         if self.ptype != box.ptype:
-            raise ValueError(
+            raise ValidationError(
                 "SingleAugmentedBox with different PType cannot be concatenated"
             )
         if self.metadata_kwargs != box.metadata_kwargs:
-            raise ValueError(
+            raise ValidationError(
                 "SingleAugmentedBox with different metadata cannot be concatenated"
             )
         return FrameAugmentedBoxes(
