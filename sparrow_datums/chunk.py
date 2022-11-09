@@ -150,6 +150,23 @@ class Chunk(FloatArray):
             **self.metadata_kwargs,
         )
 
+    def pad(self, shape: tuple[int, ...]) -> T:
+        """Pad a chunk with NaN values."""
+        try:
+            assert len(shape) == self.ndim
+            assert all(a <= b for a, b in zip(self.shape, shape))
+        except AssertionError:
+            raise ValidationError(
+                f"Shape should be compatible with {self.shape} but got {shape}."
+            )
+        pad_width = tuple((0, b - a) for a, b in zip(self.shape, shape))
+        data = np.pad(self.array, pad_width, "constant", constant_values=np.nan)
+        return self.__class__(
+            data,
+            ptype=self.ptype,
+            **self.metadata_kwargs,
+        )
+
     def to_dict(self) -> dict[str, Any]:
         """Serialize chunk to a dict."""
         return {

@@ -63,3 +63,10 @@ def test_concat_concatenates_along_zeroth_axis():
     polygons_c = polygons_a.concat(polygons_b)
     assert polygons_c.shape == (3, 2)
     assert polygons_c.ptype == PType.unknown
+
+
+def test_pad_adds_nan_values():
+    polygons_a = Polygons(np.random.uniform(size=(2, 2)), ptype=PType.unknown)
+    polygons_b = polygons_a.pad((4, 2))
+    assert polygons_b.shape == (4, 2)
+    assert np.isnan(polygons_b.array).mean() == 0.5
