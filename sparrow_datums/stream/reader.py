@@ -3,8 +3,11 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Iterator
 
+import numpy as np
+
 from ..chunk import T
 from ..exceptions import ValidationError
+from ..tracking import Tracking
 from ..types import PType
 from .types import ChunkPath, Footer, Header
 
@@ -14,6 +17,8 @@ class ChunkStreamReader:
 
     def __init__(self, manifest_path: str | Path, chunk_type: type[T]) -> None:
         self.manifest_path = Path(manifest_path)
+        if not issubclass(chunk_type, Tracking):
+            raise ValidationError(f"Invalid stream chunk type {chunk_type}")
         self.chunk_type = chunk_type
         header, chunk_paths, footer = self.parse_manifest()
         self.header = header
@@ -57,3 +62,47 @@ class ChunkStreamReader:
         """Yield chunks from a stream."""
         for i in range(len(self)):
             yield self[i]
+
+    def _concat_with_object_ids(self) -> T:
+        n_frames = 0
+        object_ids = set()
+        for chunk in self:
+            n_frames += len(chunk)
+            object_ids |= set(chunk.object_ids)
+        object_ids = sorted(object_ids)
+        data = np.zeros((n_frames, len(object_ids), chunk.shape[-1]))
+        frame_idx = 0
+        for chunk in self:
+            object_indices = np.array(
+                [object_ids.index(object_id) for object_id in chunk.object_ids]
+            )
+            data[frame_idx : frame_idx + len(chunk), object_indices] = chunk.data
+            frame_idx += len(chunk)
+        return self.chunk_type(
+            data,
+            ptype=chunk.ptype,
+            **chunk.metadata_kwargs,
+        )
+
+    def _concat_without_object_ids(self) -> T:
+        n_frames = 0
+        n_objects = 0
+        for chunk in self:
+            n_frames += len(chunk)
+            n_objects = max(n_objects, chunk.shape[1])
+        data = np.zeros((n_frames, n_objects, chunk.shape[-1]))
+        frame_idx = 0
+        for chunk in self:
+            data[frame_idx : frame_idx + len(chunk), : chunk.shape[1]] = chunk.data
+            frame_idx += len(chunk)
+        return self.chunk_type(
+            data,
+            ptype=chunk.ptype,
+            **chunk.metadata_kwargs,
+        )
+
+    def concat(self) -> T:
+        """Concatenate all chunks in a stream."""
+        if self[0]._object_ids is None:
+            return self._concat_without_object_ids()
+        return self._concat_with_object_ids()
