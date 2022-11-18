@@ -63,19 +63,24 @@ class ChunkStreamReader:
         for i in range(len(self)):
             yield self[i]
 
-    def _concat_with_object_ids(self) -> T:
+    def concat(self) -> T:
         n_frames = 0
         object_ids = set()
+        n_objects = 0
         for chunk in self:
             n_frames += len(chunk)
+            n_objects = max(n_objects, chunk.shape[1])
             object_ids |= set(chunk.object_ids)
         object_ids = sorted(object_ids)
-        data = np.zeros((n_frames, len(object_ids), chunk.shape[-1]))
+        n_objects = max(n_objects, len(object_ids))
+        data = np.zeros((n_frames, n_objects, chunk.shape[-1])) * np.nan
         frame_idx = 0
         for chunk in self:
             object_indices = np.array(
                 [object_ids.index(object_id) for object_id in chunk.object_ids]
             )
+            if len(object_indices) < chunk.shape[1]:
+                object_indices = np.arange(chunk.shape[1])
             data[frame_idx : frame_idx + len(chunk), object_indices] = chunk.data
             frame_idx += len(chunk)
         return self.chunk_type(
@@ -83,26 +88,3 @@ class ChunkStreamReader:
             ptype=chunk.ptype,
             **chunk.metadata_kwargs,
         )
-
-    def _concat_without_object_ids(self) -> T:
-        n_frames = 0
-        n_objects = 0
-        for chunk in self:
-            n_frames += len(chunk)
-            n_objects = max(n_objects, chunk.shape[1])
-        data = np.zeros((n_frames, n_objects, chunk.shape[-1]))
-        frame_idx = 0
-        for chunk in self:
-            data[frame_idx : frame_idx + len(chunk), : chunk.shape[1]] = chunk.data
-            frame_idx += len(chunk)
-        return self.chunk_type(
-            data,
-            ptype=chunk.ptype,
-            **chunk.metadata_kwargs,
-        )
-
-    def concat(self) -> T:
-        """Concatenate all chunks in a stream."""
-        if self[0]._object_ids is None:
-            return self._concat_without_object_ids()
-        return self._concat_with_object_ids()

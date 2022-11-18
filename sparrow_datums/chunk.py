@@ -130,7 +130,7 @@ class Chunk(FloatArray):
     def object_ids(self) -> list[str]:
         """List of IDs for tracked objects."""
         if self._object_ids is None:
-            raise ValidationError("object_ids not set")
+            return []
         return self._object_ids
 
     @property
