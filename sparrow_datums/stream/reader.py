@@ -81,7 +81,8 @@ class ChunkStreamReader:
             )
             if len(object_indices) < chunk.shape[1]:
                 object_indices = np.arange(chunk.shape[1])
-            data[frame_idx : frame_idx + len(chunk), object_indices] = chunk.data
+            if len(object_indices):
+                data[frame_idx : frame_idx + len(chunk), object_indices] = chunk.data
             frame_idx += len(chunk)
         return self.chunk_type(
             data,
