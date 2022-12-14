@@ -21,7 +21,7 @@ class Keypoints(Chunk):
     -------
     >>> import numpy as np
     >>> from sparrow_datums import Keypoints, PType
-    >>> Keypoints(np.ones(2), PType.absolute_tlbr).to_tlwh()
+    >>> Keypoints(np.ones(2))
     Keypoints([1., 1.])
     """
 
@@ -29,6 +29,15 @@ class Keypoints(Chunk):
         """Check validity of boxes array."""
         if not self.shape or self.shape[-1] != 2:
             raise ValidationError("Keypoint arrays must have size-2 dimensions")
+
+    @property  # Overriding
+    def scale(self) -> FloatArray:
+        """Scaling array."""
+        if self._scale is None or len(self._scale) == 4:
+            width = self.image_width
+            height = self.image_height
+            self._scale = np.array([width, height])
+        return self._scale
 
     @property
     def is_relative(self) -> bool:
@@ -42,10 +51,12 @@ class Keypoints(Chunk):
 
     # @TODO
     def to_relative(self: T) -> T:
-        """Convert boxes to relative pixel coordinates, if necessary."""
+        """Convert kp to relative pixel coordinates, if necessary."""
         if self.is_relative:
             return self
         x = self.array.copy()
+        print(self.scale)
+        print(self.__class__)
         x[..., :2] /= self.scale
         return self.__class__(
             x,
@@ -55,7 +66,7 @@ class Keypoints(Chunk):
 
     # @TODO
     def to_absolute(self: T) -> T:
-        """Convert boxes to absolute pixel coordinates, if necessary."""
+        """Convert kp to absolute pixel coordinates, if necessary."""
         if self.is_absolute:
             return self
         x = self.array.copy()
@@ -87,3 +98,34 @@ class Keypoints(Chunk):
         result: FloatArray
         result = self.array[..., 1]
         return result
+
+    def to_heatmap(
+        self, x0: int, y0: int, img_w: int, img_h: int, covariance: float = 20
+    ) -> np.ndarray:
+        """Create a 2D heatmap from an x, y pixel location."""
+        xx, yy = np.meshgrid(np.arange(img_w), np.arange(img_h))
+        zz = (
+            1
+            / (2 * np.pi * covariance**2)
+            * np.exp(
+                -(
+                    (xx - x0) ** 2 / (2 * covariance**2)
+                    + (yy - y0) ** 2 / (2 * covariance**2)
+                )
+            )
+        )
+        # Normalize zz to be in [0, 1]
+        zz_min = zz.min()
+        zz_max = zz.max()
+        zz_range = zz_max - zz_min
+        if zz_range == 0:
+            zz_range += 1e-8
+        return (zz - zz_min) / zz_range
+
+    def to_keypoint(self, heatmap):
+        ncols = heatmap.shape[-1]
+        print(heatmap.shape, ncols)
+        flattened_keypoint_indices = heatmap.flatten().argmax(-1)
+        x = flattened_keypoint_indices % ncols
+        y = np.floor(flattened_keypoint_indices / ncols)
+        return np.array([x, y], dtype=float)

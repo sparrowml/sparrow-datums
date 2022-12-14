@@ -15,6 +15,21 @@ class PType(enum.Enum):
     Unknown parameterization
     """
 
+    """
+    Keypoint in relative space
+    """
+    relative_kp = "relative_kp"
+
+    """
+    Keypoint in absolute space
+    """
+    absolute_kp = "absolute_kp"
+
+    """
+    heatmaps
+    """
+    heatmap = "heatmap"
+
     @property
     def is_relative(self) -> bool:
         """Whether the parameterization is in relative space."""

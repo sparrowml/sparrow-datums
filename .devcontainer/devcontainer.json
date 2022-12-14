@@ -41,7 +41,7 @@
 		// "source=${localEnv:HOME}/.aws,target=/root/.aws,type=bind,consistency=cached,readonly",
 		// "source=${localEnv:HOME}/.darwin,target=/root/.darwin,type=bind,consistency=cached,readonly",
 		"source=${localEnv:HOME}/.gitconfig,target=/root/.gitconfig,type=bind,consistency=cached,readonly",
-		"source=/data,target=/data,type=bind,consistency=cached",
+		// "source=/data,target=/data,type=bind,consistency=cached",
 	],
 	"workspaceFolder": "/code",
 	"workspaceMount": "source=${localWorkspaceFolder},target=/code,type=bind,consistency=cached",
