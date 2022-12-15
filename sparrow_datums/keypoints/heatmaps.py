@@ -2,6 +2,8 @@ from typing import TypeVar
 
 import numpy as np
 
+from sparrow_datums.keypoints.keypoints import Keypoints
+
 from ..chunk import Chunk
 from ..exceptions import ValidationError
 
@@ -14,7 +16,7 @@ from .keypoints import Keypoints
 
 T = TypeVar("T", bound="Heatmaps")
 
-# Note to self: np.view is making a shallow copy of an array.
+
 class Heatmaps(Chunk):
     """Dense data arrays for keypoints.
 
@@ -35,16 +37,14 @@ class Heatmaps(Chunk):
         """Check validity of boxes array."""
         if not self.shape or len(self.shape) > 3:
             raise ValidationError("Heatmaps cannot have more than 3 dimensions")
-        if np.max(self) < 0 or np.min(self) > 1:
-            raise ValidationError("Heatmap values has to be between 0 - 1")
 
-    def validate_known_ptype(self) -> None:
-        """Make sure PType is a known box parameterization."""
-        known_box_parameterizations = {PType.heatmap}
-        if self.ptype not in known_box_parameterizations:
-            raise ValidationError(f"Unknown box parameterization: {self.ptype.name}")
+    @property
+    def is_heatmap(self) -> bool:
+        """Keypoint is in heatmap form."""
+        return bool(self.ptype.is_heatmap)
 
-    def to_keypoint(self, heatmaps):
+    def to_keypoint(self):
+        heatmaps = self.array
         n_heatmaps = heatmaps.shape[0]
         keypoints = []
         for i in range(n_heatmaps):

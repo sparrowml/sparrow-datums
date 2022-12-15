@@ -71,6 +71,11 @@ class PType(enum.Enum):
         return "tlwh" in self.name
 
     @property
+    def is_heatmap(self) -> bool:
+        """Whether the parameterization is heatmap."""
+        return "heatmap" in self.name
+
+    @property
     def as_relative(self) -> "PType":
         """Convert parameterization type to relative."""
         return PType(self.name.replace("absolute", "relative"))

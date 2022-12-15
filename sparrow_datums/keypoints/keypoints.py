@@ -4,11 +4,7 @@ import numpy as np
 
 from ..chunk import Chunk
 from ..exceptions import ValidationError
-
-# from .keypoint_types import FloatArray, PType
 from ..types import FloatArray, PType
-
-# from .heatmaps import Heatmaps
 
 T = TypeVar("T", bound="Keypoints")
 
@@ -103,7 +99,7 @@ class Keypoints(Chunk):
         result = self.array[..., 1]
         return result
 
-    def to_heatmap(self, covariance: float = 20) -> np.ndarray:
+    def to_heatmap_array(self, covariance: float = 20) -> np.ndarray:
         """Create a 2D heatmap from an x, y pixel location."""
         xs = self.array[..., 0]
         ys = self.array[..., 1]
