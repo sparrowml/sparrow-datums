@@ -37,7 +37,7 @@ class Heatmaps(Chunk):
     """
 
     def validate(self) -> None:
-        """Check validity of boxes array."""
+        """Check validity of heatmaps array."""
         if not self.shape or len(self.shape) > 3:
             raise ValidationError("Heatmaps cannot have more than 3 dimensions")
 
@@ -47,6 +47,13 @@ class Heatmaps(Chunk):
         return bool(self.ptype.is_heatmap)
 
     def to_keypoint(self):
+        """Convert a Heatmap to Keypoints.
+
+        Returns
+        -------
+        Keypoints
+            keypoint in Keypoints form
+        """
         heatmaps = self.array
         keypoints = []
         heatmap_dims = len(heatmaps.shape)

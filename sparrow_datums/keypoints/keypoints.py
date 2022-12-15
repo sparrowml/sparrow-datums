@@ -8,7 +8,7 @@ from ..types import FloatArray, PType
 
 T = TypeVar("T", bound="Keypoints")
 
-# Note to self: np.view is making a shallow copy of an array.
+
 class Keypoints(Chunk):
     """Dense data arrays for keypoints.
 
@@ -26,7 +26,7 @@ class Keypoints(Chunk):
     """
 
     def validate(self) -> None:
-        """Check validity of boxes array."""
+        """Check validity of keypoints array."""
         if not self.shape or self.shape[-1] != 2:
             raise ValidationError("Keypoint arrays must have size-2 dimensions")
 
@@ -50,7 +50,7 @@ class Keypoints(Chunk):
         return bool(self.ptype.is_absolute)
 
     def to_relative(self: T) -> T:
-        """Convert kp to relative pixel coordinates, if necessary."""
+        """Convert keypoint (kp) to relative pixel coordinates, if necessary."""
         if self.is_relative:
             return self
         x = self.array.copy().astype(np.float32)
@@ -66,7 +66,7 @@ class Keypoints(Chunk):
         )
 
     def to_absolute(self: T) -> T:
-        """Convert kp to absolute pixel coordinates, if necessary."""
+        """Convert keypoint (kp) to absolute pixel coordinates, if necessary."""
         if self.is_absolute:
             return self
         x = self.array.copy().astype(np.float32)
@@ -82,7 +82,7 @@ class Keypoints(Chunk):
         )
 
     def validate_known_ptype(self) -> None:
-        """Make sure PType is a known box parameterization."""
+        """Make sure PType is a known keypoint parameterization."""
         known_box_parameterizations = {
             PType.absolute_kp,
             PType.relative_kp,
@@ -108,6 +108,24 @@ class Keypoints(Chunk):
         return result
 
     def generate_heatmap(self, x0, y0, covariance):
+        """Create a 2D heatmap from an x, y pixel location.
+
+        Note: This is a helper function for to_heatmap_array()
+
+        Parameters
+        ----------
+        x0 : int
+            x coordinate of the keypoint to be transformed
+        y0 : int
+            y coordinate of the keypoint to be transformed
+        covariance : float
+            covariance of the surface to be created
+
+        Returns
+        -------
+        np.ndarray
+            keypoint in form of a 2D array( a heatmap)
+        """
         img_w = self.image_width
         img_h = self.image_height
         xx, yy = np.meshgrid(np.arange(img_w), np.arange(img_h))
@@ -129,8 +147,19 @@ class Keypoints(Chunk):
             zz_range += 1e-8
         return (zz - zz_min) / zz_range
 
-    def to_heatmap_array(self, covariance: float = 20) -> np.ndarray:
-        """Create a 2D heatmap from an x, y pixel location."""
+    def to_heatmap_array(self, covariance=20):
+        """Convert Keypoints into a heatmap array.
+
+        Parameters
+        ----------
+        covariance : float, optional
+            Covariance of the surface to be created, by default 20
+
+        Returns
+        -------
+        np.ndarray
+            heatmaps in numpy form.
+        """
         xs = self.array[..., 0]
         ys = self.array[..., 1]
         if np.size(xs) > 1:
