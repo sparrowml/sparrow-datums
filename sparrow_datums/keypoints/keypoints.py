@@ -53,11 +53,15 @@ class Keypoints(Chunk):
         """Convert kp to relative pixel coordinates, if necessary."""
         if self.is_relative:
             return self
-        x = self.array.copy()
+        x = self.array.copy().astype(np.float32)
         x[..., :2] /= self.scale
+        if self.ptype is PType.unknown:
+            param_type = PType.relative_kp
+        else:
+            param_type = self.ptype.as_relative
         return self.__class__(
             x,
-            ptype=self.ptype.as_relative,
+            ptype=param_type,
             **self.metadata_kwargs,
         )
 
@@ -65,13 +69,17 @@ class Keypoints(Chunk):
         """Convert kp to absolute pixel coordinates, if necessary."""
         if self.is_absolute:
             return self
-        x = self.array.copy()
+        x = self.array.copy().astype(np.float32)
         x[..., :2] *= self.scale
+        if self.ptype is PType.unknown:
+            param_type = PType.absolute_kp
+        else:
+            param_type = self.ptype.as_absolute
         return self.__class__(
             x,
-            ptype=self.ptype.as_absolute,
+            ptype=param_type,
             **self.metadata_kwargs,
-        )  # Note to self: Make sure these two works right not sure yet
+        )
 
     def validate_known_ptype(self) -> None:
         """Make sure PType is a known box parameterization."""
@@ -99,31 +107,37 @@ class Keypoints(Chunk):
         result = self.array[..., 1]
         return result
 
+    def generate_heatmap(self, x0, y0, covariance):
+        img_w = self.image_width
+        img_h = self.image_height
+        xx, yy = np.meshgrid(np.arange(img_w), np.arange(img_h))
+        zz = (
+            1
+            / (2 * np.pi * covariance**2)
+            * np.exp(
+                -(
+                    (xx - x0) ** 2 / (2 * covariance**2)
+                    + (yy - y0) ** 2 / (2 * covariance**2)
+                )
+            )
+        )
+        # Normalize zz to be in [0, 1]
+        zz_min = zz.min()
+        zz_max = zz.max()
+        zz_range = zz_max - zz_min
+        if zz_range == 0:
+            zz_range += 1e-8
+        return (zz - zz_min) / zz_range
+
     def to_heatmap_array(self, covariance: float = 20) -> np.ndarray:
         """Create a 2D heatmap from an x, y pixel location."""
         xs = self.array[..., 0]
         ys = self.array[..., 1]
-        img_w = self.image_width
-        img_h = self.image_height
-        heatmaps = []
-        for x0, y0 in zip(xs, ys):
-            xx, yy = np.meshgrid(np.arange(img_w), np.arange(img_h))
-            zz = (
-                1
-                / (2 * np.pi * covariance**2)
-                * np.exp(
-                    -(
-                        (xx - x0) ** 2 / (2 * covariance**2)
-                        + (yy - y0) ** 2 / (2 * covariance**2)
-                    )
-                )
-            )
-            # Normalize zz to be in [0, 1]
-            zz_min = zz.min()
-            zz_max = zz.max()
-            zz_range = zz_max - zz_min
-            if zz_range == 0:
-                zz_range += 1e-8
-            heatmap = (zz - zz_min) / zz_range
-            heatmaps.append(heatmap)
-        return np.stack(heatmaps)
+        if np.size(xs) > 1:
+            heatmaps = []
+            for x0, y0 in zip(xs, ys):
+                heatmap = self.generate_heatmap(x0, y0, covariance)
+                heatmaps.append(heatmap)
+            return np.stack(heatmaps)
+        elif np.size(xs) == 1:
+            return self.generate_heatmap(xs.item(), ys.item(), covariance)

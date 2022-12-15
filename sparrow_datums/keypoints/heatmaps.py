@@ -6,13 +6,8 @@ from sparrow_datums.keypoints.keypoints import Keypoints
 
 from ..chunk import Chunk
 from ..exceptions import ValidationError
-
-# from .keypoint_types import FloatArray, PType
 from ..types import FloatArray, PType
 from .keypoints import Keypoints
-
-# from sparrow_datums import Keypoints
-
 
 T = TypeVar("T", bound="Heatmaps")
 
@@ -27,10 +22,18 @@ class Heatmaps(Chunk):
 
     Example
     -------
-    # >>> import numpy as np
-    # >>> from sparrow_datums import Keypoints, Heatmaps, PType
-    # >>> Keypoints(np.ones(2))
-    # Heatmaps([1., 1.])
+    >>> import numpy as np
+    >>> from sparrow_datums import Keypoints, Heatmaps, PType
+    >>> n_keypoints = 2
+    >>> np.random.seed(0)
+    >>> candidate_arr = np.random.randint(low=2, high=20, size=(n_keypoints, 2))
+    >>> keypoint = Keypoints(candidate_arr,PType.absolute_kp,image_height=21,image_width=28)
+    >>> heatmap_array = keypoint.to_heatmap_array()
+    >>> heatmap = Heatmaps(heatmap_array,PType.heatmap,image_width=heatmap_array.shape[-1],image_height=heatmap_array.shape[-2])
+    >>> back_to_keypoint = heatmap.to_keypoint()
+    >>> back_to_keypoint
+    Keypoints([[14., 17.],
+               [ 2.,  5.]])
     """
 
     def validate(self) -> None:
@@ -45,14 +48,19 @@ class Heatmaps(Chunk):
 
     def to_keypoint(self):
         heatmaps = self.array
-        n_heatmaps = heatmaps.shape[0]
         keypoints = []
+        heatmap_dims = len(heatmaps.shape)
+        if heatmap_dims == 2:
+            heatmaps = np.expand_dims(heatmaps, axis=2)
+            heatmaps = np.moveaxis(heatmaps, -1, 0)
+        n_heatmaps = heatmaps.shape[0]
         for i in range(n_heatmaps):
-            heatmap = heatmaps[i]
-            ncols = heatmap.shape[-1]
+            heatmap = heatmaps[i, :, :]
+            _, width = heatmap.shape
+            ncols = width
             flattened_keypoint_indices = heatmap.flatten().argmax(-1)
             x = flattened_keypoint_indices % ncols
             y = np.floor(flattened_keypoint_indices / ncols)
             keypoint = np.array([x, y], dtype=float)
             keypoints.append(keypoint)
-        return Keypoints(np.stack(keypoints)).to_absolute()
+        return Keypoints(np.stack(keypoints), **self.metadata_kwargs)
