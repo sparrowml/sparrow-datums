@@ -99,10 +99,24 @@ class Keypoints(Chunk):
         result = self.array[..., 1]
         return result
 
-    def to_heatmap(
-        self, x0: int, y0: int, img_w: int, img_h: int, covariance: float = 20
-    ) -> np.ndarray:
-        """Create a 2D heatmap from an x, y pixel location."""
+    def generate_heatmap(self, x0, y0, covariance):
+        """Create a 2D heatmap from an x, y pixel location.
+        Note: This is a helper function for to_heatmap_array()
+        Parameters
+        ----------
+        x0 : int
+            x coordinate of the keypoint to be transformed
+        y0 : int
+            y coordinate of the keypoint to be transformed
+        covariance : float
+            covariance of the surface to be created
+        Returns
+        -------
+        np.ndarray
+            keypoint in form of a 2D array( a heatmap)
+        """
+        img_w = self.image_width
+        img_h = self.image_height
         xx, yy = np.meshgrid(np.arange(img_w), np.arange(img_h))
         zz = (
             1
@@ -122,10 +136,43 @@ class Keypoints(Chunk):
             zz_range += 1e-8
         return (zz - zz_min) / zz_range
 
-    def to_keypoint(self, heatmap):
-        ncols = heatmap.shape[-1]
-        print(heatmap.shape, ncols)
-        flattened_keypoint_indices = heatmap.flatten().argmax(-1)
-        x = flattened_keypoint_indices % ncols
-        y = np.floor(flattened_keypoint_indices / ncols)
-        return np.array([x, y], dtype=float)
+    def to_heatmap_array(self, covariance=20):
+        """Convert Keypoints into a heatmap array.
+
+        Parameters
+        ----------
+        covariance : float, optional
+            Covariance of the surface to be created, by default 20
+        Returns
+        -------
+        np.ndarray
+            heatmaps in numpy form.
+        """
+        xs = self.array[..., 0]
+        ys = self.array[..., 1]
+        if np.size(xs) > 1:
+            heatmaps = []
+            for x0, y0 in zip(xs, ys):
+                heatmap = self.generate_heatmap(x0, y0, covariance)
+                heatmaps.append(heatmap)
+            return np.stack(heatmaps)
+        elif np.size(xs) == 1:
+            return self.generate_heatmap(xs.item(), ys.item(), covariance)
+
+    def from_heatmap_array(self, heatmaps):
+        keypoints = []
+        heatmap_dims = len(heatmaps.shape)
+        if heatmap_dims == 2:
+            heatmaps = np.expand_dims(heatmaps, axis=2)
+            heatmaps = np.moveaxis(heatmaps, -1, 0)
+        n_heatmaps = heatmaps.shape[0]
+        for i in range(n_heatmaps):
+            heatmap = heatmaps[i, :, :]
+            _, width = heatmap.shape
+            ncols = width
+            flattened_keypoint_indices = heatmap.flatten().argmax(-1)
+            x = flattened_keypoint_indices % ncols
+            y = np.floor(flattened_keypoint_indices / ncols)
+            keypoint = np.array([x, y], dtype=float)
+            keypoints.append(keypoint)
+        return np.stack(keypoints)
