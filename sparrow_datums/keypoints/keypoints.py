@@ -4,7 +4,7 @@ import numpy as np
 
 from ..chunk import Chunk
 from ..exceptions import ValidationError
-from .keypoint_types import FloatArray, PType
+from ..types import FloatArray, PType
 
 T = TypeVar("T", bound="Keypoints")
 
@@ -55,8 +55,6 @@ class Keypoints(Chunk):
         if self.is_relative:
             return self
         x = self.array.copy()
-        print(self.scale)
-        print(self.__class__)
         x[..., :2] /= self.scale
         return self.__class__(
             x,
@@ -79,7 +77,7 @@ class Keypoints(Chunk):
 
     def validate_known_ptype(self) -> None:
         """Make sure PType is a known box parameterization."""
-        known_box_parameterizations = {PType.unknown}
+        known_box_parameterizations = {PType.absolute_xy, PType.relative_xy}
         if self.ptype not in known_box_parameterizations:
             raise ValidationError(f"Unknown box parameterization: {self.ptype.name}")
 
