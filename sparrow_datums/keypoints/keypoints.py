@@ -49,31 +49,37 @@ class Keypoints(Chunk):
         """Parameterization is absolute."""
         return bool(self.ptype.is_absolute)
 
-    # @TODO
     def to_relative(self: T) -> T:
-        """Convert kp to relative pixel coordinates, if necessary."""
+        """Convert keypoint to relative pixel coordinates, if necessary."""
         if self.is_relative:
             return self
-        x = self.array.copy()
+        x = self.array.copy().astype(np.float32)
         x[..., :2] /= self.scale
+        if self.ptype is PType.unknown:
+            param_type = PType.relative_xy
+        else:
+            param_type = self.ptype.as_relative
         return self.__class__(
             x,
-            ptype=self.ptype.as_relative,
+            ptype=param_type,
             **self.metadata_kwargs,
-        )  # Note to self: Make sure these two works right not sure yet
+        )
 
-    # @TODO
     def to_absolute(self: T) -> T:
-        """Convert kp to absolute pixel coordinates, if necessary."""
+        """Convert keypoint to absolute pixel coordinates, if necessary."""
         if self.is_absolute:
             return self
-        x = self.array.copy()
+        x = self.array.copy().astype(np.float32)
         x[..., :2] *= self.scale
+        if self.ptype is PType.unknown:
+            param_type = PType.absolute_xy
+        else:
+            param_type = self.ptype.as_absolute
         return self.__class__(
             x,
-            ptype=self.ptype.as_absolute,
+            ptype=param_type,
             **self.metadata_kwargs,
-        )  # Note to self: Make sure these two works right not sure yet
+        )
 
     def validate_known_ptype(self) -> None:
         """Make sure PType is a known box parameterization."""
@@ -157,6 +163,7 @@ class Keypoints(Chunk):
         elif np.size(xs) == 1:
             return self.generate_heatmap(xs.item(), ys.item(), covariance)
 
+    @classmethod
     def from_heatmap_array(self, heatmaps):
         keypoints = []
         heatmap_dims = len(heatmaps.shape)
@@ -173,4 +180,4 @@ class Keypoints(Chunk):
             y = np.floor(flattened_keypoint_indices / ncols)
             keypoint = np.array([x, y], dtype=float)
             keypoints.append(keypoint)
-        return np.stack(keypoints)
+        return Keypoints(np.stack(keypoints), self.metadata_kwargs)

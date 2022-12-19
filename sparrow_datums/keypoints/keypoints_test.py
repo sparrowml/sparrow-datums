@@ -84,26 +84,6 @@ def test_keypoint_attributes_require_known_keypoint_parameterization():
         Keypoints(np.ones(2)).x
 
 
-# def test_creating_heatmap():
-#     image_size = 512
-#     keypoints = Keypoints(
-#         np.random.uniform(size=(10, 2)),
-#         PType.relative_xy,
-#         image_width=image_size,
-#         image_height=image_size,
-#     )
-#     heatmaps_array = keypoints.to_heatmap_array()
-#     assert heatmaps_array.shape == (10, image_size, image_size)  # check the shape
-#     assert type(heatmaps_array) is np.ndarray
-#     assert np.min(heatmaps_array) == 0
-#     assert np.max(heatmaps_array) == 1
-#     heatmaps = Heatmaps(data=heatmaps_array, ptype=PType.heatmap)
-#     assert type(heatmaps) is Heatmaps
-#     # change the co-variance
-#     heatmaps_array = keypoints.to_heatmap_array(covariance=10)
-#     np.testing.assert_array_less(heatmaps_array, 1.0000001)
-
-
 def test_back_and_forth_between_keypoints_and_heatmaps_for_1D_arrays():
     keypoint = Keypoints(
         np.array([4, 8]),
@@ -116,15 +96,14 @@ def test_back_and_forth_between_keypoints_and_heatmaps_for_1D_arrays():
     assert np.max(heatmap_array) == 1
     assert np.min(heatmap_array) == 0
     back_to_keypoint = Keypoints.from_heatmap_array(heatmaps=heatmap_array)
+    back_to_keypoint = Keypoints(
+        back_to_keypoint, ptype=keypoint.ptype, **keypoint.metadata_kwargs
+    ).to_relative()
+    assert not back_to_keypoint.is_absolute
+    back_to_keypoint = back_to_keypoint.to_absolute()
     assert back_to_keypoint[0][0] == keypoint.array[0]
     assert back_to_keypoint[0][1] == keypoint.array[1]
-    # assert type(back_to_keypoint) is Keypoints
-    # back_to_keypoint_abs = back_to_keypoint.to_absolute()
-    # assert back_to_keypoint_abs.is_absolute
-    # assert back_to_keypoint_abs[0][0] == keypoint.array[0] * keypoint.image_width
-    # assert back_to_keypoint_abs[0][1] == keypoint.array[1] * keypoint.image_height
-    # back_to_keypoint_rel = back_to_keypoint.to_relative()
-    # assert back_to_keypoint_rel.is_relative
+    assert type(back_to_keypoint) is Keypoints
 
 
 # def test_back_and_forth_between_keypoints_and_heatmaps_for_dense_arrays():

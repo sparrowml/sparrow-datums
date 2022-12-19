@@ -45,11 +45,6 @@ class PType(enum.Enum):
     """
     absolute_xy = "absolute_xy"
 
-    """
-    heatmaps
-    """
-    heatmap = "heatmap"
-
     @property
     def is_relative(self) -> bool:
         """Whether the parameterization is in relative space."""
@@ -69,11 +64,6 @@ class PType(enum.Enum):
     def is_tlwh(self) -> bool:
         """Whether the parameterization is TLWH."""
         return "tlwh" in self.name
-
-    @property
-    def is_heatmap(self) -> bool:
-        """Whether the parameterization is heatmap."""
-        return "heatmap" in self.name
 
     @property
     def as_relative(self) -> "PType":
