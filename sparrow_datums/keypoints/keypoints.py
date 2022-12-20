@@ -8,14 +8,9 @@ from ..types import FloatArray, PType
 
 T = TypeVar("T", bound="Keypoints")
 
-# Note to self: np.view is making a shallow copy of an array.
+
 class Keypoints(Chunk):
     """Dense data arrays for keypoints.
-
-    Parameters
-    ----------
-    Chunk : Chunk
-        Base class for dense data arrays with metadata.
 
     Example
     -------
@@ -105,6 +100,7 @@ class Keypoints(Chunk):
 
     def generate_heatmap(self, x0, y0, covariance):
         """Create a 2D heatmap from an x, y pixel location.
+
         Note: This is a helper function for to_heatmap_array()
         Parameters
         ----------
@@ -165,6 +161,18 @@ class Keypoints(Chunk):
 
     @classmethod
     def from_heatmap_array(self, heatmaps):
+        """Convert a heatmap array back into Keypoint form.
+
+        Parameters
+        ----------
+        heatmaps : ndarray
+            Keypoints represented in form of a 2D surface.
+
+        Returns
+        -------
+        ndarray
+            Keypoints in xy coordinates
+        """
         keypoints = []
         heatmap_dims = len(heatmaps.shape)
         if heatmap_dims == 2:
@@ -180,4 +188,4 @@ class Keypoints(Chunk):
             y = np.floor(flattened_keypoint_indices / ncols)
             keypoint = np.array([x, y], dtype=float)
             keypoints.append(keypoint)
-        return Keypoints(np.stack(keypoints), self.metadata_kwargs)
+        return np.stack(keypoints)
