@@ -42,6 +42,15 @@ class Boxes(Chunk):
             raise ValidationError("Box arrays must have size-4 dimensions")
 
     @property
+    def scale(self) -> FloatArray:
+        """Scaling array."""
+        if self._scale is None:
+            width = self.image_width
+            height = self.image_height
+            self._scale = np.array([width, height, width, height])
+        return self._scale
+
+    @property
     def is_relative(self) -> bool:
         """Parameterization is relative."""
         return bool(self.ptype.is_relative)

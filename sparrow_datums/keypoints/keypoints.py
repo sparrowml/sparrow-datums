@@ -25,10 +25,10 @@ class Keypoints(Chunk):
         if not self.shape or self.shape[-1] != 2:
             raise ValidationError("Keypoint arrays must have size-2 dimensions")
 
-    @property  # Overriding
+    @property
     def scale(self) -> FloatArray:
         """Scaling array."""
-        if self._scale is None or len(self._scale) == 4:
+        if self._scale is None:
             width = self.image_width
             height = self.image_height
             self._scale = np.array([width, height])
