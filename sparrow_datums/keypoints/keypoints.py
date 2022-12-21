@@ -1,6 +1,7 @@
 from typing import TypeVar
 
 import numpy as np
+import numpy.typing as npt
 
 from ..chunk import Chunk
 from ..exceptions import ValidationError
@@ -98,21 +99,20 @@ class Keypoints(Chunk):
         result = self.array[..., 1]
         return result
 
-    def generate_heatmap(self, x0, y0, covariance):
+    def generate_heatmap(self, x0: int, y0: int, covariance: float):
         """Create a 2D heatmap from an x, y pixel location.
 
         Note: This is a helper function for to_heatmap_array()
         Parameters
         ----------
-        x0 : int
+        x0 :
             x coordinate of the keypoint to be transformed
-        y0 : int
+        y0 :
             y coordinate of the keypoint to be transformed
-        covariance : float
+        covariance :
             covariance of the surface to be created
         Returns
         -------
-        np.ndarray
             keypoint in form of a 2D array( a heatmap)
         """
         img_w = self.image_width
@@ -136,16 +136,15 @@ class Keypoints(Chunk):
             zz_range += 1e-8
         return (zz - zz_min) / zz_range
 
-    def to_heatmap_array(self, covariance=20):
+    def to_heatmap_array(self, covariance: float = 20) -> npt.NDArray[np.float64]:
         """Convert Keypoints into a heatmap array.
 
         Parameters
         ----------
-        covariance : float, optional
+        covariance :
             Covariance of the surface to be created, by default 20
         Returns
         -------
-        np.ndarray
             heatmaps in numpy form.
         """
         xs = self.array[..., 0]
@@ -160,17 +159,18 @@ class Keypoints(Chunk):
             return self.generate_heatmap(xs.item(), ys.item(), covariance)
 
     @classmethod
-    def from_heatmap_array(self, heatmaps):
+    def from_heatmap_array(
+        self, heatmaps: npt.NDArray[np.float64]
+    ) -> npt.NDArray[np.float64]:
         """Convert a heatmap array back into Keypoint form.
 
         Parameters
         ----------
-        heatmaps : ndarray
+        heatmaps :
             Keypoints represented in form of a 2D surface.
 
         Returns
         -------
-        ndarray
             Keypoints in xy coordinates
         """
         keypoints = []
