@@ -131,3 +131,16 @@ def test_back_and_forth_between_keypoints_and_heatmaps_for_dense_arrays():
     assert back_to_keypoint_abs.is_absolute
     back_to_keypoint_rel = back_to_keypoint.to_relative()
     assert back_to_keypoint_rel.is_relative
+
+
+def test_from_heatmap_array_raises_invalid_dimensions():
+    heatmap_array = np.random.rand(3, 2, 2, 5)
+    with pytest.raises(
+        Exception, match="Invalid heatmap dimensions. Every heatmap has to be 2D."
+    ):
+        keypoint = Keypoints.from_heatmap_array(heatmaps=heatmap_array)
+    heatmap_array = np.random.rand(5)
+    with pytest.raises(
+        Exception, match="Invalid heatmap dimensions. Every heatmap has to be 2D."
+    ):
+        keypoint = Keypoints.from_heatmap_array(heatmaps=heatmap_array)

@@ -99,7 +99,7 @@ class Keypoints(Chunk):
         result = self.array[..., 1]
         return result
 
-    def generate_heatmap(self, x0: int, y0: int, covariance: float):
+    def __generate_heatmap(self, x0: int, y0: int, covariance: float):
         """Create a 2D heatmap from an x, y pixel location.
 
         Note: This is a helper function for to_heatmap_array()
@@ -152,11 +152,11 @@ class Keypoints(Chunk):
         if np.size(xs) > 1:
             heatmaps = []
             for x0, y0 in zip(xs, ys):
-                heatmap = self.generate_heatmap(x0, y0, covariance)
+                heatmap = self.__generate_heatmap(x0, y0, covariance)
                 heatmaps.append(heatmap)
             return np.stack(heatmaps)
         elif np.size(xs) == 1:
-            return self.generate_heatmap(xs.item(), ys.item(), covariance)
+            return self.__generate_heatmap(xs.item(), ys.item(), covariance)
 
     @classmethod
     def from_heatmap_array(
@@ -175,6 +175,8 @@ class Keypoints(Chunk):
         """
         keypoints = []
         heatmap_dims = len(heatmaps.shape)
+        if heatmap_dims < 2 or heatmap_dims > 3:
+            raise Exception("Invalid heatmap dimensions. Every heatmap has to be 2D.")
         if heatmap_dims == 2:
             heatmaps = np.expand_dims(heatmaps, axis=2)
             heatmaps = np.moveaxis(heatmaps, -1, 0)
