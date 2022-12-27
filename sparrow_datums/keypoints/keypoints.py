@@ -25,6 +25,10 @@ class Keypoints(Chunk):
         """Check validity of boxes array."""
         if not self.shape or self.shape[-1] != 2:
             raise ValidationError("Keypoint arrays must have size-2 dimensions")
+        elif self.ndim > 2:
+            raise ValidationError(
+                "2D Keypoint chunks are the maximum dimension supported."
+            )
 
     @property
     def scale(self) -> FloatArray:

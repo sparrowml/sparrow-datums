@@ -144,3 +144,21 @@ def test_from_heatmap_array_raises_invalid_dimensions():
         Exception, match="Invalid heatmap dimensions. Every heatmap has to be 2D."
     ):
         keypoint = Keypoints.from_heatmap_array(heatmaps=heatmap_array)
+
+
+def test_non_2D_keypoints_raise_dim_not_supported_error():
+    keypoints_batch_size = 5
+    n_keypoints = 11
+    np.random.seed(0)
+    candidate_arr = np.random.randint(
+        low=2, high=20, size=(keypoints_batch_size, n_keypoints, 2)
+    )
+    with pytest.raises(
+        Exception, match="2D Keypoint chunks are the maximum dimension supported."
+    ):
+        keypoint = Keypoints(
+            candidate_arr,
+            PType.absolute_xy,
+            image_height=21,
+            image_width=28,
+        )
