@@ -35,6 +35,16 @@ class PType(enum.Enum):
     (x, y, w, h) in relative pixel coordinates
     """
 
+    """
+    Keypoint in relative space
+    """
+    relative_xy = "relative_xy"
+
+    """
+    Keypoint in absolute space
+    """
+    absolute_xy = "absolute_xy"
+
     @property
     def is_relative(self) -> bool:
         """Whether the parameterization is in relative space."""

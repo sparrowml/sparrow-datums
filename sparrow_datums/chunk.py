@@ -141,15 +141,6 @@ class Chunk(FloatArray):
         return self._start_time
 
     @property
-    def scale(self) -> FloatArray:
-        """Scaling array."""
-        if self._scale is None:
-            width = self.image_width
-            height = self.image_height
-            self._scale = np.array([width, height, width, height])
-        return self._scale
-
-    @property
     def duration(self) -> float:
         """Duration of the chunk in seconds."""
         raise NotImplementedError

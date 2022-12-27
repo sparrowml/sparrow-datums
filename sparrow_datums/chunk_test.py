@@ -17,12 +17,6 @@ class Polygons(Chunk):
             raise ValidationError("Uh oh")
 
 
-def test_dense_with_no_width_throws_on_scale():
-    polygons = Polygons(np.ones((10, 10, 2)))
-    with pytest.raises(ValidationError):
-        polygons.scale
-
-
 def test_dense_serialization_preserves_data():
     polygons_a = Polygons(np.random.uniform(size=(2,)), ptype=PType.unknown)
     polygons_a_dict = polygons_a.to_dict()

@@ -3,6 +3,7 @@ import doctest
 import numpy as np
 import pytest
 
+from ..chunk import Chunk
 from ..exceptions import ValidationError
 from ..types import FloatArray, PType
 from . import boxes
