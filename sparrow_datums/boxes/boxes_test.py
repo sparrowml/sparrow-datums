@@ -110,19 +110,3 @@ def test_resize():
     assert new_boxes.image_width == 32
     assert new_boxes.image_height == 16
     np.testing.assert_equal(new_boxes.array, np.array([8, 4, 8, 4]))
-
-
-# Make this test work after Ben gets back. Also, replicate for the keypoint class.
-
-# class Polygons(Boxes):
-#     empty_shape: tuple[int] = (2,)
-
-#     def validate(self) -> None:
-#         if self.shape[-1] != 2:
-#             raise ValidationError("Uh oh")
-
-
-# def test_dense_with_no_width_throws_on_scale():
-#     polygons = Polygons(np.ones((10, 10, 2)))
-#     with pytest.raises(ValidationError):
-#         polygons.scale
