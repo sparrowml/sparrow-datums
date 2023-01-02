@@ -9,8 +9,8 @@ from typing import Any, TypeVar
 
 import numpy as np
 
+from .chunk_types import FloatArray, PType
 from .exceptions import ValidationError
-from .types import FloatArray, PType
 
 T = TypeVar("T", bound="Chunk")
 

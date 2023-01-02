@@ -5,8 +5,8 @@ import numpy as np
 import pytest
 
 from .chunk import Chunk
+from .chunk_types import PType
 from .exceptions import ValidationError
-from .types import PType
 
 
 class Polygons(Chunk):

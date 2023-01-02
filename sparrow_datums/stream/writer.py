@@ -4,9 +4,9 @@ from pathlib import Path
 from typing import Optional
 
 from ..chunk import T
+from ..chunk_types import PType
 from ..exceptions import ValidationError
-from ..types import PType
-from .types import ChunkPath, Footer, Header
+from .stream_types import ChunkPath, Footer, Header
 
 
 class ChunkStreamWriter:

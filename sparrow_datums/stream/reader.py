@@ -6,10 +6,10 @@ from typing import Iterator
 import numpy as np
 
 from ..chunk import T
+from ..chunk_types import PType
 from ..exceptions import ValidationError
 from ..tracking import Tracking
-from ..types import PType
-from .types import ChunkPath, Footer, Header
+from .stream_types import ChunkPath, Footer, Header
 
 
 class ChunkStreamReader:

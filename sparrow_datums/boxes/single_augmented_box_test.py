@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
+from ..chunk_types import PType
 from ..exceptions import ValidationError
-from ..types import PType
 from .single_augmented_box import SingleAugmentedBox
 
 

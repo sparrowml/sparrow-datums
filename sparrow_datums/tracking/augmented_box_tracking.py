@@ -10,7 +10,7 @@ import numpy as np
 import numpy.typing as npt
 
 from ..boxes import AugmentedBoxes, FrameAugmentedBoxes
-from ..types import PType
+from ..chunk_types import PType
 from .box_tracking import BoxTracking
 from .tracking import Tracking
 

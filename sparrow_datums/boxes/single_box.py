@@ -1,5 +1,5 @@
+from ..chunk_types import FloatArray
 from ..exceptions import ValidationError
-from ..types import FloatArray
 from .boxes import Boxes
 
 

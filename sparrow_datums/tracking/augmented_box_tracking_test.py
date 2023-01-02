@@ -4,8 +4,8 @@ import pytest
 from sparrow_datums.boxes.frame_augmented_boxes import FrameAugmentedBoxes
 from sparrow_datums.tracking.box_tracking import BoxTracking
 
+from ..chunk_types import PType
 from ..exceptions import ValidationError
-from ..types import PType
 from .augmented_box_tracking import AugmentedBoxTracking
 
 DARWIN_DICT = {

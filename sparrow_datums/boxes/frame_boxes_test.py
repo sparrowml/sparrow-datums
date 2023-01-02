@@ -3,8 +3,8 @@ import doctest
 import numpy as np
 import pytest
 
+from ..chunk_types import FloatArray, PType
 from ..exceptions import ValidationError
-from ..types import FloatArray, PType
 from . import frame_boxes
 from .frame_boxes import FrameBoxes
 from .single_box import SingleBox
