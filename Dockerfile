@@ -7,7 +7,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt install -y tzdata
 RUN apt install -y \
     build-essential \
     curl \
-    git
+    git \
+    libgl1-mesa-glx
 
 # Allow root for Jupyter notebooks
 RUN mkdir /root/.jupyter

@@ -2,6 +2,7 @@ import doctest
 import os
 import tempfile
 
+import datumaro as dm
 import numpy as np
 import pytest
 
@@ -168,3 +169,19 @@ def test_to_frame_boxes():
     assert isinstance(boxes, FrameBoxes)
     assert boxes.ptype == PType.absolute_tlwh
     assert boxes.shape[-1] == 4
+
+
+def test_from_dataset_item():
+    dataset_item = dm.DatasetItem(
+        id="foo-bar",
+        media=dm.Image(size=(2464, 2048)),
+        annotations=[
+            dm.Bbox(1837.67, 961.85, 100, 200, label=0),
+            dm.Bbox(1589.93, 1216.74, 200, 300, label=1),
+        ],
+    )
+    boxes = FrameAugmentedBoxes.from_dataset_item(dataset_item)
+    assert len(boxes) == 2
+    assert boxes.image_width == 2048
+    assert boxes.image_height == 2464
+    np.testing.assert_equal(boxes.labels, np.array([0, 1]))
