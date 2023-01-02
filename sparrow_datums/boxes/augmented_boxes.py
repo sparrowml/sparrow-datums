@@ -3,8 +3,8 @@ from __future__ import annotations
 import numpy as np
 import numpy.typing as npt
 
+from ..chunk_types import FloatArray
 from ..exceptions import ValidationError
-from ..types import FloatArray
 from .boxes import Boxes
 
 

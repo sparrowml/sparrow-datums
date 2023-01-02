@@ -6,7 +6,7 @@ from typing import Iterator, Optional
 import numpy as np
 
 from ..boxes import Boxes, FrameBoxes
-from ..types import PType
+from ..chunk_types import PType
 from .tracking import Tracking
 
 

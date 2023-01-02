@@ -7,8 +7,8 @@ import pytest
 
 from sparrow_datums.boxes.frame_boxes import FrameBoxes
 
+from ..chunk_types import PType
 from ..exceptions import ValidationError
-from ..types import PType
 from . import frame_augmented_boxes
 from .frame_augmented_boxes import FrameAugmentedBoxes
 from .single_augmented_box import SingleAugmentedBox

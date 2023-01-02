@@ -3,10 +3,10 @@ import doctest
 import numpy as np
 import pytest
 
+from sparrow_datums.chunk_types import PType
 from sparrow_datums.exceptions import ValidationError
 from sparrow_datums.keypoints import keypoints
 from sparrow_datums.keypoints.keypoints import Keypoints
-from sparrow_datums.types import PType
 
 
 def test_docstring_example():

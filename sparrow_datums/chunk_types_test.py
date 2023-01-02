@@ -1,4 +1,4 @@
-from .types import PType
+from .chunk_types import PType
 
 PTYPE_NAMES = (
     "relative_tlbr",

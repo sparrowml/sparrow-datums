@@ -1,6 +1,6 @@
 import numpy as np
 
-from ..types import PType
+from ..chunk_types import PType
 from .frame_augmented_boxes import FrameAugmentedBoxes
 from .nms import non_max_suppression
 

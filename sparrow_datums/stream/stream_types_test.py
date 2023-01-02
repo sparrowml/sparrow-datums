@@ -2,7 +2,7 @@ import json
 
 from sparrow_datums import FrameAugmentedBoxes, PType
 
-from .types import ChunkPath, Header
+from .stream_types import ChunkPath, Header
 
 
 def test_header_serialization():

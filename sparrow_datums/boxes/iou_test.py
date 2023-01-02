@@ -1,6 +1,6 @@
 import numpy as np
 
-from ..types import PType
+from ..chunk_types import PType
 from .boxes import Boxes
 from .frame_augmented_boxes import FrameAugmentedBoxes
 from .frame_boxes import FrameBoxes

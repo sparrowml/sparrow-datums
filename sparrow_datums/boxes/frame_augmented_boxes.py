@@ -8,8 +8,8 @@ from typing import Any, Iterator, Optional, Union
 import numpy as np
 import numpy.typing as npt
 
+from ..chunk_types import PType
 from ..exceptions import ValidationError
-from ..types import PType
 from .augmented_boxes import AugmentedBoxes
 from .frame_boxes import FrameBoxes, _is_2d
 from .single_augmented_box import SingleAugmentedBox

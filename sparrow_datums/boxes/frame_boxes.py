@@ -4,8 +4,8 @@ from typing import Any, Iterator, Optional
 
 import numpy as np
 
+from ..chunk_types import FloatArray, PType
 from ..exceptions import ValidationError
-from ..types import FloatArray, PType
 from .boxes import Boxes
 from .single_box import SingleBox
 

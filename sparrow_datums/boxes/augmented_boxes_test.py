@@ -4,8 +4,8 @@ import numpy as np
 import numpy.typing as npt
 import pytest
 
+from ..chunk_types import PType
 from ..exceptions import ValidationError
-from ..types import PType
 from . import augmented_boxes
 from .augmented_boxes import AugmentedBoxes
 
