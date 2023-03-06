@@ -238,8 +238,12 @@ class AugmentedBoxTracking(Tracking, AugmentedBoxes):
         for j in range(self.shape[1]):
             if class_idx in set(self.array[:, j, -1].ravel()):
                 object_mask.append(j)
+        if len(object_mask) > 0:
+            data = self.array[:, np.array(object_mask), :4]
+        else:
+            data = np.zeros((len(self), 0, 4)) * np.nan
         return BoxTracking(
-            self.array[:, np.array(object_mask), :4],
+            data,
             ptype=self.ptype,
             **self.metadata_kwargs,
         )
