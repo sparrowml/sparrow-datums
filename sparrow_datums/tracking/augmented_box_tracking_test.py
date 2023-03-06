@@ -160,9 +160,12 @@ def test_filter_by_class():
     )
     cars = chunk.filter_by_class(0)
     bikes = chunk.filter_by_class(1)
+    empty = chunk.filter_by_class(2)
     assert isinstance(cars, BoxTracking)
     assert isinstance(bikes, BoxTracking)
+    assert isinstance(empty, BoxTracking)
     assert cars.shape[1] + bikes.shape[1] == chunk.shape[1]
+    assert empty.shape[1] == 0
 
 
 def test_from_box_tracking():
