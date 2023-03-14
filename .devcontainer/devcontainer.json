@@ -9,35 +9,37 @@
     },
     "containerUser": "1000",
 	"settings": {
-		"python.pythonPath": "/usr/local/bin/python",
-		"python.languageServer": "Pylance",
-		"python.linting.enabled": true,
-		// pydocstyle
-		"python.linting.pydocstyleEnabled": true,
-		"python.linting.pydocstylePath": "/usr/local/bin/pydocstyle",
-		// black
-		"python.formatting.blackPath": "/usr/local/bin/black",
-		"python.formatting.provider": "black",
-		"[python]": {
-			"editor.formatOnSave": true,
-			"editor.codeActionsOnSave": {
-				"source.organizeImports": true
-			},
-		},
-		// isort
-		"python.sortImports.path": "/usr/local/bin/isort",
-		// pylint
-		"python.linting.pylintEnabled": true,
-		"python.linting.pylintPath": "/usr/local/bin/pylint",
+        "python.pythonPath": "/usr/local/bin/python",
+        "python.languageServer": "Pylance",
+        "python.linting.enabled": true,
+        // pydocstyle
+        "python.linting.pydocstyleEnabled": true,
+        "python.linting.pydocstylePath": "/home/${localEnv:USER}/.local/bin/pydocstyle",
+        // black
+        "python.formatting.blackPath": "/home/${localEnv:USER}/.local/bin/black",
+        "python.formatting.provider": "black",
+        "[python]": {
+            "editor.formatOnSave": true,
+            "editor.codeActionsOnSave": {
+                "source.organizeImports": true
+            },
+        },
+        // isort
+        "python.sortImports.path": "/home/${localEnv:USER}/.local/bin/isort",
+        // pylint
+        "python.linting.pylintEnabled": true,
+        "python.linting.pylintPath": "/home/${localEnv:USER}/.local/bin/pylint",
 		// pytest
 		"python.testing.pytestArgs": [
 			"sparrow_datums"
 		],
 		"python.testing.pytestEnabled": true,
 	},
-	"extensions": [
+    "extensions": [
+		"GitHub.copilot",
+		"ms-python.isort",
 		"ms-python.python",
-		"ms-python.vscode-pylance"
+		"ms-python.vscode-pylance",
 	],
 	"mounts": [
         "source=projectname-bashhistory,target=/commandhistory,type=volume",
