@@ -178,3 +178,18 @@ def test_from_box_tracking():
     )
     assert isinstance(augmented_cars, AugmentedBoxTracking)
     np.testing.assert_equal(cars.array, augmented_cars.array[..., :4])
+
+
+def test_empty_chunk():
+    data_dict = {
+        "data": [[], [], []],
+        "classname": "AugmentedBoxTracking",
+        "ptype": "relative_tlbr",
+        "image_width": 128,
+        "image_height": 128,
+        "fps": None,
+        "object_ids": None,
+        "start_time": None,
+    }
+    boxes = AugmentedBoxTracking.from_dict(data_dict)
+    assert boxes.shape == (3, 0, 6)
