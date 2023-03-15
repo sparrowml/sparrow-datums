@@ -184,6 +184,8 @@ class AugmentedBoxTracking(Tracking, AugmentedBoxes):
         for item in dataset:
             frame_idx = int(item.id.split("_")[-1])
             for box in item.annotations:
+                if box.attributes.get("outside"):
+                    continue
                 track_idx = id_mapper[box.id]
                 x1, y1, x2, y2 = box.points
                 label = box.label
