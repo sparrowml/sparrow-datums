@@ -11,12 +11,6 @@ VERSION := latest
 test:
 	pytest --cov=sparrow_datums sparrow_datums/
 
-.PHONY: check-codestyle
-check-codestyle:
-	isort --diff --check-only sparrow_datums
-	black --diff --check sparrow_datums
-	pylint sparrow_datums
-
 #* Docker
 # Example: make docker-build VERSION=latest
 # Example: make docker-build IMAGE=some_name VERSION=0.1.0

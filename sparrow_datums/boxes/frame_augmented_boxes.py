@@ -5,7 +5,6 @@ from operator import itemgetter
 from pathlib import Path
 from typing import Any, Iterator, Optional, Union
 
-import datumaro as dm
 import numpy as np
 import numpy.typing as npt
 
@@ -112,33 +111,6 @@ class FrameAugmentedBoxes(AugmentedBoxes):
                     self.to_darwin_dict(filename, path=path, label_names=label_names)
                 )
             )
-
-    @classmethod
-    def from_dataset_item(
-        cls: type["FrameAugmentedBoxes"], dataset_item: dm.DatasetItem
-    ) -> "FrameAugmentedBoxes":
-        """Create FrameAugmentedBoxes from a Datumaro DatasetItem object."""
-        image: dm.Image = dataset_item.media
-        image_height, image_width = image.size
-        boxes = []
-        score = 1.0
-        for annotation in dataset_item.annotations:
-            if not isinstance(annotation, dm.Bbox):
-                continue
-            x1, y1, x2, y2 = annotation.points
-            label = annotation.label
-            boxes.append([x1, y1, x2, y2, score, label])
-        data: npt.NDArray[np.float64]
-        if len(boxes):
-            data = np.array(boxes).astype("float64")
-        else:
-            data = np.zeros((0, 6), "float64")
-        return cls(
-            data,
-            ptype=PType.absolute_tlbr,
-            image_width=image_width,
-            image_height=image_height,
-        )
 
     @classmethod
     def from_darwin_dict(

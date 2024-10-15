@@ -1,4 +1,5 @@
 """AugmentedBoxTracking chunk."""
+
 from __future__ import annotations
 
 import json
@@ -6,10 +7,8 @@ from operator import itemgetter
 from pathlib import Path
 from typing import Any, Iterator, Optional, Union
 
-import datumaro as dm
 import numpy as np
 import numpy.typing as npt
-import xmltodict
 
 from ..boxes import AugmentedBoxes, FrameAugmentedBoxes
 from ..chunk_types import PType
@@ -169,33 +168,7 @@ class AugmentedBoxTracking(Tracking, AugmentedBoxes):
         cls: type["AugmentedBoxTracking"], annotations_path: Union[str, Path]
     ) -> "AugmentedBoxTracking":
         """Create AugmentedBoxTracking from a CVAT video file."""
-        with open(annotations_path) as f:
-            metadata = xmltodict.parse(f.read())["annotations"]["meta"]
-        n_frames = int(metadata["task"]["stop_frame"]) + 1
-        image_width, image_height = map(
-            int, itemgetter("width", "height")(metadata["task"]["original_size"])
-        )
-        dataset = dm.Dataset.import_from(annotations_path, "cvat")
-        box_ids = set()
-        for item in dataset:
-            box_ids |= set(bb.attributes["track_id"] for bb in item.annotations)
-        id_mapper = {_id: index for index, _id in enumerate(sorted(box_ids))}
-        data = np.zeros((n_frames, len(id_mapper), 6)) * np.nan
-        for item in dataset:
-            frame_idx = int(item.id.split("_")[-1])
-            for box in item.annotations:
-                if box.attributes.get("outside"):
-                    continue
-                track_idx = id_mapper[box.id]
-                x1, y1, x2, y2 = box.points
-                label = box.label
-                data[frame_idx, track_idx] = x1, y1, x2, y2, 1.0, label
-        return cls(
-            data,
-            ptype=PType.absolute_tlbr,
-            image_width=image_width,
-            image_height=image_height,
-        )
+        raise NotImplementedError
 
     @classmethod
     def from_dict(
