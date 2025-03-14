@@ -55,6 +55,15 @@ class FrameBoxes(Boxes):
             yield box.view(SingleBox)
 
     @classmethod
+    def from_dict(
+        cls: type["FrameBoxes"],
+        chunk_dict: dict[str, Any],
+        dims: Optional[int] = None,
+    ) -> "FrameBoxes":
+        """Create chunk from chunk dict."""
+        return super().from_dict(chunk_dict, dims=4)
+
+    @classmethod
     def from_single_box(cls: type["FrameBoxes"], box: SingleBox) -> "FrameBoxes":
         """Create a FrameBoxes object from a SingleBox."""
         return cls(

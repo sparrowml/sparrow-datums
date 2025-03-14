@@ -67,3 +67,19 @@ def test_get_single_box_returns_single_box():
     single_box = boxes.get_single_box(0)
     assert isinstance(single_box, SingleBox)
     assert single_box.ptype == boxes.ptype
+
+
+def test_from_dict_with_empty_data():
+    boxes = FrameBoxes.from_dict(
+        {
+            "data": [],
+            "ptype": "unknown",
+            "image_width": None,
+            "image_height": None,
+            "fps": None,
+            "object_ids": None,
+        }
+    )
+    assert isinstance(boxes, FrameBoxes)
+    assert len(boxes) == 0
+    assert boxes.shape == (0, 4)
