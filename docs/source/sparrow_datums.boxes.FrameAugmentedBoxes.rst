@@ -11,14 +11,10 @@
 
    .. autosummary::
    
-      ~FrameAugmentedBoxes.from_darwin_dict
-      ~FrameAugmentedBoxes.from_darwin_file
       ~FrameAugmentedBoxes.from_dict
       ~FrameAugmentedBoxes.from_file
       ~FrameAugmentedBoxes.names
       ~FrameAugmentedBoxes.to_absolute
-      ~FrameAugmentedBoxes.to_darwin_dict
-      ~FrameAugmentedBoxes.to_darwin_file
       ~FrameAugmentedBoxes.to_dict
       ~FrameAugmentedBoxes.to_file
       ~FrameAugmentedBoxes.to_relative

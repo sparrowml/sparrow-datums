@@ -8,102 +8,6 @@ from ..chunk_types import PType
 from ..exceptions import ValidationError
 from .augmented_box_tracking import AugmentedBoxTracking
 
-DARWIN_DICT = {
-    "dataset": "Ring Tracking",
-    "image": {
-        "width": 1920,
-        "height": 1080,
-        "fps": 30.0,
-        "original_filename": "Ring_541700402_1820_7075017446887328011.mp4",
-        "filename": "Ring_541700402_1820_7075017446887328011.mp4",
-        "url": "https://darwin.v7labs.com/api/videos/4007448/original",
-        "path": "/",
-        "workview_url": "https://darwin.v7labs.com/workview?dataset=470324&image=1",
-        "frame_count": 3,
-    },
-    "annotations": [
-        {
-            "frames": {
-                "0": {
-                    "bounding_box": {"h": 32.1, "w": 60.35, "x": 704.11, "y": 414.68},
-                    "keyframe": True,
-                },
-                "1": {
-                    "bounding_box": {"h": 32.1, "w": 60.35, "x": 704.11, "y": 414.68},
-                    "keyframe": False,
-                },
-                "2": {
-                    "bounding_box": {"h": 32.1, "w": 60.35, "x": 704.11, "y": 414.68},
-                    "keyframe": False,
-                },
-            },
-            "id": "f90b983d-8d31-41c3-828f-69b993099ca7",
-            "interpolate_algorithm": "linear-1.1",
-            "interpolated": True,
-            "name": "car",
-            "segments": [[0, 3783]],
-        },
-        {
-            "frames": {
-                "0": {
-                    "bounding_box": {"h": 16.05, "w": 35.31, "x": 659.81, "y": 398.62},
-                    "keyframe": True,
-                },
-                "1": {
-                    "bounding_box": {"h": 16.05, "w": 35.31, "x": 659.81, "y": 398.62},
-                    "keyframe": False,
-                },
-                "2": {
-                    "bounding_box": {"h": 16.05, "w": 35.31, "x": 659.81, "y": 398.62},
-                    "keyframe": False,
-                },
-            },
-            # Leave id out of one annotation to make sure everything still works
-            # "id": "c2c5e6c7-f4f5-4edb-b24a-00aa76b7674e",
-            "interpolate_algorithm": "linear-1.1",
-            "interpolated": True,
-            "name": "car",
-            "segments": [[0, 3783]],
-        },
-        {
-            "frames": {
-                "0": {
-                    "bounding_box": {
-                        "h": 494.39,
-                        "w": 559.11,
-                        "x": 987.14,
-                        "y": 494.43,
-                    },
-                    "keyframe": True,
-                },
-                "1": {
-                    "bounding_box": {
-                        "h": 494.39,
-                        "w": 559.11,
-                        "x": 987.14,
-                        "y": 494.43,
-                    },
-                    "keyframe": False,
-                },
-                "2": {
-                    "bounding_box": {
-                        "h": 494.39,
-                        "w": 559.11,
-                        "x": 987.14,
-                        "y": 494.43,
-                    },
-                    "keyframe": False,
-                },
-            },
-            "id": "8ffd95e2-0641-445a-83e5-47c664edaaa5",
-            "interpolate_algorithm": "linear-1.1",
-            "interpolated": True,
-            "name": "bicycle",
-            "segments": [[0, 3783]],
-        },
-    ],
-}
-
 
 def test_box_tracking_chunk_requires_3_dimensions():
     with pytest.raises(ValidationError):
@@ -134,17 +38,6 @@ def test_frame_augmented_boxes_iterator_makes_frame_augmented_boxes():
         assert frame.ptype == PType.absolute_tlwh
 
 
-def test_from_darwin_dict_creates_augmented_box_tracking():
-    chunk = AugmentedBoxTracking.from_darwin_dict(DARWIN_DICT)
-    assert chunk.shape == (3, 3, 6)
-    assert isinstance(chunk, AugmentedBoxTracking)
-    assert chunk.ptype == PType.absolute_tlwh
-    assert chunk.image_width
-    assert chunk.image_height
-    np.testing.assert_equal(chunk.labels, -1)
-    assert "8ffd95e2-0641-445a-83e5-47c664edaaa5" in chunk.object_ids
-
-
 def test_from_frame_augmented_boxes():
     boxes_a = FrameAugmentedBoxes(np.ones((2, 6)), PType.absolute_tlwh)
     boxes_b = FrameAugmentedBoxes(np.ones((3, 6)), PType.absolute_tlwh)
@@ -155,29 +48,43 @@ def test_from_frame_augmented_boxes():
 
 
 def test_filter_by_class():
-    chunk = AugmentedBoxTracking.from_darwin_dict(
-        DARWIN_DICT, label_names=["car", "bicycle"]
-    )
+    # Create tracking data with different classes
+    data = np.zeros((3, 3, 6))
+    # Object 0 is class 0
+    data[:, 0, -1] = 0
+    # Object 1 is class 1
+    data[:, 1, -1] = 1
+    # Object 2 is class 0
+    data[:, 2, -1] = 0
+
+    chunk = AugmentedBoxTracking(data, ptype=PType.absolute_tlwh)
     cars = chunk.filter_by_class(0)
     bikes = chunk.filter_by_class(1)
     empty = chunk.filter_by_class(2)
+
     assert isinstance(cars, BoxTracking)
     assert isinstance(bikes, BoxTracking)
     assert isinstance(empty, BoxTracking)
-    assert cars.shape[1] + bikes.shape[1] == chunk.shape[1]
-    assert empty.shape[1] == 0
+    assert cars.shape[1] == 2  # 2 objects of class 0
+    assert bikes.shape[1] == 1  # 1 object of class 1
+    assert empty.shape[1] == 0  # 0 objects of class 2
 
 
 def test_from_box_tracking():
-    chunk = AugmentedBoxTracking.from_darwin_dict(
-        DARWIN_DICT, label_names=["car", "bicycle"]
+    # Create a BoxTracking object
+    box_data = np.ones((3, 2, 4))
+    box_tracking = BoxTracking(box_data, ptype=PType.absolute_tlwh)
+
+    # Convert to AugmentedBoxTracking
+    augmented_tracking = AugmentedBoxTracking.from_box_tracking(
+        box_tracking, score=1.0, class_idx=0
     )
-    cars = chunk.filter_by_class(0)
-    augmented_cars = AugmentedBoxTracking.from_box_tracking(
-        cars, score=1.0, class_idx=0
-    )
-    assert isinstance(augmented_cars, AugmentedBoxTracking)
-    np.testing.assert_equal(cars.array, augmented_cars.array[..., :4])
+
+    assert isinstance(augmented_tracking, AugmentedBoxTracking)
+    np.testing.assert_equal(box_tracking.array, augmented_tracking.array[..., :4])
+    assert augmented_tracking.shape == (3, 2, 6)
+    assert (augmented_tracking.array[..., 4] == 1.0).all()  # All scores are 1.0
+    assert (augmented_tracking.array[..., 5] == 0).all()  # All class indices are 0
 
 
 def test_empty_chunk():
